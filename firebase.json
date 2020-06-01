@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "dist",
+    "site": "eachonline-dev",
     "ignore": [
       "firebase.json",
       "**/.*",

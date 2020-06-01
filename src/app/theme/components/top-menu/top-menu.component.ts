@@ -1,5 +1,7 @@
+import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
-import { Data, AppService } from '../../../app.service';
+import { Data, AppService, User } from '../../../app.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-top-menu',
@@ -17,7 +19,7 @@ export class TopMenuComponent implements OnInit {
   ]
   public flag:any;
 
-  constructor(public appService:AppService) { }
+  constructor(public appService:AppService, public authService: AuthService, public router:Router) { }
 
   ngOnInit() {
     this.currency = this.currencies[0];
@@ -30,6 +32,11 @@ export class TopMenuComponent implements OnInit {
 
   public changeLang(flag){
     this.flag = flag;
+  }
+
+  public signOut(){
+    this.authService.logout();
+
   }
 
   

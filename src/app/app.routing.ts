@@ -3,10 +3,13 @@ import { ModuleWithProviders } from '@angular/core';
 
 import { PagesComponent } from './pages/pages.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { CanActivate } from '@angular/router/src/utils/preactivation';
+import { AppGuardService } from './services/app-guard.service';
 
 export const routes: Routes = [
     { 
         path: '', 
+        canActivate:[AppGuardService],
         component: PagesComponent, children: [
             { path: '', loadChildren: './pages/home/home.module#HomeModule' },
             { path: 'account', loadChildren: './pages/account/account.module#AccountModule', data: { breadcrumb: 'Account Settings' } },

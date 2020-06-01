@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { emailValidator, matchingPasswords } from '../../theme/utils/app-validators';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-sign-in',
@@ -13,7 +14,11 @@ export class SignInComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
 
-  constructor(public formBuilder: FormBuilder, public router:Router, public snackBar: MatSnackBar) { }
+  constructor(public formBuilder: FormBuilder,
+    public router:Router,
+    public snackBar: MatSnackBar,
+    public authService: AuthService
+    ) { }
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -32,12 +37,24 @@ export class SignInComponent implements OnInit {
 
   public onLoginFormSubmit(values:Object):void {
     if (this.loginForm.valid) {
+      this.authService.login(values)
       this.router.navigate(['/']);
+    }else{
+      //error code
     }
+  }
+
+  public loginWithGoogle(){
+    this.authService.doGoogleLogin();
+  }
+
+  public loginWithFacebook(){
+    this.authService.doFacebookLogin();
   }
 
   public onRegisterFormSubmit(values:Object):void {
     if (this.registerForm.valid) {
+      this.authService.register(values)
       this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
     }
   }

@@ -422,3 +422,8 @@ export class AppService {
     }
 
 } 
+export interface User {
+    email?: string;
+    // username?: string;
+    // profilePhotoURL?: string;
+}
