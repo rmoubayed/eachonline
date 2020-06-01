@@ -5,6 +5,7 @@ import { Settings, AppSettings } from '../app.settings';
 import { AppService } from '../app.service';
 import { Category, Product } from '../app.models';
 import { SidenavMenuService } from '../theme/components/sidenav-menu/sidenav-menu.service';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-pages',
@@ -22,12 +23,14 @@ export class PagesComponent implements OnInit {
   public settings: Settings;
   constructor(public appSettings:AppSettings, 
               public appService:AppService, 
+              public authService: AuthService,
               public sidenavMenuService:SidenavMenuService,
               public router:Router) { 
     this.settings = this.appSettings.settings; 
   }
 
   ngOnInit() {
+    console.log(this.authService.user, 'user in pages')
     this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
   } 

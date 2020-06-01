@@ -1,8 +1,10 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { Category, Product } from './app.models';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 export class Data {
     constructor(public categories: Category[],
@@ -15,6 +17,9 @@ export class Data {
 
 @Injectable()
 export class AppService {
+
+    constructor(public http:HttpClient, public snackBar: MatSnackBar,private afs: AngularFirestore, private authService: AuthService) { }
+
     public Data = new Data(
         [], // categories
         [], // compareList
@@ -24,7 +29,6 @@ export class AppService {
         0 //totalCartCount
     )
     public url = "assets/data/";
-    constructor(public http:HttpClient, public snackBar: MatSnackBar) { }
     
     public getCategories(): Observable<Category[]>{
         return this.http.get<Category[]>(this.url + 'categories.json');
@@ -93,21 +97,52 @@ export class AppService {
 
     public addToCart(product:Product){
         let message, status;        
-       
         this.Data.totalPrice = null;
         this.Data.totalCartCount = null;
-
         if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
             let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
             item.cartCount = product.cartCount;  
-        }
-        else{           
+        }else{           
             this.Data.cartList.push(product);
         }        
         this.Data.cartList.forEach(product=>{
             this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
             this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
         });
+
+        let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
+        document.get().toPromise().then(
+            (docSnapshot) => {
+                if (docSnapshot.exists) {
+                  document.update({
+                    products: this.Data.cartList,
+                    total: this.Data.totalPrice,
+                    totalCartCount: this.Data.totalCartCount
+                })
+                } else {
+                  document.set({
+                    products: this.Data.cartList,
+                    total: this.Data.totalPrice,
+                    totalCartCount: this.Data.totalCartCount
+                  }, { merge: true }) 
+                }
+            });
+        // if(document){
+        //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
+        //         products: this.Data.cartList,
+        //         total: this.Data.totalPrice,
+        //         totalCartCount: this.Data.totalCartCount
+        //     })
+        // }else{
+        //     console.log('no document')
+        //     this.afs.doc(`cart/${this.authService.user['uid']}`).set({ }, { merge: true });
+        //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
+        //         products: this.Data.cartList,
+        //         total: this.Data.totalPrice,
+        //         totalCartCount: this.Data.totalCartCount
+        //     })
+        // }
+        
 
         message = 'The product ' + product.name + ' has been added to cart.'; 
         status = 'success';          

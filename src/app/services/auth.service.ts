@@ -21,34 +21,26 @@ export class AuthService {
     this.afAuth.auth.createUserWithEmailAndPassword(values['email'], values['password']).then(
       (data)=>{
         console.log(data);
-        this.loggedIn = true;
-        this.user = data.user;
-        data.user.updateProfile({displayName: values['name']}).then(
-            (data)=>{
-            console.log('updateProfile', data);
-            this.sendEmailVerify();
-            }
-        )
-        this.router.navigate(['/']);
-        
-        // return this.afs.doc(`customer/${data.user.uid}`).update({
-        //   email: data.user.email,
-        //   fullName: values['name'],
-        //   listings: []
-        // }).then(
-        //   ()=>{ 
-        //     (<HTMLButtonElement>document.getElementsByClassName('reg-overlay')[0]).click();
-        //     this.loggedIn = true;
-        //     data.user.updateProfile({displayName: values['name']}).then(
-        //       (data)=>{
-        //         console.log('updateProfile', data);
-        //         this.sendEmailVerify();
-        //       }
-        //     )
-        //   }
-        // ).catch( (error) => {
-        //     console.log(error);
-        // });
+        this.afs.doc(`cart/${data.user.uid}`).set({ }, { merge: true });
+        this.afs.doc(`customer/${data.user.uid}`).set({ }, { merge: true });
+        return this.afs.doc(`customer/${data.user.uid}`).update({
+          email: data.user.email,
+          fullName: values['name'],
+        }).then(
+          ()=>{ 
+            this.loggedIn = true;
+            this.user = data.user;
+            data.user.updateProfile({displayName: values['name']}).then(
+              (data)=>{
+                console.log('updateProfile', data);
+                this.sendEmailVerify();
+                this.router.navigate(['/']);
+              }
+            )
+          }
+        ).catch( (error) => {
+            console.log(error);
+        });
       })
   }
   login(values) {
@@ -110,6 +102,14 @@ export class AuthService {
           this.user = user;
           // firebase.f
           console.log('USER', user);
+          this.db.collection('cart').doc(user.uid).get().then((doc)=>{
+              if(doc.exists){
+                  console.log(doc.data(), 'cart data');
+                  this.user['totalCartCount'] =  doc.data().totalCartCount;
+                  this.user['cartTotal'] = doc.data().total;
+                  console.log(this.user)
+               }
+          })
           this.db.collection('customer').doc(user.uid).get().then((doc) => {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
