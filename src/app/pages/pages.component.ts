@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { Router, NavigationEnd } from '@angular/router';
 import { Settings, AppSettings } from '../app.settings';
@@ -13,12 +13,13 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./pages.component.scss'],
   providers: [ SidenavMenuService ]
 })
-export class PagesComponent implements OnInit {
+export class PagesComponent implements OnInit, AfterViewInit {
   public showBackToTop:boolean = false;
   public categories:Category[];
   public category:Category;
   public sidenavMenuItems:Array<any>;
   @ViewChild('sidenav') sidenav:any;
+  public localAuthService:AuthService;
 
   public settings: Settings;
   constructor(public appSettings:AppSettings, 
@@ -30,16 +31,17 @@ export class PagesComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.authService.user, 'user in pages')
+    console.log(this.authService.Data, 'dataaa ')
     this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
   } 
+
 
   public getCategories(){    
     this.appService.getCategories().subscribe(data => {
       this.categories = data;
       this.category = data[0];
-      this.appService.Data.categories = data;
+      this.authService.Data.categories = data;
     })
   }
 
@@ -53,22 +55,22 @@ export class PagesComponent implements OnInit {
   }
 
   public remove(product) {
-      const index: number = this.appService.Data.cartList.indexOf(product);
+      const index: number = this.authService.Data.cartList.indexOf(product);
       if (index !== -1) {
-          this.appService.Data.cartList.splice(index, 1);
-          this.appService.Data.totalPrice = this.appService.Data.totalPrice - product.newPrice*product.cartCount;
-          this.appService.Data.totalCartCount = this.appService.Data.totalCartCount - product.cartCount;
-          this.appService.resetProductCartCount(product);
+          this.authService.Data.cartList.splice(index, 1);
+          this.authService.Data.totalPrice = this.authService.Data.totalPrice - product.newPrice*product.cartCount;
+          this.authService.Data.totalCartCount = this.authService.Data.totalCartCount - product.cartCount;
+          this.authService.resetProductCartCount(product);
       }        
   }
 
   public clear(){
-    this.appService.Data.cartList.forEach(product=>{
-      this.appService.resetProductCartCount(product);
+    this.authService.Data.cartList.forEach(product=>{
+      this.authService.resetProductCartCount(product);
     });
-    this.appService.Data.cartList.length = 0;
-    this.appService.Data.totalPrice = 0;
-    this.appService.Data.totalCartCount = 0;
+    this.authService.Data.cartList.length = 0;
+    this.authService.Data.totalPrice = 0;
+    this.authService.Data.totalCartCount = 0;
   }
  
 
@@ -104,7 +106,7 @@ export class PagesComponent implements OnInit {
     ($event.target.documentElement.scrollTop > 300) ? this.showBackToTop = true : this.showBackToTop = false;  
   }
 
-  ngAfterViewInit(){
+  ngAfterViewInit(){    
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) { 
         this.sidenav.close(); 

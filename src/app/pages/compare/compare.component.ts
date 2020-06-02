@@ -1,6 +1,7 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Data, AppService } from '../../app.service';
+import {AppService } from '../../app.service';
 import { Product } from '../../app.models';
 
 @Component({
@@ -10,11 +11,11 @@ import { Product } from '../../app.models';
 })
 export class CompareComponent implements OnInit {
   
-  constructor(public appService:AppService, public snackBar: MatSnackBar) { }
+  constructor(public appService:AppService, public snackBar: MatSnackBar, private authService : AuthService) { }
 
   ngOnInit() { 
-    this.appService.Data.cartList.forEach(cartProduct=>{
-      this.appService.Data.compareList.forEach(product=>{
+    this.authService.Data.cartList.forEach(cartProduct=>{
+      this.authService.Data.compareList.forEach(product=>{
         if(cartProduct.id == product.id){
           product.cartCount = cartProduct.cartCount;
         }
@@ -23,20 +24,20 @@ export class CompareComponent implements OnInit {
   }
 
   public remove(product:Product) {
-      const index: number = this.appService.Data.compareList.indexOf(product);
+      const index: number = this.authService.Data.compareList.indexOf(product);
       if (index !== -1) {
-          this.appService.Data.compareList.splice(index, 1);
+          this.authService.Data.compareList.splice(index, 1);
       }        
   }
 
   public clear(){
-    this.appService.Data.compareList.length = 0;
+    this.authService.Data.compareList.length = 0;
   }
 
   public addToCart(product:Product){
     product.cartCount = product.cartCount + 1;
     if(product.cartCount <= product.availibilityCount){
-      this.appService.addToCart(product);
+      this.authService.addToCart(product);
     }
     else{
       product.cartCount = product.availibilityCount;

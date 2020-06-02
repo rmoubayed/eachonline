@@ -14,6 +14,7 @@ export class AuthGuardService implements CanActivate {
   canActivate(route : ActivatedRouteSnapshot,state : RouterStateSnapshot) 
   : Observable<boolean> | Promise<boolean> | boolean {
     var user = firebase.auth().currentUser;
+    console.log(user, 'user in auth guard')
     this.auth.user = user;
     console.log('USe', user);
     if(!user) {

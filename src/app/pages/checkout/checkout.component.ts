@@ -1,7 +1,8 @@
+import { AppService } from './../../app.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material';
-import { Data, AppService } from '../../app.service';
 
 @Component({
   selector: 'app-checkout',
@@ -20,10 +21,10 @@ export class CheckoutComponent implements OnInit {
   deliveryMethods = [];
   grandTotal = 0;
 
-  constructor(public appService:AppService, public formBuilder: FormBuilder) { }
+  constructor(public authService : AuthService, public formBuilder: FormBuilder, private appService : AppService) { }
 
   ngOnInit() {    
-    this.appService.Data.cartList.forEach(product=>{
+    this.authService.Data.cartList.forEach(product=>{
       this.grandTotal += product.cartCount*product.newPrice;
     });
     this.countries = this.appService.getCountries();
@@ -58,9 +59,9 @@ export class CheckoutComponent implements OnInit {
   public placeOrder(){
     this.horizontalStepper._steps.forEach(step => step.editable = false);
     this.verticalStepper._steps.forEach(step => step.editable = false);
-    this.appService.Data.cartList.length = 0;    
-    this.appService.Data.totalPrice = 0;
-    this.appService.Data.totalCartCount = 0;
+    this.authService.Data.cartList.length = 0;    
+    this.authService.Data.totalPrice = 0;
+    this.authService.Data.totalCartCount = 0;
 
   }
 

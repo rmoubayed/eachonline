@@ -16,10 +16,22 @@ export class AppGuardService implements CanActivate, CanActivateChild {
     return new Promise((resolve, reject) => {
       this.auth.getCurrentUser().then(
         (data)=>{
-          console.log(data);
-          resolve(true);
+          this.auth.getCart().then(
+            (data)=>{
+              if(data){
+                console.log(data)
+                resolve(true)
+              }else{
+                reject()
+              }
+            }
+          )
         }
-      )
+        ).catch(
+            (e)=>{
+                reject(e);
+            }
+        )
     })
   }
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):  Observable<boolean> | Promise<boolean> | boolean {

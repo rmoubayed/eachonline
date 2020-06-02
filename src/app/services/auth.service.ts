@@ -1,21 +1,40 @@
+import { AppService } from './../app.service';
 import { User } from '../app.service';
 import { Injectable } from '@angular/core';
 import { AngularFirestoreCollection } from '@angular/fire/firestore/public_api';
-import { Subject } from 'rxjs';
+import { Subject, Observable } from 'rxjs';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router} from '@angular/router';
 import * as firebase from 'firebase';
-
+import { Category, Product } from '../app.models';
+import { HttpClient } from '@angular/common/http';
+import { MatSnackBar } from '@angular/material';
+export interface Data {
+  categories: Category[];
+  compareList: Product[];
+  wishList: Product[];
+  cartList: Product[];
+  totalPrice: number;
+  totalCartCount: number;
+}
 @Injectable({
     providedIn:'root'
 })
 export class AuthService {
-  constructor(public afAuth: AngularFireAuth, private afs: AngularFirestore, public formBuilder: FormBuilder, public router:Router) { }
+  constructor(public afAuth: AngularFireAuth,private appService:AppService, private afs: AngularFirestore, public formBuilder: FormBuilder, public router:Router, public http:HttpClient, public snackBar: MatSnackBar) { }
   loggedIn : boolean;
   user : User
   db = firebase.firestore();
+  Data :  Data = {
+    categories: [], // categories
+    compareList:[], // compareList
+    wishList: [],  // wishList
+    cartList: [],  // cartList
+    totalPrice: null, //totalPrice,
+    totalCartCount: 0 //totalCartCount
+  }
   
   register(values) {
     this.afAuth.auth.createUserWithEmailAndPassword(values['email'], values['password']).then(
@@ -26,6 +45,8 @@ export class AuthService {
         return this.afs.doc(`customer/${data.user.uid}`).update({
           email: data.user.email,
           fullName: values['name'],
+          totalCartCount:null,
+          cartTotal:null
         }).then(
           ()=>{ 
             this.loggedIn = true;
@@ -102,14 +123,6 @@ export class AuthService {
           this.user = user;
           // firebase.f
           console.log('USER', user);
-          this.db.collection('cart').doc(user.uid).get().then((doc)=>{
-              if(doc.exists){
-                  console.log(doc.data(), 'cart data');
-                  this.user['totalCartCount'] =  doc.data().totalCartCount;
-                  this.user['cartTotal'] = doc.data().total;
-                  console.log(this.user)
-               }
-          })
           this.db.collection('customer').doc(user.uid).get().then((doc) => {
             if (doc.exists) {
                 console.log("Document data:", doc.data());
@@ -130,6 +143,169 @@ export class AuthService {
       })
     })
   }
+
+public addToCompare(product:Product){
+    let message, status;
+    if(this.Data.compareList.filter(item=>item.id == product.id)[0]){
+        message = 'The product ' + product.name + ' already added to comparison list.'; 
+        status = 'error';     
+    }
+    else{
+        this.Data.compareList.push(product);
+        message = 'The product ' + product.name + ' has been added to comparison list.'; 
+        status = 'success';  
+    }
+    let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
+    document.get().toPromise().then(
+        (docSnapshot) => {
+            if (docSnapshot.exists) {
+              document.update({
+                compareList: this.Data.compareList
+            })
+            } else {
+              document.set({
+                compareList: this.Data.compareList
+              }, { merge: true }) 
+            }
+        });
+    this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+}
+
+public addToWishList(product:Product){
+    let message, status;
+    if(this.Data.wishList.filter(item=>item.id == product.id)[0]){
+        message = 'The product ' + product.name + ' already added to wish list.'; 
+        status = 'error';     
+    }else{
+        this.Data.wishList.push(product);
+        message = 'The product ' + product.name + ' has been added to wish list.'; 
+        status = 'success';  
+    }
+    let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
+    document.get().toPromise().then(
+        (docSnapshot) => {
+            if (docSnapshot.exists) {
+              document.update({
+                wishList: this.Data.wishList
+            })
+            } else {
+              document.set({
+                wishList: this.Data.wishList
+              }, { merge: true }) 
+            }
+        });
+    this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+}
+
+// public addToCart(product:Product){
+//     let message, status;
+//     if(this.Data.cartList.filter(item=>item.id == product.id)[0]){
+//         message = 'The product ' + product.name + ' already added to cart.'; 
+//         status = 'error'; 
+//     }
+//     else{
+//         this.Data.totalPrice = null;
+//         this.Data.totalCartCount = null;
+//         this.Data.cartList.push(product);
+//         this.Data.cartList.forEach(product=>{
+//             this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
+//             this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
+//         })
+//         message = 'The product ' + product.name + ' has been added to cart.'; 
+//         status = 'success';  
+//     }
+//     this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+// }
+
+
+public addToCart(product:Product){
+    let message, status;        
+    this.Data.totalPrice = null;
+    this.Data.totalCartCount = null;
+    if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
+        let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
+        item.cartCount = product.cartCount;  
+    }else{           
+        this.Data.cartList.push(product);
+    }        
+    this.Data.cartList.forEach(product=>{
+        this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
+        this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
+    });
+
+    let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
+    document.get().toPromise().then(
+        (docSnapshot) => {
+            if (docSnapshot.exists) {
+              document.update({
+                products: this.Data.cartList,
+                totalPrice: this.Data.totalPrice,
+                totalCartCount: this.Data.totalCartCount
+            })
+            } else {
+              document.set({
+                products: this.Data.cartList,
+                totalPrice: this.Data.totalPrice,
+                totalCartCount: this.Data.totalCartCount
+              }, { merge: true }) 
+            }
+        });
+    // if(document){
+    //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
+    //         products: this.Data.cartList,
+    //         total: this.Data.totalPrice,
+    //         totalCartCount: this.Data.totalCartCount
+    //     })
+    // }else{
+    //     console.log('no document')
+    //     this.afs.doc(`cart/${this.authService.user['uid']}`).set({ }, { merge: true });
+    //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
+    //         products: this.Data.cartList,
+    //         total: this.Data.totalPrice,
+    //         totalCartCount: this.Data.totalCartCount
+    //     })
+    // }
+    
+
+    message = 'The product ' + product.name + ' has been added to cart.'; 
+    status = 'success';          
+    this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+}
+
+
+public resetProductCartCount(product:Product){
+    product.cartCount = 0;
+    let compareProduct = this.Data.compareList.filter(item=>item.id == product.id)[0];
+    if(compareProduct){
+        compareProduct.cartCount = 0;
+    };
+    let wishProduct = this.Data.wishList.filter(item=>item.id == product.id)[0];
+    if(wishProduct){
+        wishProduct.cartCount = 0;
+    }; 
+}
+  getCart(){
+    return new Promise<any>((resolve, reject)=>{
+      this.db.collection('cart').doc(this.user['uid']).get().then((doc)=>{
+        if(doc.exists){
+            let docData = doc.data();
+            console.log(doc.data(), 'cart data');
+            this.Data.cartList = docData.products;
+            this.Data.wishList = docData.wishList;
+            this.Data.compareList = docData.compareList;
+            this.Data.totalCartCount = docData.totalCartCount;
+            this.Data.totalPrice = docData.totalPrice;
+            console.log(this.user)
+        }
+        resolve(true)
+    }).catch(
+      (error)=> {
+        console.log('cat fail', error);
+        reject(error)
+      }
+    )
+  })
+}
   
   updateProfileName(name) {
     var user = firebase.auth().currentUser;

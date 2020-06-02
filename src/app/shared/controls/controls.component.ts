@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Data, AppService } from '../../app.service';
 import { Product } from '../../app.models';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-controls',
@@ -15,7 +15,7 @@ export class ControlsComponent implements OnInit {
   @Output() onQuantityChange: EventEmitter<any> = new EventEmitter<any>();
   public count:number = 1;
   public align = 'center center';
-  constructor(public appService:AppService, public snackBar: MatSnackBar) { }
+  constructor(public authService:AuthService, public snackBar: MatSnackBar) { }
 
   ngOnInit() {
     if(this.product){
@@ -68,16 +68,16 @@ export class ControlsComponent implements OnInit {
   }
 
   public addToCompare(product:Product){
-    this.appService.addToCompare(product);
+    this.authService.addToCompare(product);
   }
 
   public addToWishList(product:Product){
-    this.appService.addToWishList(product);
+    this.authService.addToWishList(product);
   }
 
   public addToCart(product:Product){
     console.log(product)
-    let currentProduct = this.appService.Data.cartList.filter(item=>item.id == product.id)[0];
+    let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
     if(currentProduct){
       if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
         product.cartCount = currentProduct.cartCount + this.count;
@@ -90,7 +90,7 @@ export class ControlsComponent implements OnInit {
     else{
       product.cartCount = this.count;
     }
-    this.appService.addToCart(product);
+    this.authService.addToCart(product);
   }
 
   public openProductDialog(event){

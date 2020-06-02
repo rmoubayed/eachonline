@@ -151,7 +151,7 @@
             <div class="mat-header-cell">Quantity</div>
             <div class="mat-header-cell">Total</div>
           </div>
-          <div *ngFor="let product of appService.Data.cartList" class="mat-row">
+          <div *ngFor="let product of authService.Data.cartList" class="mat-row">
             <div class="mat-cell"><img [src]="product.images[0].small"></div>
             <div class="mat-cell">{{product.name}}</div>
             <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      
@@ -387,7 +387,7 @@
             <div class="mat-header-cell">Quantity</div>
             <div class="mat-header-cell">Total</div>
           </div>
-          <div *ngFor="let product of appService.Data.cartList" class="mat-row">
+          <div *ngFor="let product of authService.Data.cartList" class="mat-row">
             <div class="mat-cell"><img [src]="product.images[0].small"></div>
             <div class="mat-cell">{{product.name}}</div>
             <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      

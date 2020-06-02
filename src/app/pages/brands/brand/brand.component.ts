@@ -1,8 +1,9 @@
+import { AuthService } from 'src/app/services/auth.service';
+import { AppService } from './../../../app.service';
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { ProductDialogComponent } from '../../../shared/products-carousel/product-dialog/product-dialog.component';
-import { AppService } from '../../../app.service';
 import { Product, Category } from "../../../app.models";
 
 @Component({
@@ -29,7 +30,7 @@ export class BrandComponent implements OnInit {
   public sizes = ["S","M","L","XL","2XL","32","36","38","46","52","13.3\"","15.4\"","17\"","21\"","23.4\""];
   public page:any;
 
-  constructor(private activatedRoute: ActivatedRoute, public appService:AppService, public dialog: MatDialog, private router: Router) { }
+  constructor(private activatedRoute: ActivatedRoute, private authService : AuthService, private appService:AppService, public dialog: MatDialog, private router: Router) { }
 
   ngOnInit() {
     this.count = this.counts[0];
@@ -59,14 +60,14 @@ export class BrandComponent implements OnInit {
   }
 
   public getCategories(){  
-    if(this.appService.Data.categories.length == 0) { 
+    if(this.authService.Data.categories.length == 0) { 
       this.appService.getCategories().subscribe(data => {
         this.categories = data;
-        this.appService.Data.categories = data;
+        this.authService.Data.categories = data;
       });
     }
     else{
-      this.categories = this.appService.Data.categories;
+      this.categories = this.authService.Data.categories;
     }
   }
 

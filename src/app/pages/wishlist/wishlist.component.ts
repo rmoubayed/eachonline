@@ -1,6 +1,7 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { Data, AppService } from '../../app.service';
+import { AppService } from '../../app.service';
 import { Product } from '../../app.models';
 
 @Component({
@@ -10,11 +11,11 @@ import { Product } from '../../app.models';
 })
 export class WishlistComponent implements OnInit {
   public quantity:number = 1;
-  constructor(public appService:AppService, public snackBar: MatSnackBar) { }
+  constructor(public appService:AppService, public snackBar: MatSnackBar, private authService : AuthService) { }
 
   ngOnInit() {
-    this.appService.Data.cartList.forEach(cartProduct=>{
-      this.appService.Data.wishList.forEach(product=>{
+    this.authService.Data.cartList.forEach(cartProduct=>{
+      this.authService.Data.wishList.forEach(product=>{
         if(cartProduct.id == product.id){
           product.cartCount = cartProduct.cartCount;
         }
@@ -23,14 +24,14 @@ export class WishlistComponent implements OnInit {
   }
 
   public remove(product:Product) {
-    const index: number = this.appService.Data.wishList.indexOf(product);
+    const index: number = this.authService.Data.wishList.indexOf(product);
     if (index !== -1) {
-        this.appService.Data.wishList.splice(index, 1);
+        this.authService.Data.wishList.splice(index, 1);
     }     
   }
 
   public clear(){
-    this.appService.Data.wishList.length = 0;
+    this.authService.Data.wishList.length = 0;
   } 
 
   public getQuantity(val){
@@ -38,7 +39,7 @@ export class WishlistComponent implements OnInit {
   }
 
   public addToCart(product:Product){
-    let currentProduct = this.appService.Data.cartList.filter(item=>item.id == product.id)[0];
+    let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
     if(currentProduct){
       if((currentProduct.cartCount + this.quantity) <= product.availibilityCount){
         product.cartCount = currentProduct.cartCount + this.quantity;
@@ -51,7 +52,7 @@ export class WishlistComponent implements OnInit {
     else{
       product.cartCount = this.quantity;
     }
-    this.appService.addToCart(product);
+    this.authService.addToCart(product);
   } 
 
 }
