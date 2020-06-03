@@ -12,11 +12,13 @@ import { Router } from '@angular/router';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatSnackBar } from '@angular/material';
 import { emailValidator, matchingPasswords } from '../../theme/utils/app-validators';
+import { AuthService } from 'src/app/services/auth.service';
 var SignInComponent = /** @class */ (function () {
-    function SignInComponent(formBuilder, router, snackBar) {
+    function SignInComponent(formBuilder, router, snackBar, authService) {
         this.formBuilder = formBuilder;
         this.router = router;
         this.snackBar = snackBar;
+        this.authService = authService;
     }
     SignInComponent.prototype.ngOnInit = function () {
         this.loginForm = this.formBuilder.group({
@@ -32,11 +34,22 @@ var SignInComponent = /** @class */ (function () {
     };
     SignInComponent.prototype.onLoginFormSubmit = function (values) {
         if (this.loginForm.valid) {
+            this.authService.login(values);
             this.router.navigate(['/']);
         }
+        else {
+            //error code
+        }
+    };
+    SignInComponent.prototype.loginWithGoogle = function () {
+        this.authService.doGoogleLogin();
+    };
+    SignInComponent.prototype.loginWithFacebook = function () {
+        this.authService.doFacebookLogin();
     };
     SignInComponent.prototype.onRegisterFormSubmit = function (values) {
         if (this.registerForm.valid) {
+            this.authService.register(values);
             this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
         }
     };
@@ -46,7 +59,10 @@ var SignInComponent = /** @class */ (function () {
             templateUrl: './sign-in.component.html',
             styleUrls: ['./sign-in.component.scss']
         }),
-        __metadata("design:paramtypes", [FormBuilder, Router, MatSnackBar])
+        __metadata("design:paramtypes", [FormBuilder,
+            Router,
+            MatSnackBar,
+            AuthService])
     ], SignInComponent);
     return SignInComponent;
 }());

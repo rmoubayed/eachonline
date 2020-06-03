@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 
@@ -14,9 +15,11 @@ export class AccountComponent implements OnInit {
     { name: 'Account Information', href: 'information', icon: 'info' },
     { name: 'Addresses', href: 'addresses', icon: 'location_on' },
     { name: 'Order History', href: 'orders', icon: 'add_shopping_cart' },  
-    { name: 'Logout', href: '/sign-in', icon: 'power_settings_new' },    
+    { name: 'Logout', icon: 'power_settings_new' },    
   ];
-  constructor(public router:Router) { }
+  constructor(public router:Router,
+             private authService : AuthService
+            ) { }
 
   ngOnInit() {
     if(window.innerWidth < 960){
@@ -37,6 +40,10 @@ export class AccountComponent implements OnInit {
         }
       }                
     });
+  }
+
+  logout(){
+    this.authService.logout()
   }
 
 }

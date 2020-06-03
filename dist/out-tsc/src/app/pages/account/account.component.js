@@ -7,18 +7,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, ViewChild, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 var AccountComponent = /** @class */ (function () {
-    function AccountComponent(router) {
+    function AccountComponent(router, authService) {
         this.router = router;
+        this.authService = authService;
         this.sidenavOpen = true;
         this.links = [
             { name: 'Account Dashboard', href: 'dashboard', icon: 'dashboard' },
             { name: 'Account Information', href: 'information', icon: 'info' },
             { name: 'Addresses', href: 'addresses', icon: 'location_on' },
             { name: 'Order History', href: 'orders', icon: 'add_shopping_cart' },
-            { name: 'Logout', href: '/sign-in', icon: 'power_settings_new' },
+            { name: 'Logout', icon: 'power_settings_new' },
         ];
     }
     AccountComponent.prototype.ngOnInit = function () {
@@ -40,6 +42,9 @@ var AccountComponent = /** @class */ (function () {
             }
         });
     };
+    AccountComponent.prototype.logout = function () {
+        this.authService.logout();
+    };
     __decorate([
         ViewChild('sidenav'),
         __metadata("design:type", Object)
@@ -56,7 +61,8 @@ var AccountComponent = /** @class */ (function () {
             templateUrl: './account.component.html',
             styleUrls: ['./account.component.scss']
         }),
-        __metadata("design:paramtypes", [Router])
+        __metadata("design:paramtypes", [Router,
+            AuthService])
     ], AccountComponent);
     return AccountComponent;
 }());

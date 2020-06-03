@@ -23,7 +23,7 @@ export interface Data {
     providedIn:'root'
 })
 export class AuthService {
-  constructor(public afAuth: AngularFireAuth,private appService:AppService, private afs: AngularFirestore, public formBuilder: FormBuilder, public router:Router, public http:HttpClient, public snackBar: MatSnackBar) { }
+  constructor(public afAuth: AngularFireAuth, public appService:AppService, private afs: AngularFirestore, public formBuilder: FormBuilder, public router:Router, public http:HttpClient, public snackBar: MatSnackBar) { }
   loggedIn : boolean;
   user : User
   db = firebase.firestore();
@@ -44,9 +44,7 @@ export class AuthService {
         this.afs.doc(`customer/${data.user.uid}`).set({ }, { merge: true });
         return this.afs.doc(`customer/${data.user.uid}`).update({
           email: data.user.email,
-          fullName: values['name'],
-          totalCartCount:null,
-          cartTotal:null
+          fullName: values['name']
         }).then(
           ()=>{ 
             this.loggedIn = true;
@@ -74,7 +72,6 @@ export class AuthService {
       },(e)=>{
         console.log('err',e);
         if(e['code'] && e['message']) {
-          
         }
       }
     )
@@ -111,6 +108,14 @@ export class AuthService {
         console.log(data);
         this.loggedIn = false;
         this.user = null;
+        this.Data = {
+          categories: [], 
+          compareList:[], 
+          wishList: [],  
+          cartList: [],  
+          totalPrice: null, 
+          totalCartCount: 0 
+        }
         this.router.navigate(['/']);
       }
     )
@@ -123,8 +128,12 @@ export class AuthService {
           this.user = user;
           // firebase.f
           console.log('USER', user);
+          
           this.db.collection('customer').doc(user.uid).get().then((doc) => {
             if (doc.exists) {
+              let user = doc.data()
+              this.user['billingAddress'] = user.billingAddress ? user.billingAddress : {}
+              this.user['shippingAddress'] = user.shippingAddress ? user.shippingAddress : {}
                 console.log("Document data:", doc.data());
                 
             } else {
@@ -197,26 +206,6 @@ public addToWishList(product:Product){
     this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
 }
 
-// public addToCart(product:Product){
-//     let message, status;
-//     if(this.Data.cartList.filter(item=>item.id == product.id)[0]){
-//         message = 'The product ' + product.name + ' already added to cart.'; 
-//         status = 'error'; 
-//     }
-//     else{
-//         this.Data.totalPrice = null;
-//         this.Data.totalCartCount = null;
-//         this.Data.cartList.push(product);
-//         this.Data.cartList.forEach(product=>{
-//             this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
-//             this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
-//         })
-//         message = 'The product ' + product.name + ' has been added to cart.'; 
-//         status = 'success';  
-//     }
-//     this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-// }
-
 
 public addToCart(product:Product){
     let message, status;        
@@ -250,23 +239,6 @@ public addToCart(product:Product){
               }, { merge: true }) 
             }
         });
-    // if(document){
-    //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
-    //         products: this.Data.cartList,
-    //         total: this.Data.totalPrice,
-    //         totalCartCount: this.Data.totalCartCount
-    //     })
-    // }else{
-    //     console.log('no document')
-    //     this.afs.doc(`cart/${this.authService.user['uid']}`).set({ }, { merge: true });
-    //     this.afs.doc(`cart/${this.authService.user['uid']}`).update({
-    //         products: this.Data.cartList,
-    //         total: this.Data.totalPrice,
-    //         totalCartCount: this.Data.totalCartCount
-    //     })
-    // }
-    
-
     message = 'The product ' + product.name + ' has been added to cart.'; 
     status = 'success';          
     this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
@@ -278,10 +250,16 @@ public resetProductCartCount(product:Product){
     let compareProduct = this.Data.compareList.filter(item=>item.id == product.id)[0];
     if(compareProduct){
         compareProduct.cartCount = 0;
+        this.afs.collection('cart').doc(this.user['uid']).update({
+          compareList: this.Data.compareList
+        })
     };
     let wishProduct = this.Data.wishList.filter(item=>item.id == product.id)[0];
     if(wishProduct){
         wishProduct.cartCount = 0;
+        this.afs.collection('cart').doc(this.user['uid']).update({
+          wishList: this.Data.wishList
+        })
     }; 
 }
   getCart(){
@@ -289,12 +267,12 @@ public resetProductCartCount(product:Product){
       this.db.collection('cart').doc(this.user['uid']).get().then((doc)=>{
         if(doc.exists){
             let docData = doc.data();
-            console.log(doc.data(), 'cart data');
-            this.Data.cartList = docData.products;
-            this.Data.wishList = docData.wishList;
-            this.Data.compareList = docData.compareList;
-            this.Data.totalCartCount = docData.totalCartCount;
-            this.Data.totalPrice = docData.totalPrice;
+            console.log(docData, 'cart data');
+            this.Data.cartList = docData.products ? docData.products : [];
+            this.Data.wishList = docData.wishList ? docData.wishList : [];
+            this.Data.compareList = docData.compareList ? docData.compareList : [];
+            this.Data.totalCartCount = docData.totalCartCount ? docData.totalCartCount : 0;
+            this.Data.totalPrice = docData.totalPrice ? docData.totalPrice : 0;
             console.log(this.user)
         }
         resolve(true)
@@ -307,20 +285,64 @@ public resetProductCartCount(product:Product){
   })
 }
   
-  updateProfileName(name) {
+  updateProfileName(name){
+    console.log(name)
     var user = firebase.auth().currentUser;
-    user.updateProfile({displayName: name}).then(()=> {console.log('UPDATED PROFILE NAME');firebase.auth().currentUser.reload()}).catch((e)=>{console.log(e)})
+    user.updateProfile({displayName: name}).then(
+      ()=> {
+        console.log('UPDATED PROFILE NAME');
+        firebase.auth().currentUser.reload()
+        this.afs.collection('customer').doc(this.user['uid']).update({
+          fullName:name
+        })
+      }).catch(
+        (e)=>{
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          console.log(e); 
+      }).finally(
+        ()=>{
+          this.snackBar.open('Your name has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+        }
+      )
   }
   updateUserEmail(email) {
     var user = firebase.auth().currentUser;
-    user.updateEmail(email).then(()=> {this.sendEmailVerify()}).catch((e)=>{console.log(e)})
+    user.updateEmail(email).then(
+      ()=>{
+        this.sendEmailVerify();
+        this.afs.collection('customer').doc(this.user['uid']).update({
+          email:email
+        })
+      }).catch(
+        (e)=>{
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          console.log(e);
+      }).finally(
+        ()=>{
+          this.snackBar.open('Your email has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+        }
+      )
   }
-  resetUserPassword() {
-    this.afAuth.auth.sendPasswordResetEmail(this.user['email']).then(()=>{}).catch((error) => {console.log(error)});
+  
+  resetUserPassword(newPassword) {
+    var user = firebase.auth().currentUser;
+    user.updatePassword(newPassword).then(function() {
+      this.snackBar.open('Your password has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });        
+    }).catch(function(error) {
+        this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+    });
   }
+
   sendEmailVerify() {
     var user = firebase.auth().currentUser;
-    user.sendEmailVerification().then(function() {}).catch(function(error) {console.log(error)});
+    user.sendEmailVerification().then(
+      ()=>{
+
+      }).catch(
+        (error)=>{
+          console.log(error)
+        }
+      );
   }
 //   getCategories() {
 //     let cats = [];

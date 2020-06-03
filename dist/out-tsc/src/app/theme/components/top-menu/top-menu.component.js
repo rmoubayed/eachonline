@@ -7,11 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { Router } from '@angular/router';
 import { Component } from '@angular/core';
 import { AppService } from '../../../app.service';
+import { AuthService } from 'src/app/services/auth.service';
 var TopMenuComponent = /** @class */ (function () {
-    function TopMenuComponent(appService) {
+    function TopMenuComponent(appService, authService, router) {
         this.appService = appService;
+        this.authService = authService;
+        this.router = router;
         this.currencies = ['USD', 'EUR'];
         this.flags = [
             { name: 'English', image: 'assets/images/flags/gb.svg' },
@@ -22,6 +26,8 @@ var TopMenuComponent = /** @class */ (function () {
         ];
     }
     TopMenuComponent.prototype.ngOnInit = function () {
+        this.user = this.authService.user;
+        this.data = this.authService.Data;
         this.currency = this.currencies[0];
         this.flag = this.flags[0];
     };
@@ -31,12 +37,15 @@ var TopMenuComponent = /** @class */ (function () {
     TopMenuComponent.prototype.changeLang = function (flag) {
         this.flag = flag;
     };
+    TopMenuComponent.prototype.signOut = function () {
+        this.authService.logout();
+    };
     TopMenuComponent = __decorate([
         Component({
             selector: 'app-top-menu',
             templateUrl: './top-menu.component.html'
         }),
-        __metadata("design:paramtypes", [AppService])
+        __metadata("design:paramtypes", [AppService, AuthService, Router])
     ], TopMenuComponent);
     return TopMenuComponent;
 }());

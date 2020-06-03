@@ -1,6 +1,7 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../app.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-cart',
@@ -12,19 +13,26 @@ export class CartComponent implements OnInit {
   grandTotal = 0;
   cartItemCount = [];
   cartItemCountTotal = 0;
-  constructor(public appService:AppService, private authService : AuthService) { }
+  constructor(public appService:AppService,private afs: AngularFirestore, private authService : AuthService) { }
 
   ngOnInit() {
     this.authService.Data.cartList.forEach(product=>{
+      console.log(product, 'productttt')
       this.total[product.id] = product.cartCount*product.newPrice;
       this.grandTotal += product.cartCount*product.newPrice;
       this.cartItemCount[product.id] = product.cartCount;
       this.cartItemCountTotal += product.cartCount;
+
+      console.log(this.total, this.grandTotal, this.cartItemCount, this.cartItemCountTotal)
     })
+    console.log(this.authService.Data)
+    
   }
 
   public updateCart(value){
+    console.log(value)
     if(value){
+
       this.total[value.productId] = value.total;
       this.cartItemCount[value.productId] = value.soldQuantity;
       this.grandTotal = 0;
@@ -44,9 +52,24 @@ export class CartComponent implements OnInit {
           if(product.id == index){
             product.cartCount = count;
           }
+          if(product.id == value.productId){
+            console.log(product['selectedSize'], product['selectedColor'])
+            let size = product['selectedSize'][0]
+            let color = product['selectedColor'][0]
+            console.log(size, color)
+            product['selectedSize'].push(size)
+            product['selectedColor'].push(color)
+            console.log(product, 'product after push size annd colorrr')
+
+          }
         });
       });
-      
+      let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
+      document.update({
+        products: this.authService.Data.cartList,
+        totalPrice: this.authService.Data.totalPrice,
+        totalCartCount: this.authService.Data.totalCartCount
+      })
     }
   }
 
@@ -69,6 +92,11 @@ export class CartComponent implements OnInit {
           this.cartItemCount[product.id] = 0;
         }
       });
+      this.afs.collection('cart').doc(this.authService.user['uid']).update({
+        products: this.authService.Data.cartList,
+        totalPrice:this.authService.Data.totalPrice,
+        totalCartCount:this.authService.Data.totalCartCount
+      })
       this.authService.resetProductCartCount(product);
     }     
   }
@@ -80,6 +108,11 @@ export class CartComponent implements OnInit {
     this.authService.Data.cartList.length = 0;
     this.authService.Data.totalPrice = 0;
     this.authService.Data.totalCartCount = 0;
+    this.afs.collection('cart').doc(this.authService.user['uid']).update({
+      products: this.authService.Data.cartList,
+      totalPrice:this.authService.Data.totalPrice,
+      totalCartCount:this.authService.Data.totalCartCount
+    })
   } 
 
 }

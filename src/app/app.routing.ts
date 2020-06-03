@@ -9,7 +9,7 @@ import { AppGuardService } from './services/app-guard.service';
 export const routes: Routes = [
     { 
         path: '', 
-        canActivate:[AppGuardService],
+        canActivateChild:[AppGuardService],
         component: PagesComponent, children: [
             { path: '', loadChildren: './pages/home/home.module#HomeModule' },
             { path: 'account', loadChildren: './pages/account/account.module#AccountModule', data: { breadcrumb: 'Account Settings' } },

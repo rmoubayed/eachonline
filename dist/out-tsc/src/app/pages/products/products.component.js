@@ -7,14 +7,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, ViewChild, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { ProductDialogComponent } from '../../shared/products-carousel/product-dialog/product-dialog.component';
 import { AppService } from '../../app.service';
 var ProductsComponent = /** @class */ (function () {
-    function ProductsComponent(activatedRoute, appService, dialog, router) {
+    function ProductsComponent(activatedRoute, authService, appService, dialog, router) {
         this.activatedRoute = activatedRoute;
+        this.authService = authService;
         this.appService = appService;
         this.dialog = dialog;
         this.router = router;
@@ -60,14 +62,14 @@ var ProductsComponent = /** @class */ (function () {
     };
     ProductsComponent.prototype.getCategories = function () {
         var _this = this;
-        if (this.appService.Data.categories.length == 0) {
+        if (this.authService.Data.categories.length == 0) {
             this.appService.getCategories().subscribe(function (data) {
                 _this.categories = data;
-                _this.appService.Data.categories = data;
+                _this.authService.Data.categories = data;
             });
         }
         else {
-            this.categories = this.appService.Data.categories;
+            this.categories = this.authService.Data.categories;
         }
     };
     ProductsComponent.prototype.getBrands = function () {
@@ -129,7 +131,7 @@ var ProductsComponent = /** @class */ (function () {
             templateUrl: './products.component.html',
             styleUrls: ['./products.component.scss']
         }),
-        __metadata("design:paramtypes", [ActivatedRoute, AppService, MatDialog, Router])
+        __metadata("design:paramtypes", [ActivatedRoute, AuthService, AppService, MatDialog, Router])
     ], ProductsComponent);
     return ProductsComponent;
 }());

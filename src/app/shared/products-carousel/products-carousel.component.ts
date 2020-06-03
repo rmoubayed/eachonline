@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 import { DecimalPipe } from '@angular/common';
@@ -16,7 +17,7 @@ export class ProductsCarouselComponent implements OnInit {
 
   @Input('products') products: Array<Product> = [];
   public config: SwiperConfigInterface = {};
-  constructor(public appService:AppService, public dialog: MatDialog, private router: Router) { }
+  constructor(public appService:AppService, public dialog: MatDialog, private router: Router, public authService : AuthService) { }
 
   ngOnInit() {
    }

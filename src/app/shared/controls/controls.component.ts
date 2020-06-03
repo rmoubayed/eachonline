@@ -18,6 +18,7 @@ export class ControlsComponent implements OnInit {
   constructor(public authService:AuthService, public snackBar: MatSnackBar) { }
 
   ngOnInit() {
+    console.log(this.type)
     if(this.product){
       if(this.product.cartCount > 0){
         this.count = this.product.cartCount;
@@ -27,7 +28,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public layoutAlign(){
-    if(this.type == 'all'){
+    if(this.type == 'all' || this.type == 'quick-view'){
       this.align = 'space-between center';
     }
     else if(this.type == 'wish'){
@@ -77,20 +78,45 @@ export class ControlsComponent implements OnInit {
 
   public addToCart(product:Product){
     console.log(product)
+    
+    let message;
+    let status;
     let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
     if(currentProduct){
       if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
         product.cartCount = currentProduct.cartCount + this.count;
-      }
-      else{
+        if(product['selectedSize'] && product['selectedColor'] ){
+          if(this.count > 1){
+            let size = product['selectedSize'][0];
+            let color = product['selectedColor'][0]
+            for(let i=0 ; i < this.count - 1; i++){
+              product['selectedSize'].push(size);
+              product['selectedColor'].push(color);
+            }
+            console.log(product)
+          }
+          product['selectedSize'] = product['selectedSize'].concat(currentProduct['selectedSize'])
+          product['selectedColor'] = product['selectedColor'].concat(currentProduct['selectedColor'])
+          this.authService.addToCart(product)
+        }else{
+          message = 'Please select size and color in order to add to cart'; 
+          status = 'success';          
+          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+        }
+      }else{
         this.snackBar.open('You can not add more items than available. In stock ' + this.product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
         return false;
       }
-    }
-    else{
+    }else{
       product.cartCount = this.count;
+      if(product['selectedSize'] && product['selectedColor']){
+        this.authService.addToCart(product);
+      }else{
+        message = 'Please select size and color in order to add to cart'; 
+        status = 'success';          
+        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+      }
     }
-    this.authService.addToCart(product);
   }
 
   public openProductDialog(event){
@@ -98,7 +124,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public changeQuantity(value){
-      this.onQuantityChange.emit(value);
+    this.onQuantityChange.emit(value);
   }
 
 }

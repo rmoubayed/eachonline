@@ -7,14 +7,16 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AppService } from './../../app.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatStepper } from '@angular/material';
-import { AppService } from '../../app.service';
 var CheckoutComponent = /** @class */ (function () {
-    function CheckoutComponent(appService, formBuilder) {
-        this.appService = appService;
+    function CheckoutComponent(authService, formBuilder, appService) {
+        this.authService = authService;
         this.formBuilder = formBuilder;
+        this.appService = appService;
         this.countries = [];
         this.months = [];
         this.years = [];
@@ -23,7 +25,7 @@ var CheckoutComponent = /** @class */ (function () {
     }
     CheckoutComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.appService.Data.cartList.forEach(function (product) {
+        this.authService.Data.cartList.forEach(function (product) {
             _this.grandTotal += product.cartCount * product.newPrice;
         });
         this.countries = this.appService.getCountries();
@@ -57,9 +59,9 @@ var CheckoutComponent = /** @class */ (function () {
     CheckoutComponent.prototype.placeOrder = function () {
         this.horizontalStepper._steps.forEach(function (step) { return step.editable = false; });
         this.verticalStepper._steps.forEach(function (step) { return step.editable = false; });
-        this.appService.Data.cartList.length = 0;
-        this.appService.Data.totalPrice = 0;
-        this.appService.Data.totalCartCount = 0;
+        this.authService.Data.cartList.length = 0;
+        this.authService.Data.totalPrice = 0;
+        this.authService.Data.totalCartCount = 0;
     };
     __decorate([
         ViewChild('horizontalStepper'),
@@ -75,7 +77,7 @@ var CheckoutComponent = /** @class */ (function () {
             templateUrl: './checkout.component.html',
             styleUrls: ['./checkout.component.scss']
         }),
-        __metadata("design:paramtypes", [AppService, FormBuilder])
+        __metadata("design:paramtypes", [AuthService, FormBuilder, AppService])
     ], CheckoutComponent);
     return CheckoutComponent;
 }());

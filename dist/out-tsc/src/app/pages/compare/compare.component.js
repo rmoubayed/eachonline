@@ -7,18 +7,22 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AngularFirestore } from '@angular/fire/firestore';
+import { AuthService } from 'src/app/services/auth.service';
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from '../../app.service';
 var CompareComponent = /** @class */ (function () {
-    function CompareComponent(appService, snackBar) {
+    function CompareComponent(appService, afs, snackBar, authService) {
         this.appService = appService;
+        this.afs = afs;
         this.snackBar = snackBar;
+        this.authService = authService;
     }
     CompareComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.appService.Data.cartList.forEach(function (cartProduct) {
-            _this.appService.Data.compareList.forEach(function (product) {
+        this.authService.Data.cartList.forEach(function (cartProduct) {
+            _this.authService.Data.compareList.forEach(function (product) {
                 if (cartProduct.id == product.id) {
                     product.cartCount = cartProduct.cartCount;
                 }
@@ -26,23 +30,21 @@ var CompareComponent = /** @class */ (function () {
         });
     };
     CompareComponent.prototype.remove = function (product) {
-        var index = this.appService.Data.compareList.indexOf(product);
+        var index = this.authService.Data.compareList.indexOf(product);
         if (index !== -1) {
-            this.appService.Data.compareList.splice(index, 1);
+            this.authService.Data.compareList.splice(index, 1);
+            var document_1 = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+            document_1.update({
+                compareList: this.authService.Data.compareList
+            });
         }
     };
     CompareComponent.prototype.clear = function () {
-        this.appService.Data.compareList.length = 0;
-    };
-    CompareComponent.prototype.addToCart = function (product) {
-        product.cartCount = product.cartCount + 1;
-        if (product.cartCount <= product.availibilityCount) {
-            this.appService.addToCart(product);
-        }
-        else {
-            product.cartCount = product.availibilityCount;
-            this.snackBar.open('You can not add more items than available. In stock ' + product.availibilityCount + ' items and you already added ' + product.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
-        }
+        this.authService.Data.compareList.length = 0;
+        var document = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+        document.update({
+            compareList: this.authService.Data.compareList
+        });
     };
     CompareComponent = __decorate([
         Component({
@@ -50,7 +52,7 @@ var CompareComponent = /** @class */ (function () {
             templateUrl: './compare.component.html',
             styleUrls: ['./compare.component.scss']
         }),
-        __metadata("design:paramtypes", [AppService, MatSnackBar])
+        __metadata("design:paramtypes", [AppService, AngularFirestore, MatSnackBar, AuthService])
     ], CompareComponent);
     return CompareComponent;
 }());

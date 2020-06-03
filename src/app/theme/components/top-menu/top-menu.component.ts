@@ -1,4 +1,4 @@
-import { Router } from '@angular/router';
+import { Router, Data } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AppService, User } from '../../../app.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -10,6 +10,8 @@ import { AuthService } from 'src/app/services/auth.service';
 export class TopMenuComponent implements OnInit {
   public currencies = ['USD', 'EUR'];
   public currency:any;
+  data: Data;
+  user: User;
   public flags = [
     { name:'English', image: 'assets/images/flags/gb.svg' },
     { name:'German', image: 'assets/images/flags/de.svg' },
@@ -22,6 +24,8 @@ export class TopMenuComponent implements OnInit {
   constructor(public appService:AppService, public authService: AuthService, public router:Router) { }
 
   ngOnInit() {
+    this.user = this.authService.user;
+    this.data = this.authService.Data;
     this.currency = this.currencies[0];
     this.flag = this.flags[0];    
   }
@@ -36,7 +40,6 @@ export class TopMenuComponent implements OnInit {
 
   public signOut(){
     this.authService.logout();
-
   }
 
   

@@ -1,9 +1,11 @@
 import { RouterModule, PreloadAllModules } from '@angular/router';
 import { PagesComponent } from './pages/pages.component';
 import { NotFoundComponent } from './pages/not-found/not-found.component';
+import { AppGuardService } from './services/app-guard.service';
 export var routes = [
     {
         path: '',
+        canActivateChild: [AppGuardService],
         component: PagesComponent, children: [
             { path: '', loadChildren: './pages/home/home.module#HomeModule' },
             { path: 'account', loadChildren: './pages/account/account.module#AccountModule', data: { breadcrumb: 'Account Settings' } },

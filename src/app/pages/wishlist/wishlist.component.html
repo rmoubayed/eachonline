@@ -27,9 +27,11 @@
       </div>
       <div class="mat-cell">
         <div class="p-1">          
-          <button mat-mini-fab color="primary" (click)="addToCart(product)" matTooltip="Add to cart">
+          <!-- <button mat-mini-fab color="primary" (click)="addToCart(product)" matTooltip="Add to cart">
               <mat-icon>add_shopping_cart</mat-icon>
-          </button>
+          </button> -->
+          <button mat-icon-button matTooltip="View full details" [routerLink]="['/products', product.id, product.name]"><mat-icon>remove_red_eye</mat-icon></button>
+
           <button mat-mini-fab color="warn" (click)="remove(product)" matTooltip="Clear" class="remove">
               <mat-icon>close</mat-icon>
           </button>

@@ -7,21 +7,28 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, HostListener, ViewChild } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { AppSettings } from '../app.settings';
 import { AppService } from '../app.service';
 import { SidenavMenuService } from '../theme/components/sidenav-menu/sidenav-menu.service';
+import { AuthService } from '../services/auth.service';
 var PagesComponent = /** @class */ (function () {
-    function PagesComponent(appSettings, appService, sidenavMenuService, router) {
+    function PagesComponent(appSettings, appService, afs, authService, sidenavMenuService, router) {
         this.appSettings = appSettings;
         this.appService = appService;
+        this.afs = afs;
+        this.authService = authService;
         this.sidenavMenuService = sidenavMenuService;
         this.router = router;
         this.showBackToTop = false;
         this.settings = this.appSettings.settings;
     }
     PagesComponent.prototype.ngOnInit = function () {
+        this.data = this.authService.Data;
+        this.user = this.authService.user;
+        console.log(this.authService.Data, 'dataaa ');
         this.getCategories();
         this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
     };
@@ -30,7 +37,7 @@ var PagesComponent = /** @class */ (function () {
         this.appService.getCategories().subscribe(function (data) {
             _this.categories = data;
             _this.category = data[0];
-            _this.appService.Data.categories = data;
+            _this.authService.Data.categories = data;
         });
     };
     PagesComponent.prototype.changeCategory = function (event) {
@@ -42,22 +49,34 @@ var PagesComponent = /** @class */ (function () {
         }
     };
     PagesComponent.prototype.remove = function (product) {
-        var index = this.appService.Data.cartList.indexOf(product);
+        var index = this.authService.Data.cartList.indexOf(product);
         if (index !== -1) {
-            this.appService.Data.cartList.splice(index, 1);
-            this.appService.Data.totalPrice = this.appService.Data.totalPrice - product.newPrice * product.cartCount;
-            this.appService.Data.totalCartCount = this.appService.Data.totalCartCount - product.cartCount;
-            this.appService.resetProductCartCount(product);
+            this.authService.Data.cartList.splice(index, 1);
+            this.authService.Data.totalPrice = this.authService.Data.totalPrice - product.newPrice * product.cartCount;
+            this.authService.Data.totalCartCount = this.authService.Data.totalCartCount - product.cartCount;
+            this.authService.resetProductCartCount(product);
+            var document_1 = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+            document_1.update({
+                products: this.authService.Data.cartList,
+                totalPrice: this.authService.Data.totalPrice,
+                totalCartCount: this.authService.Data.totalCartCount
+            });
         }
     };
     PagesComponent.prototype.clear = function () {
         var _this = this;
-        this.appService.Data.cartList.forEach(function (product) {
-            _this.appService.resetProductCartCount(product);
+        this.authService.Data.cartList.forEach(function (product) {
+            _this.authService.resetProductCartCount(product);
         });
-        this.appService.Data.cartList.length = 0;
-        this.appService.Data.totalPrice = 0;
-        this.appService.Data.totalCartCount = 0;
+        this.authService.Data.cartList.length = 0;
+        this.authService.Data.totalPrice = 0;
+        this.authService.Data.totalCartCount = 0;
+        var document = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+        document.update({
+            products: this.authService.Data.cartList,
+            totalPrice: this.authService.Data.totalPrice,
+            totalCartCount: this.authService.Data.totalCartCount
+        });
     };
     PagesComponent.prototype.changeTheme = function (theme) {
         this.settings.theme = theme;
@@ -118,6 +137,8 @@ var PagesComponent = /** @class */ (function () {
         }),
         __metadata("design:paramtypes", [AppSettings,
             AppService,
+            AngularFirestore,
+            AuthService,
             SidenavMenuService,
             Router])
     ], PagesComponent);

@@ -7,6 +7,7 @@ import { AppService } from '../../../app.service';
 import { Product } from "../../../app.models";
 import { emailValidator } from '../../../theme/utils/app-validators';
 import { ProductZoomComponent } from './product-zoom/product-zoom.component';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-product',
@@ -24,7 +25,7 @@ export class ProductComponent implements OnInit {
   public form: FormGroup;
   public relatedProducts: Array<Product>;
 
-  constructor(public appService:AppService, private activatedRoute: ActivatedRoute, public dialog: MatDialog, public formBuilder: FormBuilder) {  }
+  constructor(public appService:AppService, public authService : AuthService, private activatedRoute: ActivatedRoute, public dialog: MatDialog, public formBuilder: FormBuilder) {  }
 
   ngOnInit() {      
     this.sub = this.activatedRoute.params.subscribe(params => { 
@@ -110,6 +111,44 @@ export class ProductComponent implements OnInit {
       data: this.zoomImage,
       panelClass: 'zoom-dialog'
     });
+  }
+
+  public selectSize(size:string){
+    console.log(size)
+    console.log(this.product)
+    if(this.product['selectedSize']){
+      if(this.product['selectedSize'].indexOf(size) > -1){
+        this.product['selectedSize'].splice(this.product['selectedSize'].indexOf(size))
+      }else{
+        this.product['selectedSize'].push(size)
+      }
+    }else{
+      this.product['selectedSize'] = [size]
+    }
+    if(document.getElementById(size).classList.contains('selected')){
+      document.getElementById(size).classList.remove('selected')
+    }else{
+      document.getElementById(size).classList.add('selected')
+    }
+    console.log(this.product)
+  }
+
+  public selectColor(color:string){
+    console.log(color, this.product)
+    if(this.product['selectedColor']){
+      if(this.product['selectedColor'].indexOf(color) > -1){
+        this.product['selectedColor'].splice(this.product['selectedColor'].indexOf(color))
+      }else{
+        this.product['selectedColor'].push(color)
+      }
+    }else{
+      this.product['selectedColor'] = [color]
+    }
+    if(document.getElementById(color).classList.contains('selected')){
+      document.getElementById(color).classList.remove('selected')
+    }else{
+      document.getElementById(color).classList.add('selected')
+    }
   }
 
   ngOnDestroy() {

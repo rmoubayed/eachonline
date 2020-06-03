@@ -9,30 +9,9 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MatSnackBar } from '@angular/material';
-var Data = /** @class */ (function () {
-    function Data(categories, compareList, wishList, cartList, totalPrice, totalCartCount) {
-        this.categories = categories;
-        this.compareList = compareList;
-        this.wishList = wishList;
-        this.cartList = cartList;
-        this.totalPrice = totalPrice;
-        this.totalCartCount = totalCartCount;
-    }
-    return Data;
-}());
-export { Data };
 var AppService = /** @class */ (function () {
-    function AppService(http, snackBar) {
+    function AppService(http) {
         this.http = http;
-        this.snackBar = snackBar;
-        this.Data = new Data([], // categories
-        [], // compareList
-        [], // wishList
-        [], // cartList
-        null, //totalPrice,
-        0 //totalCartCount
-        );
         this.url = "assets/data/";
     }
     AppService.prototype.getCategories = function () {
@@ -46,84 +25,6 @@ var AppService = /** @class */ (function () {
     };
     AppService.prototype.getBanners = function () {
         return this.http.get(this.url + 'banners.json');
-    };
-    AppService.prototype.addToCompare = function (product) {
-        var message, status;
-        if (this.Data.compareList.filter(function (item) { return item.id == product.id; })[0]) {
-            message = 'The product ' + product.name + ' already added to comparison list.';
-            status = 'error';
-        }
-        else {
-            this.Data.compareList.push(product);
-            message = 'The product ' + product.name + ' has been added to comparison list.';
-            status = 'success';
-        }
-        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-    };
-    AppService.prototype.addToWishList = function (product) {
-        var message, status;
-        if (this.Data.wishList.filter(function (item) { return item.id == product.id; })[0]) {
-            message = 'The product ' + product.name + ' already added to wish list.';
-            status = 'error';
-        }
-        else {
-            this.Data.wishList.push(product);
-            message = 'The product ' + product.name + ' has been added to wish list.';
-            status = 'success';
-        }
-        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-    };
-    // public addToCart(product:Product){
-    //     let message, status;
-    //     if(this.Data.cartList.filter(item=>item.id == product.id)[0]){
-    //         message = 'The product ' + product.name + ' already added to cart.'; 
-    //         status = 'error'; 
-    //     }
-    //     else{
-    //         this.Data.totalPrice = null;
-    //         this.Data.totalCartCount = null;
-    //         this.Data.cartList.push(product);
-    //         this.Data.cartList.forEach(product=>{
-    //             this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
-    //             this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
-    //         })
-    //         message = 'The product ' + product.name + ' has been added to cart.'; 
-    //         status = 'success';  
-    //     }
-    //     this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-    // }
-    AppService.prototype.addToCart = function (product) {
-        var _this = this;
-        var message, status;
-        this.Data.totalPrice = null;
-        this.Data.totalCartCount = null;
-        if (this.Data.cartList.filter(function (item) { return item.id == product.id; })[0]) {
-            var item = this.Data.cartList.filter(function (item) { return item.id == product.id; })[0];
-            item.cartCount = product.cartCount;
-        }
-        else {
-            this.Data.cartList.push(product);
-        }
-        this.Data.cartList.forEach(function (product) {
-            _this.Data.totalPrice = _this.Data.totalPrice + (product.cartCount * product.newPrice);
-            _this.Data.totalCartCount = _this.Data.totalCartCount + product.cartCount;
-        });
-        message = 'The product ' + product.name + ' has been added to cart.';
-        status = 'success';
-        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-    };
-    AppService.prototype.resetProductCartCount = function (product) {
-        product.cartCount = 0;
-        var compareProduct = this.Data.compareList.filter(function (item) { return item.id == product.id; })[0];
-        if (compareProduct) {
-            compareProduct.cartCount = 0;
-        }
-        ;
-        var wishProduct = this.Data.wishList.filter(function (item) { return item.id == product.id; })[0];
-        if (wishProduct) {
-            wishProduct.cartCount = 0;
-        }
-        ;
     };
     AppService.prototype.getBrands = function () {
         return [
@@ -417,7 +318,7 @@ var AppService = /** @class */ (function () {
     };
     AppService = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [HttpClient, MatSnackBar])
+        __metadata("design:paramtypes", [HttpClient])
     ], AppService);
     return AppService;
 }());

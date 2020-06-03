@@ -1,3 +1,4 @@
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, ViewEncapsulation, OnInit, Inject} from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
@@ -12,7 +13,8 @@ import { Product } from '../../../app.models';
 })
 export class ProductDialogComponent implements OnInit {
   public config: SwiperConfigInterface = {};
-  constructor(public appService:AppService, 
+  constructor(public appService:AppService,
+              public authService : AuthService, 
               public dialogRef: MatDialogRef<ProductDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public product: Product) { }
 

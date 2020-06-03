@@ -56,11 +56,11 @@
                 <div fxLayoutAlign="center center">
                     <button mat-button [matMenuTriggerFor]="cartMenu" #cartMenuTrigger="matMenuTrigger" class="flex-row-button">
                         <mat-icon class="mat-icon-lg">shopping_cart</mat-icon>
-                        <span *ngIf="authService.Data.totalCartCount > 0" class="cart-items-count">{{localAuthService.user.totalCartCount}}</span>
+                        <span *ngIf="data?.totalCartCount > 0" class="cart-items-count">{{data?.totalCartCount}}</span>
                         <div fxLayout="column" fxLayoutAlign="center center" fxShow="false" fxShow.gt-xs class="top-cart">
                             <span>Shopping Cart</span>
-                            <span *ngIf="authService.Data.totalCartCount > 0">{{localAuthService.user.totalCartCount}} item<span *ngIf="authService.Data.totalCartCount > 1">s</span> - 
-                                $<span>{{localAuthService.user.cartTotal | number : '1.2-2'}}</span>
+                            <span *ngIf="data?.totalCartCount > 0">{{data?.totalCartCount}} item<span *ngIf="data?.totalCartCount > 1">s</span> - 
+                                $<span>{{data?.totalPrice | number : '1.2-2'}}</span>
                             </span>
                         </div>
                         <mat-icon class="mat-icon-sm">arrow_drop_down</mat-icon>
@@ -69,13 +69,13 @@
                         <ng-template matMenuContent>
                             <span (mouseleave)="cartMenuTrigger.closeMenu()" class="d-block">
                                 <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted">
-                                    <b><span>{{authService.Data.totalCartCount}} ITEM<span *ngIf="authService.Data.totalCartCount > 1">S</span></span></b>
+                                    <b><span>{{data?.totalCartCount}} ITEM<span *ngIf="data?.totalCartCount > 1">S</span></span></b>
                                     <b><a [routerLink]="['/cart']" class="text-muted">VIEW CART</a></b>
                                 </div>
                                 <div class="divider mt-1"></div>
-                                <div *ngIf="authService.Data.totalCartCount == 0" class="py-1 text-muted text-center">You have no items in your shopping cart.</div>
+                                <div *ngIf="data?.totalCartCount == 0" class="py-1 text-muted text-center">You have no items in your shopping cart.</div>
                                 <mat-list>
-                                    <mat-list-item *ngFor="let product of authService.Data.cartList">                                   
+                                    <mat-list-item *ngFor="let product of data?.cartList">                                   
                                         <h3 matLine class="text-muted"> {{product.name}} </h3>
                                         <p matLine class="text-muted">
                                             <span> {{product.cartCount}} x ${{product.newPrice | number : '1.2-2'}} </span>
@@ -86,11 +86,11 @@
                                         </button>
                                     </mat-list-item>
                                 </mat-list>
-                                <div *ngIf="authService.Data.cartList.length > 0" class="cart-dropdown-footer">
+                                <div *ngIf="data?.cartList.length > 0" class="cart-dropdown-footer">
                                     <div class="divider mt-1"></div>
                                     <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted mt-1">
                                         <b>TOTAL:</b>
-                                        <b class="new-price">${{authService.Data.totalPrice | number : '1.2-2'}}</b>
+                                        <b class="new-price">${{data?.totalPrice | number : '1.2-2'}}</b>
                                     </div>
                                     <div class="divider mt-1"></div>
                                     <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">

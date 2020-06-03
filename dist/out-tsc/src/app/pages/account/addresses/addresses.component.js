@@ -7,19 +7,26 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AuthService } from 'src/app/services/auth.service';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { FormBuilder, Validators } from '@angular/forms';
 import { AppService } from '../../../app.service';
 var AddressesComponent = /** @class */ (function () {
-    function AddressesComponent(appService, formBuilder, snackBar) {
+    function AddressesComponent(appService, afs, formBuilder, authService, snackBar) {
         this.appService = appService;
+        this.afs = afs;
         this.formBuilder = formBuilder;
+        this.authService = authService;
         this.snackBar = snackBar;
         this.countries = [];
     }
     AddressesComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.user = this.authService.user;
         this.countries = this.appService.getCountries();
+        console.log(this.countries);
         this.billingForm = this.formBuilder.group({
             'firstName': ['', Validators.required],
             'lastName': ['', Validators.required],
@@ -46,14 +53,30 @@ var AddressesComponent = /** @class */ (function () {
             'zip': ['', Validators.required],
             'address': ['', Validators.required]
         });
+        if (this.user['billingAddress']) {
+            Object.keys(this.user['billingAddress']).forEach(function (key) {
+                _this.billingForm.get(key).setValue(_this.user['billingAddress'][key]);
+            });
+        }
+        if (this.user['shippingAddress']) {
+            Object.keys(this.user['shippingAddress']).forEach(function (key) {
+                _this.shippingForm.get(key).setValue(_this.user['shippingAddress'][key]);
+            });
+        }
     };
     AddressesComponent.prototype.onBillingFormSubmit = function (values) {
         if (this.billingForm.valid) {
+            this.afs.collection('customer').doc(this.user['uid']).update({
+                billingAddress: this.billingForm.value
+            });
             this.snackBar.open('Your billing address information updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
         }
     };
     AddressesComponent.prototype.onShippingFormSubmit = function (values) {
         if (this.shippingForm.valid) {
+            this.afs.collection('customer').doc(this.user['uid']).update({
+                shippingAddress: this.shippingForm.value
+            });
             this.snackBar.open('Your shipping address information updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
         }
     };
@@ -63,7 +86,11 @@ var AddressesComponent = /** @class */ (function () {
             templateUrl: './addresses.component.html',
             styleUrls: ['./addresses.component.scss']
         }),
-        __metadata("design:paramtypes", [AppService, FormBuilder, MatSnackBar])
+        __metadata("design:paramtypes", [AppService,
+            AngularFirestore,
+            FormBuilder,
+            AuthService,
+            MatSnackBar])
     ], AddressesComponent);
     return AddressesComponent;
 }());

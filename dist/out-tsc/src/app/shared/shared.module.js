@@ -25,6 +25,7 @@ import { ProductsCarouselComponent } from './products-carousel/products-carousel
 import { ProductDialogComponent } from './products-carousel/product-dialog/product-dialog.component';
 import { BannersComponent } from './banners/banners.component';
 import { CategoryListComponent } from './category-list/category-list.component';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 var SharedModule = /** @class */ (function () {
     function SharedModule() {
     }
@@ -67,7 +68,9 @@ var SharedModule = /** @class */ (function () {
                 MatTooltipModule,
                 MatStepperModule,
                 PerfectScrollbarModule,
-                PipesModule
+                PipesModule,
+                ReactiveFormsModule,
+                FormsModule
             ],
             exports: [
                 RouterModule,
@@ -113,7 +116,9 @@ var SharedModule = /** @class */ (function () {
                 ProductsCarouselComponent,
                 ProductDialogComponent,
                 BannersComponent,
-                CategoryListComponent
+                CategoryListComponent,
+                ReactiveFormsModule,
+                FormsModule
             ],
             declarations: [
                 RatingComponent,

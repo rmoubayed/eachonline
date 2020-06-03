@@ -7,19 +7,23 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AngularFirestore } from '@angular/fire/firestore';
+import { AuthService } from 'src/app/services/auth.service';
 import { Component } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from '../../app.service';
 var WishlistComponent = /** @class */ (function () {
-    function WishlistComponent(appService, snackBar) {
+    function WishlistComponent(appService, afs, snackBar, authService) {
         this.appService = appService;
+        this.afs = afs;
         this.snackBar = snackBar;
+        this.authService = authService;
         this.quantity = 1;
     }
     WishlistComponent.prototype.ngOnInit = function () {
         var _this = this;
-        this.appService.Data.cartList.forEach(function (cartProduct) {
-            _this.appService.Data.wishList.forEach(function (product) {
+        this.authService.Data.cartList.forEach(function (cartProduct) {
+            _this.authService.Data.wishList.forEach(function (product) {
                 if (cartProduct.id == product.id) {
                     product.cartCount = cartProduct.cartCount;
                 }
@@ -27,32 +31,25 @@ var WishlistComponent = /** @class */ (function () {
         });
     };
     WishlistComponent.prototype.remove = function (product) {
-        var index = this.appService.Data.wishList.indexOf(product);
+        var index = this.authService.Data.wishList.indexOf(product);
         if (index !== -1) {
-            this.appService.Data.wishList.splice(index, 1);
+            this.authService.Data.wishList.splice(index, 1);
+            var document_1 = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+            document_1.update({
+                wishList: this.authService.Data.wishList
+            });
         }
     };
     WishlistComponent.prototype.clear = function () {
-        this.appService.Data.wishList.length = 0;
+        this.authService.Data.wishList.length = 0;
+        var document = this.afs.collection('cart').doc("" + this.authService.user['uid']);
+        document.update({
+            wishList: this.authService.Data.wishList
+        });
     };
     WishlistComponent.prototype.getQuantity = function (val) {
+        console.log(val);
         this.quantity = val.soldQuantity;
-    };
-    WishlistComponent.prototype.addToCart = function (product) {
-        var currentProduct = this.appService.Data.cartList.filter(function (item) { return item.id == product.id; })[0];
-        if (currentProduct) {
-            if ((currentProduct.cartCount + this.quantity) <= product.availibilityCount) {
-                product.cartCount = currentProduct.cartCount + this.quantity;
-            }
-            else {
-                this.snackBar.open('You can not add more items than available. In stock ' + product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
-                return false;
-            }
-        }
-        else {
-            product.cartCount = this.quantity;
-        }
-        this.appService.addToCart(product);
     };
     WishlistComponent = __decorate([
         Component({
@@ -60,7 +57,7 @@ var WishlistComponent = /** @class */ (function () {
             templateUrl: './wishlist.component.html',
             styleUrls: ['./wishlist.component.scss']
         }),
-        __metadata("design:paramtypes", [AppService, MatSnackBar])
+        __metadata("design:paramtypes", [AppService, AngularFirestore, MatSnackBar, AuthService])
     ], WishlistComponent);
     return WishlistComponent;
 }());

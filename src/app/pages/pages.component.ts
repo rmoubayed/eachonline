@@ -1,8 +1,9 @@
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, Data } from '@angular/router';
 import { Settings, AppSettings } from '../app.settings';
-import { AppService } from '../app.service';
+import { AppService, User } from '../app.service';
 import { Category, Product } from '../app.models';
 import { SidenavMenuService } from '../theme/components/sidenav-menu/sidenav-menu.service';
 import { AuthService } from '../services/auth.service';
@@ -22,8 +23,11 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public localAuthService:AuthService;
 
   public settings: Settings;
+  public data : Data;
+  public user : User;
   constructor(public appSettings:AppSettings, 
               public appService:AppService, 
+              private afs:AngularFirestore,
               public authService: AuthService,
               public sidenavMenuService:SidenavMenuService,
               public router:Router) { 
@@ -31,6 +35,8 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.data = this.authService.Data;
+    this.user = this.authService.user;
     console.log(this.authService.Data, 'dataaa ')
     this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
@@ -61,6 +67,12 @@ export class PagesComponent implements OnInit, AfterViewInit {
           this.authService.Data.totalPrice = this.authService.Data.totalPrice - product.newPrice*product.cartCount;
           this.authService.Data.totalCartCount = this.authService.Data.totalCartCount - product.cartCount;
           this.authService.resetProductCartCount(product);
+          let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
+          document.update({
+            products: this.authService.Data.cartList,
+            totalPrice: this.authService.Data.totalPrice,
+            totalCartCount:this.authService.Data.totalCartCount
+          })
       }        
   }
 
@@ -71,6 +83,12 @@ export class PagesComponent implements OnInit, AfterViewInit {
     this.authService.Data.cartList.length = 0;
     this.authService.Data.totalPrice = 0;
     this.authService.Data.totalCartCount = 0;
+    let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
+    document.update({
+      products: this.authService.Data.cartList,
+      totalPrice: this.authService.Data.totalPrice,
+      totalCartCount:this.authService.Data.totalCartCount
+    })
   }
  
 

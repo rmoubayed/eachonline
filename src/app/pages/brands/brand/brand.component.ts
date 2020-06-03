@@ -30,7 +30,7 @@ export class BrandComponent implements OnInit {
   public sizes = ["S","M","L","XL","2XL","32","36","38","46","52","13.3\"","15.4\"","17\"","21\"","23.4\""];
   public page:any;
 
-  constructor(private activatedRoute: ActivatedRoute, private authService : AuthService, private appService:AppService, public dialog: MatDialog, private router: Router) { }
+  constructor(private activatedRoute: ActivatedRoute, public authService : AuthService, private appService:AppService, public dialog: MatDialog, private router: Router) { }
 
   ngOnInit() {
     this.count = this.counts[0];

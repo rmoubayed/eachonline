@@ -15,9 +15,11 @@ import { SwiperDirective } from 'ngx-swiper-wrapper';
 import { AppService } from '../../../app.service';
 import { emailValidator } from '../../../theme/utils/app-validators';
 import { ProductZoomComponent } from './product-zoom/product-zoom.component';
+import { AuthService } from '../../../services/auth.service';
 var ProductComponent = /** @class */ (function () {
-    function ProductComponent(appService, activatedRoute, dialog, formBuilder) {
+    function ProductComponent(appService, authService, activatedRoute, dialog, formBuilder) {
         this.appService = appService;
+        this.authService = authService;
         this.activatedRoute = activatedRoute;
         this.dialog = dialog;
         this.formBuilder = formBuilder;
@@ -104,6 +106,48 @@ var ProductComponent = /** @class */ (function () {
             panelClass: 'zoom-dialog'
         });
     };
+    ProductComponent.prototype.selectSize = function (size) {
+        console.log(size);
+        console.log(this.product);
+        if (this.product['selectedSize']) {
+            if (this.product['selectedSize'].indexOf(size) > -1) {
+                this.product['selectedSize'].splice(this.product['selectedSize'].indexOf(size));
+            }
+            else {
+                this.product['selectedSize'].push(size);
+            }
+        }
+        else {
+            this.product['selectedSize'] = [size];
+        }
+        if (document.getElementById(size).classList.contains('selected')) {
+            document.getElementById(size).classList.remove('selected');
+        }
+        else {
+            document.getElementById(size).classList.add('selected');
+        }
+        console.log(this.product);
+    };
+    ProductComponent.prototype.selectColor = function (color) {
+        console.log(color, this.product);
+        if (this.product['selectedColor']) {
+            if (this.product['selectedColor'].indexOf(color) > -1) {
+                this.product['selectedColor'].splice(this.product['selectedColor'].indexOf(color));
+            }
+            else {
+                this.product['selectedColor'].push(color);
+            }
+        }
+        else {
+            this.product['selectedColor'] = [color];
+        }
+        if (document.getElementById(color).classList.contains('selected')) {
+            document.getElementById(color).classList.remove('selected');
+        }
+        else {
+            document.getElementById(color).classList.add('selected');
+        }
+    };
     ProductComponent.prototype.ngOnDestroy = function () {
         this.sub.unsubscribe();
     };
@@ -126,7 +170,7 @@ var ProductComponent = /** @class */ (function () {
             templateUrl: './product.component.html',
             styleUrls: ['./product.component.scss']
         }),
-        __metadata("design:paramtypes", [AppService, ActivatedRoute, MatDialog, FormBuilder])
+        __metadata("design:paramtypes", [AppService, AuthService, ActivatedRoute, MatDialog, FormBuilder])
     ], ProductComponent);
     return ProductComponent;
 }());

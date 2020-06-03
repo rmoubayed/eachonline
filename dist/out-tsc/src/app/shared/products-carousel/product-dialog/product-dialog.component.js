@@ -10,13 +10,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
+import { AuthService } from 'src/app/services/auth.service';
 import { Component, ViewEncapsulation, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { AppService } from '../../../app.service';
 import { Product } from '../../../app.models';
 var ProductDialogComponent = /** @class */ (function () {
-    function ProductDialogComponent(appService, dialogRef, product) {
+    function ProductDialogComponent(appService, authService, dialogRef, product) {
         this.appService = appService;
+        this.authService = authService;
         this.dialogRef = dialogRef;
         this.product = product;
         this.config = {};
@@ -49,8 +51,9 @@ var ProductDialogComponent = /** @class */ (function () {
             styleUrls: ['./product-dialog.component.scss'],
             encapsulation: ViewEncapsulation.None
         }),
-        __param(2, Inject(MAT_DIALOG_DATA)),
+        __param(3, Inject(MAT_DIALOG_DATA)),
         __metadata("design:paramtypes", [AppService,
+            AuthService,
             MatDialogRef,
             Product])
     ], ProductDialogComponent);

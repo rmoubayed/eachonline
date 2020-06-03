@@ -7,11 +7,11 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '../../shared/shared.module';
 import { SignInComponent } from './sign-in.component';
+import { AuthGuardService } from 'src/app/services/auth-guard.service';
 export var routes = [
-    { path: '', component: SignInComponent, pathMatch: 'full' }
+    { path: '', component: SignInComponent, pathMatch: 'full', canActivate: [AuthGuardService] }
 ];
 var SignInModule = /** @class */ (function () {
     function SignInModule() {
@@ -21,7 +21,6 @@ var SignInModule = /** @class */ (function () {
             imports: [
                 CommonModule,
                 RouterModule.forChild(routes),
-                ReactiveFormsModule,
                 SharedModule
             ],
             declarations: [

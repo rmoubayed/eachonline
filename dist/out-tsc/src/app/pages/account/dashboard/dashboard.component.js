@@ -7,11 +7,15 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+import { AuthService } from 'src/app/services/auth.service';
 import { Component } from '@angular/core';
 var DashboardComponent = /** @class */ (function () {
-    function DashboardComponent() {
+    function DashboardComponent(authService) {
+        this.authService = authService;
     }
     DashboardComponent.prototype.ngOnInit = function () {
+        this.user = this.authService.user;
+        console.log(this.user);
     };
     DashboardComponent = __decorate([
         Component({
@@ -19,7 +23,7 @@ var DashboardComponent = /** @class */ (function () {
             templateUrl: './dashboard.component.html',
             styleUrls: ['./dashboard.component.scss']
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [AuthService])
     ], DashboardComponent);
     return DashboardComponent;
 }());
