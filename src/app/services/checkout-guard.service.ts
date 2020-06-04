@@ -7,19 +7,17 @@ import * as firebase from 'firebase';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuardService implements CanActivate {
+export class CheckoutGuardService implements CanActivate {
 
   constructor(private router : Router, private auth : AuthService) { }
 
   canActivate(route : ActivatedRouteSnapshot,state : RouterStateSnapshot) 
   : Observable<boolean> | Promise<boolean> | boolean {
-    var user = firebase.auth().currentUser;
-    this.auth.user = user;
-    console.log('USe', user);
-    if(user == null) {
-      this.router.navigate(['/sign-in'])
+      console.log(this.auth.Data.cartList)
+    if(this.auth.Data.cartList.length > 0) {
+      return true
     } else {
-      return true;
+        this.router.navigate(['/'])
     }
   }
 }

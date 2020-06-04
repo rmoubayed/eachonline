@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { AppService } from '../../app.service';
 import { Product } from '../../app.models';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wishlist',
@@ -12,7 +13,7 @@ import { Product } from '../../app.models';
 })
 export class WishlistComponent implements OnInit {
   public quantity:number = 1;
-  constructor(public appService:AppService, private afs:AngularFirestore, public snackBar: MatSnackBar, private authService : AuthService) { }
+  constructor(public appService:AppService, private router:Router, private afs:AngularFirestore, public snackBar: MatSnackBar, private authService : AuthService) { }
 
   ngOnInit() {
     this.authService.Data.cartList.forEach(cartProduct=>{
@@ -43,10 +44,10 @@ export class WishlistComponent implements OnInit {
     })
   } 
 
-  public getQuantity(val){
-    console.log(val)
-    this.quantity = val.soldQuantity;
-  }
+  // public getQuantity(val){
+  //   console.log(val)
+  //   this.quantity = val.soldQuantity;
+  // }
 
   // public addToCart(product:Product){
   //   let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];

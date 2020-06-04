@@ -134,8 +134,9 @@ export class AuthService {
               let user = doc.data()
               this.user['billingAddress'] = user.billingAddress ? user.billingAddress : {}
               this.user['shippingAddress'] = user.shippingAddress ? user.shippingAddress : {}
-                console.log("Document data:", doc.data());
-                
+              this.user['paymentMethod'] = user.paymentMethod ? user.paymentMethod : {}
+              this.user['deliveryMethod'] = user.deliveryMethod ? user.deliveryMethod : {}
+                console.log("Document data:", doc.data()); 
             } else {
                 // doc.data() will be undefined in this case
                 console.log("No such document!");
@@ -147,7 +148,7 @@ export class AuthService {
           resolve(user);
         } else {
           this.loggedIn = false;
-          resolve('no user');
+          reject();
         }
       })
     })
@@ -208,40 +209,41 @@ public addToWishList(product:Product){
 
 
 public addToCart(product:Product){
-    let message, status;        
-    this.Data.totalPrice = null;
-    this.Data.totalCartCount = null;
-    if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
-        let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
-        item.cartCount = product.cartCount;  
-    }else{           
-        this.Data.cartList.push(product);
-    }        
-    this.Data.cartList.forEach(product=>{
-        this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
-        this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
+  let message, status;        
+  this.Data.totalPrice = null;
+  this.Data.totalCartCount = null;
+  if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
+    let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
+    item.cartCount = product.cartCount;
+    item['items'] = product['items']
+  }else{           
+    this.Data.cartList.push(product);
+  }        
+  this.Data.cartList.forEach(product=>{
+    this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
+    this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
+  });
+  console.log(product, 'right befor databse function')
+  let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
+  document.get().toPromise().then(
+    (docSnapshot) => {
+      if(docSnapshot.exists){
+        document.update({
+          products: this.Data.cartList,
+          totalPrice: this.Data.totalPrice,
+          totalCartCount: this.Data.totalCartCount
+        })
+      }else{
+        document.set({
+          products: this.Data.cartList,
+          totalPrice: this.Data.totalPrice,
+          totalCartCount: this.Data.totalCartCount
+        }, { merge: true }) 
+      }
     });
-
-    let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
-    document.get().toPromise().then(
-        (docSnapshot) => {
-            if (docSnapshot.exists) {
-              document.update({
-                products: this.Data.cartList,
-                totalPrice: this.Data.totalPrice,
-                totalCartCount: this.Data.totalCartCount
-            })
-            } else {
-              document.set({
-                products: this.Data.cartList,
-                totalPrice: this.Data.totalPrice,
-                totalCartCount: this.Data.totalCartCount
-              }, { merge: true }) 
-            }
-        });
-    message = 'The product ' + product.name + ' has been added to cart.'; 
-    status = 'success';          
-    this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+  message = 'The product ' + product.name + ' has been added to cart.'; 
+  status = 'success';          
+  this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
 }
 
 

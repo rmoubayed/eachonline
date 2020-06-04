@@ -38,8 +38,8 @@
         </div>
         <div fxFlex="100" fxFlex.gt-sm="25" class="px-1">
           <mat-form-field class="w-100">
-            <mat-select placeholder="Country" formControlName="country" required>
-              <mat-option *ngFor="let country of countries" [value]="country">
+            <mat-select placeholder="Country" [formControl]="selectedBillingCountry" required>
+              <mat-option *ngFor="let country of countries" [value]="country.code">
                   {{country.name}}
               </mat-option>
             </mat-select>
@@ -78,7 +78,7 @@
   <mat-step [stepControl]="deliveryForm" label="Delivery method">
     <form [formGroup]="deliveryForm" class="p-2">
       <mat-radio-group formControlName="deliveryMethod" fxLayout="column" fxLayoutAlign="center" required name="methods">
-        <mat-radio-button *ngFor="let method of deliveryMethods" color="primary" [value]="method" class="mt-1"><b>{{method.name}}</b> {{method.desc}}</mat-radio-button>
+        <mat-radio-button *ngFor="let method of deliveryMethods" color="primary" [value]="method.value" class="mt-1"><b>{{method.name}}</b> {{method.desc}}</mat-radio-button>
       </mat-radio-group> 
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-2 p-1"> 
         <button mat-mini-fab matStepperPrevious color="primary" matTooltip="Back" matTooltipPosition="before" class="mr-1"><mat-icon>navigate_before</mat-icon></button>

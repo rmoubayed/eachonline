@@ -3,7 +3,7 @@ import { User } from './../../../app.service';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { AppService } from '../../../app.service';
 
 @Component({
@@ -16,6 +16,9 @@ export class AddressesComponent implements OnInit {
   shippingForm: FormGroup;
   countries = [];
   user:User;
+  countryControl:FormControl;
+  selectedBillingCountry: FormControl;
+  selectedShippingCountry: FormControl;
   constructor(public appService:AppService, 
               private afs: AngularFirestore, 
               public formBuilder: FormBuilder, 
@@ -33,7 +36,7 @@ export class AddressesComponent implements OnInit {
       'company': '',
       'email': ['', Validators.required],
       'phone': ['', Validators.required],
-      'country': ['', Validators.required],
+      'country': [this.selectedBillingCountry, Validators.required],
       'city': ['', Validators.required],
       'state': '',
       'zip': ['', Validators.required],
@@ -46,7 +49,7 @@ export class AddressesComponent implements OnInit {
       'company': '',
       'email': ['', Validators.required],
       'phone': ['', Validators.required],
-      'country': ['', Validators.required],
+      'country': [this.selectedShippingCountry, Validators.required],
       'city': ['', Validators.required],
       'state': '',
       'zip': ['', Validators.required],
@@ -57,17 +60,21 @@ export class AddressesComponent implements OnInit {
       Object.keys(this.user['billingAddress']).forEach(key => {
         this.billingForm.get(key).setValue(this.user['billingAddress'][key])
       });
+      this.selectedBillingCountry = new FormControl(this.user['billingAddress'].country.code);
+      console.log(this.selectedBillingCountry)
     }
     if(this.user['shippingAddress']){
       Object.keys(this.user['shippingAddress']).forEach(key => {
         this.shippingForm.get(key).setValue(this.user['shippingAddress'][key])
       });
+      this.selectedShippingCountry =  new FormControl(this.user['shippingAddress'].country.code);
     }
     
   }
   
   public onBillingFormSubmit(values:Object):void {
-    if (this.billingForm.valid) {
+    if (this.billingForm.valid && this.billingForm.pristine == false) {
+      console.log(this.billingForm.value)
       this.afs.collection('customer').doc(this.user['uid']).update({
         billingAddress : this.billingForm.value
       })
@@ -77,7 +84,8 @@ export class AddressesComponent implements OnInit {
   }
 
   public onShippingFormSubmit(values:Object):void {
-    if (this.shippingForm.valid) {
+    if (this.shippingForm.valid && this.billingForm.pristine == false) {
+      console.log(this.shippingForm.value)
       this.afs.collection('customer').doc(this.user['uid']).update({
         shippingAddress : this.shippingForm.value
       })

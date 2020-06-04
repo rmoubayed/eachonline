@@ -29,49 +29,49 @@ export class CartComponent implements OnInit {
     
   }
 
-  public updateCart(value){
-    console.log(value)
-    if(value){
+  // public updateCart(value){
+  //   console.log(value)
+  //   if(value){
 
-      this.total[value.productId] = value.total;
-      this.cartItemCount[value.productId] = value.soldQuantity;
-      this.grandTotal = 0;
-      this.total.forEach(price=>{
-        this.grandTotal += price;
-      });
-      this.cartItemCountTotal = 0;
-      this.cartItemCount.forEach(count=>{
-        this.cartItemCountTotal +=count;
-      });
+  //     this.total[value.productId] = value.total;
+  //     this.cartItemCount[value.productId] = value.soldQuantity;
+  //     this.grandTotal = 0;
+  //     this.total.forEach(price=>{
+  //       this.grandTotal += price;
+  //     });
+  //     this.cartItemCountTotal = 0;
+  //     this.cartItemCount.forEach(count=>{
+  //       this.cartItemCountTotal +=count;
+  //     });
      
-      this.authService.Data.totalPrice = this.grandTotal;
-      this.authService.Data.totalCartCount = this.cartItemCountTotal;
+  //     this.authService.Data.totalPrice = this.grandTotal;
+  //     this.authService.Data.totalCartCount = this.cartItemCountTotal;
 
-      this.authService.Data.cartList.forEach(product=>{
-        this.cartItemCount.forEach((count,index)=>{
-          if(product.id == index){
-            product.cartCount = count;
-          }
-          if(product.id == value.productId){
-            console.log(product['selectedSize'], product['selectedColor'])
-            let size = product['selectedSize'][0]
-            let color = product['selectedColor'][0]
-            console.log(size, color)
-            product['selectedSize'].push(size)
-            product['selectedColor'].push(color)
-            console.log(product, 'product after push size annd colorrr')
+  //     this.authService.Data.cartList.forEach(product=>{
+  //       this.cartItemCount.forEach((count,index)=>{
+  //         if(product.id == index){
+  //           product.cartCount = count;
+  //         }
+  //         if(product.id == value.productId){
+  //           console.log(product['selectedSize'], product['selectedColor'])
+  //           let size = product['selectedSize'][0]
+  //           let color = product['selectedColor'][0]
+  //           console.log(size, color)
+  //           product['selectedSize'].push(size)
+  //           product['selectedColor'].push(color)
+  //           console.log(product, 'product after push size annd colorrr')
 
-          }
-        });
-      });
-      let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
-      document.update({
-        products: this.authService.Data.cartList,
-        totalPrice: this.authService.Data.totalPrice,
-        totalCartCount: this.authService.Data.totalCartCount
-      })
-    }
-  }
+  //         }
+  //       });
+  //     });
+  //     let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
+  //     document.update({
+  //       products: this.authService.Data.cartList,
+  //       totalPrice: this.authService.Data.totalPrice,
+  //       totalCartCount: this.authService.Data.totalCartCount
+  //     })
+  //   }
+  // }
 
   public remove(product) {
     const index: number = this.authService.Data.cartList.indexOf(product);

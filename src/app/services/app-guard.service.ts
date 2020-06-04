@@ -16,7 +16,8 @@ export class AppGuardService implements CanActivate, CanActivateChild {
     return new Promise((resolve, reject) => {
       this.auth.getCurrentUser().then(
         (data)=>{
-          if(this.auth.loggedIn){
+          console.log(data);
+          if(data){
             this.auth.getCart().then(
               (data)=>{
                 if(data){
@@ -26,13 +27,16 @@ export class AppGuardService implements CanActivate, CanActivateChild {
                   reject()
                 }
               }
+            ).catch(
+              (e)=>{reject(e)}
             )
+          } else {
+            reject()
           }
-          resolve(true)
         }
         ).catch(
             (e)=>{
-                reject(e);
+                resolve(true);
             }
         )
     })

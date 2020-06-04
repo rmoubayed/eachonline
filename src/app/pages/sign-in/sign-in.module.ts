@@ -7,7 +7,7 @@ import { SignInComponent } from './sign-in.component';
 import { AuthGuardService } from 'src/app/services/auth-guard.service';
 
 export const routes = [
-  { path: '', component: SignInComponent, pathMatch: 'full', canActivate:[AuthGuardService]}
+  { path: '', component: SignInComponent, pathMatch: 'full'}
 ];
 
 @NgModule({

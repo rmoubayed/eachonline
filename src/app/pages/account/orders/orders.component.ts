@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-orders',
@@ -15,9 +17,19 @@ export class OrdersComponent implements OnInit {
     { number: '#1981', date: 'December 24, 2017', status: 'Pending Payment', total: '$285.00 for 2 items', invoice: false },
     { number: '#1781', date: 'September 3, 2017', status: 'Refunded', total: '$49.00 for 2 items', invoice: false }
   ]
-  constructor() { }
+  orderList:any[]=[];
+  constructor(private afs : AngularFirestore, private authService: AuthService) { }
 
   ngOnInit() {
+    this.authService.db.collection('order').where('customerId', '==' ,''+this.authService.user['uid']).get().then(
+      (querySnapchot)=>{
+        querySnapchot.forEach((doc)=>{
+          let order = doc.data()
+          order.id = doc.id
+          this.orderList.push(order)
+        })
+      }
+    )
   }
 
 }

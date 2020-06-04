@@ -24,6 +24,8 @@ export class ProductComponent implements OnInit {
   private sub: any;
   public form: FormGroup;
   public relatedProducts: Array<Product>;
+  selectedColor: string;
+  selectedSize: string;
 
   constructor(public appService:AppService, public authService : AuthService, private activatedRoute: ActivatedRoute, public dialog: MatDialog, public formBuilder: FormBuilder) {  }
 
@@ -114,43 +116,59 @@ export class ProductComponent implements OnInit {
   }
 
   public selectSize(size:string){
+    this.selectedSize = size;
     console.log(size)
     console.log(this.product)
-    if(this.product['selectedSize']){
-      if(this.product['selectedSize'].indexOf(size) > -1){
-        this.product['selectedSize'].splice(this.product['selectedSize'].indexOf(size))
-      }else{
-        this.product['selectedSize'].push(size)
-      }
+    if(this.product['item']){
+      this.product['item']['selectedSize'] = size
     }else{
-      this.product['selectedSize'] = [size]
+      this.product['item']={}
+      this.product['item']['selectedSize'] = size
     }
-    if(document.getElementById(size).classList.contains('selected')){
-      document.getElementById(size).classList.remove('selected')
-    }else{
-      document.getElementById(size).classList.add('selected')
-    }
+    // this.product['selectedSize'] = [size]
+    // if(this.product['selectedSize']){
+    //   if(this.product['selectedSize'].indexOf(size) > -1){
+    //     this.product['selectedSize'].splice(this.product['selectedSize'].indexOf(size))
+    //   }else{
+    //     this.product['selectedSize']=[size]
+    //   }
+    // }else{
+    //   this.product['selectedSize'] = [size]
+    // }
+    // if(document.getElementById(size).classList.contains('selected')){
+    //   document.getElementById(size).classList.remove('selected')
+    // }else{
+    //   document.getElementById(size).classList.add('selected')
+    // }
     console.log(this.product)
   }
 
   public selectColor(color:string){
+    this.selectedColor = color;
     console.log(color, this.product)
-    if(this.product['selectedColor']){
-      if(this.product['selectedColor'].indexOf(color) > -1){
-        this.product['selectedColor'].splice(this.product['selectedColor'].indexOf(color))
-      }else{
-        this.product['selectedColor'].push(color)
-      }
+    if(this.product['item']){
+      this.product['item']['selectedColor'] = color
     }else{
-      this.product['selectedColor'] = [color]
+      this.product['item']={}
+      this.product['item']['selectedColor'] = color
     }
-    if(document.getElementById(color).classList.contains('selected')){
-      document.getElementById(color).classList.remove('selected')
-    }else{
-      document.getElementById(color).classList.add('selected')
-    }
+    
+    // if(this.product['selectedColor']){
+    //   if(this.product['selectedColor'].indexOf(color) > -1){
+    //     this.product['selectedColor'].splice(this.product['selectedColor'].indexOf(color))
+    //   }else{
+    //     this.product['selectedColor']=[color]
+    //   }
+    // }else{
+    //   this.product['selectedColor'] = [color]
+    // }
+    // if(document.getElementById(color).classList.contains('selected')){
+    //   document.getElementById(color).classList.remove('selected')
+    // }else{
+    //   document.getElementById(color).classList.add('selected')
+    // }
   }
-
+  
   ngOnDestroy() {
     this.sub.unsubscribe();
   } 

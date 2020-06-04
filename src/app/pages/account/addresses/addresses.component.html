@@ -39,8 +39,8 @@
                 </div>
                 <div fxFlex="100" fxFlex.gt-sm="25" class="px-1">
                   <mat-form-field class="w-100">
-                    <mat-select [(value)]="country" placeholder="Country" formControlName="country" required>
-                      <mat-option *ngFor="let country of countries" [value]="country">
+                    <mat-select placeholder="Country" [formControl]="selectedBillingCountry" required>
+                      <mat-option *ngFor="let country of countries" [value]="country.code">
                           {{country.name}}
                       </mat-option>
                     </mat-select>
@@ -117,8 +117,8 @@
                 </div>
                 <div fxFlex="100" fxFlex.gt-sm="25" class="px-1">
                   <mat-form-field class="w-100">
-                    <mat-select [(value)]="country" placeholder="Country" formControlName="country" required>
-                      <mat-option *ngFor="let country of countries" [value]="country">
+                    <mat-select placeholder="Country" [formControl]="selectedShippingCountry" required>
+                      <mat-option *ngFor="let country of countries" [value]="country.code">
                           {{country.name}}
                       </mat-option>
                     </mat-select>

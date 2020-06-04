@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { MatSnackBar } from '@angular/material';
 import { Product } from '../../app.models';
 import { AuthService } from 'src/app/services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-controls',
@@ -15,7 +16,7 @@ export class ControlsComponent implements OnInit {
   @Output() onQuantityChange: EventEmitter<any> = new EventEmitter<any>();
   public count:number = 1;
   public align = 'center center';
-  constructor(public authService:AuthService, public snackBar: MatSnackBar) { }
+  constructor(public authService:AuthService, private router: Router, public snackBar: MatSnackBar) { }
 
   ngOnInit() {
     console.log(this.type)
@@ -28,7 +29,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public layoutAlign(){
-    if(this.type == 'all' || this.type == 'quick-view'){
+    if(this.type == 'all' || this.type == 'quick-view' || this.type == 'details'){
       this.align = 'space-between center';
     }
     else if(this.type == 'wish'){
@@ -69,54 +70,86 @@ export class ControlsComponent implements OnInit {
   }
 
   public addToCompare(product:Product){
-    this.authService.addToCompare(product);
+    if(this.authService.loggedIn){
+      this.authService.addToCompare(product);
+    }else{
+      this.router.navigate(['/sign-in'])
+    }
+    
   }
 
   public addToWishList(product:Product){
-    this.authService.addToWishList(product);
+    if(this.authService.loggedIn){
+      this.authService.addToWishList(product);
+    }else{
+      this.router.navigate(['/sign-in'])
+    }
   }
 
   public addToCart(product:Product){
-    console.log(product)
-    
-    let message;
-    let status;
-    let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
-    if(currentProduct){
-      if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
-        product.cartCount = currentProduct.cartCount + this.count;
-        if(product['selectedSize'] && product['selectedColor'] ){
-          if(this.count > 1){
-            let size = product['selectedSize'][0];
-            let color = product['selectedColor'][0]
-            for(let i=0 ; i < this.count - 1; i++){
-              product['selectedSize'].push(size);
-              product['selectedColor'].push(color);
+    if(this.authService.loggedIn){
+      console.log(product)
+      // if(product['selectedSize'] && product['selectedColor'] ){
+      //   console.log('inside')
+      //   if(this.count > 1){
+      //     let size = product['selectedSize'][0];
+      //     let color = product['selectedColor'][0]
+      //     for(let i=0 ; i < this.count - 1; i++){
+      //       product['selectedSize'].push(size);
+      //       product['selectedColor'].push(color);
+      //     }
+      //     console.log(product)
+      //   }
+      // }
+      let message;
+      let status;
+      let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
+      if(currentProduct){
+        if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
+          product.cartCount = currentProduct.cartCount + this.count;
+          console.log(product.size.length)
+          if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
+            message = 'Please select size or color in order to add to cart'; 
+            status = 'success';          
+            this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+          }else{
+            product['item']['Qty'] = this.count;
+            if(this.product['items']){
+              this.product['items'].push(this.product['item'])
+            }else{
+              this.product['items'] = [this.product['item']];
             }
-            console.log(product)
+            delete this.product['item']
+            console.log(product, 'product right before add to cart')
+            this.authService.addToCart(product)
+            this.authService.addToCart(product);
           }
-          product['selectedSize'] = product['selectedSize'].concat(currentProduct['selectedSize'])
-          product['selectedColor'] = product['selectedColor'].concat(currentProduct['selectedColor'])
-          this.authService.addToCart(product)
         }else{
-          message = 'Please select size and color in order to add to cart'; 
-          status = 'success';          
-          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+          this.snackBar.open('You can not add more items than available. In stock ' + this.product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
+          return false;
         }
       }else{
-        this.snackBar.open('You can not add more items than available. In stock ' + this.product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
-        return false;
+        product.cartCount = this.count;
+        if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
+          message = 'Please select size and color in order to add to cart'; 
+          status = 'success';          
+          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 }); product['item']['Qty'] = this.count;
+        }else{
+          product['item']['Qty'] = this.count;
+          if(this.product['items']){
+            this.product['items'].push(this.product['item'])
+          }else{
+            this.product['items'] = [this.product['item']];
+          }
+          delete this.product['item']
+          console.log(product, 'product right before add to cart')
+          this.authService.addToCart(product);
+        }
       }
     }else{
-      product.cartCount = this.count;
-      if(product['selectedSize'] && product['selectedColor']){
-        this.authService.addToCart(product);
-      }else{
-        message = 'Please select size and color in order to add to cart'; 
-        status = 'success';          
-        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
-      }
+      this.router.navigate(['/sign-in'])
     }
+    
   }
 
   public openProductDialog(event){
