@@ -60,7 +60,8 @@ export class InformationComponent implements OnInit {
           ()=>{
             this.auth.updateProfileName(name)
             this.auth.updateUserEmail(this.infoForm.value.email)
-          })
+          }
+        )
         //   .catch(
         //   (error)=>{
         //     this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });

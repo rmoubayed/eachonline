@@ -64,15 +64,25 @@ export class AuthService {
   }
   login(values) {
     console.log(values, 'values on login')
+    let message, status;
     this.afAuth.auth.signInWithEmailAndPassword(values['email'], values['password']).then(
       (data)=>{
         console.log(data);
         this.user = data.user;
         this.loggedIn = true;
+        this.router.navigate(['/']);
       },(e)=>{
         console.log('err',e);
         if(e['code'] && e['message']) {
+          message = e['message']
+          status='error';
+          console.log(message,'erro mesgggg')
+          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
         }
+      }
+    ).catch(
+      (e)=>{
+        console.log(e)
       }
     )
   }
@@ -215,7 +225,9 @@ public addToCart(product:Product){
   if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
     let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
     item.cartCount = product.cartCount;
-    item['items'] = product['items']
+    if(product['items']){
+      item['items'] = product['items']
+    }
   }else{           
     this.Data.cartList.push(product);
   }        
@@ -240,10 +252,15 @@ public addToCart(product:Product){
           totalCartCount: this.Data.totalCartCount
         }, { merge: true }) 
       }
+      message = 'The product ' + product.name + ' has been added to cart.'; 
+      console.log(message, 'message add to cart')
+      status = 'success';          
+      this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+    },(e)=>{
+      message = 'Something went wrong please try again'; 
+      status = 'error';          
+      this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
     });
-  message = 'The product ' + product.name + ' has been added to cart.'; 
-  status = 'success';          
-  this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
 }
 
 
@@ -296,16 +313,22 @@ public resetProductCartCount(product:Product){
         firebase.auth().currentUser.reload()
         this.afs.collection('customer').doc(this.user['uid']).update({
           fullName:name
-        })
-      }).catch(
+        }).then(
+          ()=>{
+            this.snackBar.open('Your name has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          },
+          (e)=>{
+            this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+          }
+        )
+      },(e)=>{
+        this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+      }
+      ).catch(
         (e)=>{
-          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
           console.log(e); 
-      }).finally(
-        ()=>{
-          this.snackBar.open('Your name has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-        }
-      )
+      })
   }
   updateUserEmail(email) {
     var user = firebase.auth().currentUser;
@@ -314,16 +337,22 @@ public resetProductCartCount(product:Product){
         this.sendEmailVerify();
         this.afs.collection('customer').doc(this.user['uid']).update({
           email:email
-        })
-      }).catch(
+        }).then(
+          ()=>{
+            this.snackBar.open('Your email has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          },
+          (e)=>{
+            this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+          }
+        )
+      },(e)=>{
+        this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+      }
+      ).catch(
         (e)=>{
-          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
           console.log(e);
-      }).finally(
-        ()=>{
-          this.snackBar.open('Your email has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-        }
-      )
+      })
   }
   
   resetUserPassword(newPassword) {

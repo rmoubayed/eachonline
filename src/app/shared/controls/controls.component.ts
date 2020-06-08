@@ -89,18 +89,6 @@ export class ControlsComponent implements OnInit {
   public addToCart(product:Product){
     if(this.authService.loggedIn){
       console.log(product)
-      // if(product['selectedSize'] && product['selectedColor'] ){
-      //   console.log('inside')
-      //   if(this.count > 1){
-      //     let size = product['selectedSize'][0];
-      //     let color = product['selectedColor'][0]
-      //     for(let i=0 ; i < this.count - 1; i++){
-      //       product['selectedSize'].push(size);
-      //       product['selectedColor'].push(color);
-      //     }
-      //     console.log(product)
-      //   }
-      // }
       let message;
       let status;
       let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
@@ -110,19 +98,16 @@ export class ControlsComponent implements OnInit {
           console.log(product.size.length)
           if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
             message = 'Please select size or color in order to add to cart'; 
-            status = 'success';          
+            status = 'error';          
             this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+          }else if(product.size == null && product.color == null){
+            this.authService.addToCart(product)
           }else{
             product['item']['Qty'] = this.count;
-            if(this.product['items']){
-              this.product['items'].push(this.product['item'])
-            }else{
-              this.product['items'] = [this.product['item']];
-            }
+            this.product['items'].push(this.product['item'])
             delete this.product['item']
             console.log(product, 'product right before add to cart')
             this.authService.addToCart(product)
-            this.authService.addToCart(product);
           }
         }else{
           this.snackBar.open('You can not add more items than available. In stock ' + this.product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
@@ -132,8 +117,10 @@ export class ControlsComponent implements OnInit {
         product.cartCount = this.count;
         if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
           message = 'Please select size and color in order to add to cart'; 
-          status = 'success';          
-          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 }); product['item']['Qty'] = this.count;
+          status = 'error';          
+          this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 }); 
+        }else if(product.size == null && product.color == null){
+          this.authService.addToCart(product);
         }else{
           product['item']['Qty'] = this.count;
           if(this.product['items']){

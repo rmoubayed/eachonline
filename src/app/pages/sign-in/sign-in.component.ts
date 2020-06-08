@@ -38,7 +38,6 @@ export class SignInComponent implements OnInit {
   public onLoginFormSubmit(values:Object):void {
     if (this.loginForm.valid) {
       this.authService.login(values)
-      this.router.navigate(['/']);
     }else{
       //error code
     }
