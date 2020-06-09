@@ -93,10 +93,12 @@ export class CheckoutComponent implements OnInit {
         billingAddress: this.billingForm.value,
         paymentMethod: this.paymentForm.value,
         customerId: this.authService.user['uid'],
+        customerName:this.authService.user['displayName'],
+        customerEmail:this.authService.user['email'],
         products: this.authService.Data.cartList,
         totalPrice: this.authService.Data.totalPrice,
         totalOrderCount: this.authService.Data.totalCartCount,
-        date: this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear()
+        createdAt: this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear()
       }).then(
         ()=>{
           this.afs.collection('cart').doc(this.authService.user['uid']).update({
