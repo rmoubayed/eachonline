@@ -23,6 +23,9 @@ export class CheckoutComponent implements OnInit {
   grandTotal = 0;
   selectedBillingCountry: FormControl;
   monthsArray:string[]=["January", "February", "March","April","May", "June","July","August","September", "October", "November","December"]
+  deliveryMethodConntrol: FormControl;
+  cardLastDigits: string;
+  stepId=1;
 
   constructor(public authService : AuthService,
               public formBuilder: FormBuilder,
@@ -52,7 +55,7 @@ export class CheckoutComponent implements OnInit {
       address: ['', Validators.required]
     });
     this.deliveryForm = this.formBuilder.group({
-      deliveryMethod: [this.deliveryMethods[0].value, Validators.required]
+      deliveryMethod: [this.deliveryMethods[0], Validators.required]
     });
     this.paymentForm = this.formBuilder.group({
       cardHolderName: ['', Validators.required],
@@ -69,12 +72,22 @@ export class CheckoutComponent implements OnInit {
       this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     }
     if(this.authService.user['deliveryMethod']){
-      this.deliveryForm.get('deliveryMethod').setValue(this.authService.user['deliveryMethod'].value)
+      this.deliveryForm.get('deliveryMethod').setValue(this.authService.user['deliveryMethod'])
     }
     if(this.authService.user['paymentMethod']){
       Object.keys(this.authService.user['paymentMethod']).forEach(key => {
         this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
+        if(key == 'cardNumber'){
+          this.cardLastDigits = this.authService.user['paymentMethod'][key].substring(12);
+        }
       });
+    }
+  }
+
+  getStepId($event){
+    this.stepId++;
+    if(this.stepId == 4){
+      this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
     }
   }
 
@@ -105,19 +118,24 @@ export class CheckoutComponent implements OnInit {
             products:[],
             totalCartCount:0,
             totalPrice:0
-          })
+          }).then(
+            ()=>{
+              this.horizontalStepper._steps.forEach(step => step.editable = false);
+              this.verticalStepper._steps.forEach(step => step.editable = false);
+              this.authService.Data.cartList.length = 0;    
+              this.authService.Data.totalPrice = 0;
+              this.authService.Data.totalCartCount = 0;
+            },(e)=>{
+              this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+            }
+          )
+        },
+        (e)=>{
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
         }
       ).catch(
         (error)=>{
-          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-        }
-      ).finally(
-        ()=>{
-          this.horizontalStepper._steps.forEach(step => step.editable = false);
-          this.verticalStepper._steps.forEach(step => step.editable = false);
-          this.authService.Data.cartList.length = 0;    
-          this.authService.Data.totalPrice = 0;
-          this.authService.Data.totalCartCount = 0;
+          console.log(error)
         }
       )
     }

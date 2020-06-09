@@ -88,8 +88,13 @@ export class AddressesComponent implements OnInit {
       console.log(this.shippingForm.value)
       this.afs.collection('customer').doc(this.user['uid']).update({
         shippingAddress : this.shippingForm.value
-      })
-      this.snackBar.open('Your shipping address information updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+      }).then(
+        ()=>{
+          this.snackBar.open('Your shipping address information updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+        }
+      ),(e)=>{
+        this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+      }
     }
   }
 
