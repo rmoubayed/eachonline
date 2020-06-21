@@ -11,6 +11,23 @@
         max-width: 100%;
     }
 }
+.collapsable-list {
+	text-align: left;
+	cursor: pointer;
+}
+.caretSrudox {
+	margin-left: 4px;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+	transform: rotate(45deg);
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	transition: 0.15s all ease-in;
+}
+.caretClosed {
+	transform: rotate(-45deg);
+}
 
 .selected{
     border:2px solid black;

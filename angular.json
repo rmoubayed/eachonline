@@ -46,9 +46,11 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"
+              "src/styles.scss",
+              "node_modules/angular-instantsearch/bundles/instantsearch.min.css",
+              "node_modules/angular-instantsearch/bundles/instantsearch-theme-algolia.min.css"   
             ],
-            "scripts": []
+            "scripts": ["node_modules/instantsearch.js/dist/instantsearch.production.min.js"]
           },
           "configurations": {
             "production": {

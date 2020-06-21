@@ -43,11 +43,11 @@
         <h2 class="py-2 new-price">${{product?.newPrice}}</h2>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" class="details text-muted py-1">
-            <div *ngIf="product?.color" class="color">
+            <div *ngIf="product?.color.length > 0" class="color">
                 <span class="fw-500">Select Color:</span>
                 <button mat-raised-button *ngFor="let color of product?.color" [id]='color' [ngClass]="{'selected': selectedColor == color}"  (click)="selectColor(color)" [style.background]="color">&nbsp;</button>              
             </div>
-            <div *ngIf="product?.size" class="size" ngClass.xs="mt-1">
+            <div *ngIf="product?.size.length > 0" class="size" ngClass.xs="mt-1">
                 <span class="fw-500">Select Size:</span>
                 <button mat-raised-button *ngFor="let size of product?.size" [id]='size' [ngClass]="{'selected': selectedSize == size}" (click)="selectSize(size)">{{size}}</button>
             </div>
@@ -57,12 +57,12 @@
             <app-controls [product]="product"  [type]="'details'"></app-controls> 
         </div>
 
-        <div class="divider"></div>
+        <!-- <div class="divider"></div> -->
 
-        <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted py-1">
+        <!-- <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted py-1">
             <button mat-button><mat-icon>mail_outline</mat-icon> Email to a Friend</button>
             <button mat-icon-button><mat-icon>share</mat-icon></button>
-        </div>
+        </div> -->
 
     </div>
     <div fxFlex="100" fxFlex.gt-md="20" fxHide fxShow.gt-md> 
@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<div fxLayout="row wrap" class="mt-2">
+<!-- <div fxLayout="row wrap" class="mt-2">
     <div fxFlex="100" fxFlex.gt-md="78" fxFlex.md="74">
         <mat-card> 
             <mat-tab-group [@.disabled]="true" [selectedIndex]="0">       
@@ -232,7 +232,7 @@
         <img src="https://via.placeholder.com/400x310/EEEEEE/9E9E9E/?text=Banner%202" alt="" class="mw-100 d-block mt-3">
         <img src="https://via.placeholder.com/400x310/EEEEEE/9E9E9E/?text=Banner%203" alt="" class="mw-100 d-block mt-3">
     </div>
-</div>
+</div> -->
 
 <div class="py-2 mt-2">
     <h2>Related Products</h2>

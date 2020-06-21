@@ -142,10 +142,11 @@ export class AuthService {
           this.db.collection('customer').doc(user.uid).get().then((doc) => {
             if (doc.exists) {
               let user = doc.data()
-              this.user['billingAddress'] = user.billingAddress ? user.billingAddress : {}
-              this.user['shippingAddress'] = user.shippingAddress ? user.shippingAddress : {}
-              this.user['paymentMethod'] = user.paymentMethod ? user.paymentMethod : {}
-              this.user['deliveryMethod'] = user.deliveryMethod ? user.deliveryMethod : {}
+              this.user['billingAddress'] = user.billingAddress ? user.billingAddress : undefined
+              this.user['shippingAddress'] = user.shippingAddress ? user.shippingAddress : undefined
+              this.user['paymentMethod'] = user.paymentMethod ? user.paymentMethod : undefined
+              this.user['deliveryMethod'] = user.deliveryMethod ? user.deliveryMethod : undefined
+              this.user['userType']= user.userType
                 console.log("Document data:", doc.data()); 
             } else {
                 // doc.data() will be undefined in this case

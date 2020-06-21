@@ -30,16 +30,16 @@ export class AppGuardService implements CanActivate, CanActivateChild {
             ).catch(
               (e)=>{reject(e)}
             )
-          } else {
+          }else{
             reject()
           }
-        }
-        ).catch(
-            (e)=>{
-                resolve(true);
-            }
+        }).catch(
+          (e)=>{
+            resolve(true);
+          }
         )
-    })
+      }
+    )
   }
   canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot):  Observable<boolean> | Promise<boolean> | boolean {
     return this.canActivate(route, state);

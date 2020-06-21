@@ -38,9 +38,9 @@
         </div>
         <div fxFlex="100" fxFlex.gt-sm="25" class="px-1">
           <mat-form-field class="w-100">
-            <mat-select placeholder="Country" [formControl]="selectedBillingCountry" required>
+            <mat-select placeholder="Country" formControlName="country" required>
               <mat-option *ngFor="let country of countries" [value]="country.code">
-                  {{country.name}}
+                {{country.name}}
               </mat-option>
             </mat-select>
             <mat-error *ngIf="billingForm.controls.country.errors?.required">Country is required</mat-error>
@@ -180,7 +180,7 @@
       </div>
       <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="p-1">
         <p class="text-muted">Country:</p>
-        <p>{{billingForm.controls.country.value['name']}}</p>
+        <p>{{billingForm.controls.country.value.name}}</p>
       </div>
       <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="p-1">
         <p class="text-muted">City:</p>
@@ -203,7 +203,7 @@
       <div fxFlex="100" class="p-1">
         <h3 class="text-muted mt-2">Delivery information</h3>
         <div class="divider"></div>
-        <p class="py-1">{{deliveryForm.controls.deliveryMethod.value}} delivery </p> <!--<span class="text-muted">{{deliveryForm.controls.deliveryMethod.value['desc']}}</span>-->
+        <p class="py-1">{{deliveryForm.controls.deliveryMethod.value}} delivery </p> 
       </div>
     </div>
     <div fxLayout="row">
@@ -234,7 +234,7 @@
   </mat-step>
 </mat-horizontal-stepper>
 
-<mat-vertical-stepper #verticalStepper linear="true" class="mat-elevation-z2" fxHide="false" fxHide.gt-sm>
+<!-- <mat-vertical-stepper #verticalStepper linear="true" class="mat-elevation-z2" fxHide="false" fxHide.gt-sm>
   <mat-step [stepControl]="billingForm" label="Billing address">
     <form [formGroup]="billingForm">     
       <div fxLayout="row wrap">
@@ -467,4 +467,4 @@
       <a [routerLink]="['/']" mat-raised-button color="primary">Return to Shop</a>       
     </div>     
   </mat-step>
-</mat-vertical-stepper>
+</mat-vertical-stepper> -->

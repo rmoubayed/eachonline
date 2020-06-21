@@ -5,13 +5,21 @@ import { MatDialog } from '@angular/material';
 import { ProductDialogComponent } from '../../shared/products-carousel/product-dialog/product-dialog.component';
 import { AppService } from '../../app.service';
 import { Product, Category } from "../../app.models";
+import { AngularFirestore } from '@angular/fire/firestore';
+import * as algoliasearch from 'algoliasearch/lite';
+import { Inject, forwardRef } from '@angular/core';
+
+const searchClient = algoliasearch(
+  'X5I45PX5A1',
+  'd344813a13a6a7918a0eefb1e1000666'
+);
 
 @Component({
   selector: 'app-products',
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductsComponent implements OnInit {
+export class ProductsComponent implements OnInit  {
   @ViewChild('sidenav') sidenav: any;
   public sidenavOpen:boolean = true;
   private sub: any;
@@ -21,7 +29,7 @@ export class ProductsComponent implements OnInit {
   public count:any;
   public sortings = ['Sort by Default', 'Best match', 'Lowest first', 'Highest first'];
   public sort:any;
-  public products: Array<Product> = [];
+  public products: any[] = [];
   public categories:Category[];
   public brands = [];
   public priceFrom: number = 750;
@@ -29,8 +37,23 @@ export class ProductsComponent implements OnInit {
   public colors = ["#5C6BC0","#66BB6A","#EF5350","#BA68C8","#FF4081","#9575CD","#90CAF9","#B2DFDB","#DCE775","#FFD740","#00E676","#FBC02D","#FF7043","#F5F5F5","#000000"];
   public sizes = ["S","M","L","XL","2XL","32","36","38","46","52","13.3\"","15.4\"","17\"","21\"","23.4\""];
   public page:any;
-
-  constructor(private activatedRoute: ActivatedRoute, public authService: AuthService, public appService:AppService, public dialog: MatDialog, private router: Router) { }
+  config = {
+    indexName: 'product',
+    searchClient
+  };
+  public state: {
+    items: object[]
+ }
+  
+  
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private afs: AngularFirestore,
+    public authService: AuthService,
+    public appService:AppService, 
+    public dialog: MatDialog, 
+    private router: Router
+    ) { }
 
   ngOnInit() {
     this.count = this.counts[0];
@@ -64,6 +87,7 @@ export class ProductsComponent implements OnInit {
     if(this.authService.Data.categories.length == 0) { 
       this.appService.getCategories().subscribe(data => {
         this.categories = data;
+        console.log(this.categories, 'categories')
         this.authService.Data.categories = data;
       });
     }
@@ -119,9 +143,22 @@ export class ProductsComponent implements OnInit {
   }
 
   public onChangeCategory(event){
-    if(event.target){
-      this.router.navigate(['/products', event.target.innerText.toLowerCase()]); 
-    }   
+    console.log(event)
+    this.products=[];
+    this.authService.db.collection('products').where('categoryId', '==', event.id).get().then(
+      (snapshot)=>{
+        snapshot.forEach(
+          (doc)=>{
+            let data = doc.data()
+            this.products.push(data)
+          }
+        )
+      }
+    )
+    // if(event.target){
+    //   this.router.navigate(['/products', event.target.innerText.toLowerCase()]); 
+    // }   
   }
 
 }
+

@@ -53,6 +53,8 @@ import { ProductDialogComponent } from './products-carousel/product-dialog/produ
 import { BannersComponent } from './banners/banners.component';
 import { CategoryListComponent } from './category-list/category-list.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
+import { NgAisModule, NgAisInstantSearch } from 'angular-instantsearch';
+import { CustomRefine } from './custom-widgets/custom-refine.component';
 
 @NgModule({
   imports: [
@@ -61,6 +63,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     SwiperModule,
     FlexLayoutModule,
     MatAutocompleteModule,
+    NgAisModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -97,6 +100,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     FormsModule
   ],
   exports: [
+    CustomRefine,
     RouterModule,
     SwiperModule,
     FlexLayoutModule,
@@ -110,6 +114,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     MatDialogModule,
     MatExpansionModule,
     MatGridListModule,
+    NgAisModule,
     MatIconModule,
     MatInputModule,
     MatListModule,
@@ -152,12 +157,15 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
     ProductsCarouselComponent,
     ProductDialogComponent,
     BannersComponent,
+    CustomRefine,
     CategoryListComponent
   ],
   entryComponents:[
-    ProductDialogComponent
+    ProductDialogComponent,
+    CustomRefine,
   ],
   providers:[
+    NgAisInstantSearch,
     { provide: PERFECT_SCROLLBAR_CONFIG, useValue: DEFAULT_PERFECT_SCROLLBAR_CONFIG }
   ]
 })

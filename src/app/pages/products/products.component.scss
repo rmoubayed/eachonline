@@ -9,6 +9,14 @@
     background: #fff;
     padding: 8px 12px;
 }
+.colorContainer{
+    display: flex;
+}
+.colorItem{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+}
 .all-products{
     min-height: 400px;
     padding: 2px;

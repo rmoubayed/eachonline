@@ -1,7 +1,54 @@
 <mat-sidenav-container>
     <mat-sidenav #sidenav [opened]="sidenavOpen" [mode]="sidenavOpen ? 'side' : 'over'" class="filter-sidenav" perfectScrollbar>
-        
-        <mat-accordion displayMode="flat" multi="true">
+        <ais-instantsearch [config]="config">
+            <!-- <ais-search-box ></ais-search-box> -->
+            <!-- <ais-search-box></ais-search-box>
+            <ais-hits [ngStyle]="{'display': showSearchResults ? 'initial' : 'none'}" [transformItems]="listings">
+                <ng-template let-hits="hits">
+                <ol class="ais-Hits-list">
+                    <li (click)="viewListing(hit)" *ngFor="let hit of hits" class="ais-Hits-item">
+                    {{hit.companyName}}
+                    </li>
+                </ol>
+                </ng-template>
+            </ais-hits> -->
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}">
+                <div class="col-6">
+                    <h3 class="collapsable-list" (click)="toggleCategories()">Categories<span id="catCaret" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            <ais-refinement-list
+                attribute="categoryId"
+                operator="and"
+            ></ais-refinement-list>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}">
+                <div class="col-6">
+                    <h3 class="collapsable-list" (click)="toggleCities()">Price<span id="catCaret2" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            <ais-refinement-list
+                operator="and"
+                attribute="newPrice"
+            ></ais-refinement-list>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}">
+                <div class="col-6">
+                    <h3 class="collapsable-list" (click)="toggleCities()">Color<span id="catCaret2" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            
+            <ais-custom-refine attribute="color"></ais-custom-refine>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}">
+                <div class="col-6">
+                    <h3 class="collapsable-list" (click)="toggleCities()">Size<span id="catCaret2" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            <ais-refinement-list
+                attribute="size"
+                operator="and"
+            ></ais-refinement-list>
+        </ais-instantsearch>  
+       
+        <!-- <mat-accordion displayMode="flat" multi="true">
             <mat-expansion-panel expanded>
                 <mat-expansion-panel-header>
                     <mat-panel-title>
@@ -88,7 +135,7 @@
                 </div>
             </mat-expansion-panel>
 
-        </mat-accordion>
+        </mat-accordion> -->
 
     </mat-sidenav>
     <mat-sidenav-content class="all-products" ngClass.gt-sm="p-left">

@@ -12,11 +12,13 @@ export class CategoryListComponent {
   @Output() change: EventEmitter<any> = new EventEmitter();
   mainCategories;
 
-  constructor() { }
+  constructor() {
+   }
 
   public ngDoCheck() {
     if(this.categories && !this.mainCategories) {
       this.mainCategories = this.categories.filter(category => category.parentId == this.categoryParentId); 
+      console.log(this.categories, this.mainCategories)
     }
   }
 

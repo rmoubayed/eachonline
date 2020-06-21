@@ -15,7 +15,7 @@ export class AuthGuardService implements CanActivate {
   : Observable<boolean> | Promise<boolean> | boolean {
     var user = firebase.auth().currentUser;
     this.auth.user = user;
-    console.log('USe', user);
+    console.log('USe', user, user['userType']);
     if(user == null) {
       this.router.navigate(['/sign-in'])
     } else {

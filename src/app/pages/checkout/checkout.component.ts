@@ -4,6 +4,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatStepper, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
+import { takeUntil } from 'rxjs/operators';
 
 @Component({
   selector: 'app-checkout',
@@ -23,7 +24,6 @@ export class CheckoutComponent implements OnInit {
   grandTotal = 0;
   selectedBillingCountry: FormControl;
   monthsArray:string[]=["January", "February", "March","April","May", "June","July","August","September", "October", "November","December"]
-  deliveryMethodConntrol: FormControl;
   cardLastDigits: string;
   stepId=1;
 
@@ -33,7 +33,7 @@ export class CheckoutComponent implements OnInit {
               public snackBar: MatSnackBar,
               private afs : AngularFirestore) { }
 
-  ngOnInit() {    
+  ngOnInit() {   
     this.authService.Data.cartList.forEach(product=>{
       this.grandTotal += product.cartCount*product.newPrice;
     });
@@ -66,9 +66,11 @@ export class CheckoutComponent implements OnInit {
     });
     console.log(this.deliveryMethods[0])
     if(this.authService.user['billingAddress']){
+      console.log(this.authService.user['billingAddress'])
       Object.keys(this.authService.user['billingAddress']).forEach(key => {
         this.billingForm.get(key).setValue(this.authService.user['billingAddress'][key])
       });
+      this.billingForm.get('country').setValue(this.authService.user['billingAddress'].country.code)
       this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     }
     if(this.authService.user['deliveryMethod']){
@@ -89,11 +91,19 @@ export class CheckoutComponent implements OnInit {
     if(this.stepId == 4){
       this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
     }
+    if(this.stepId == 2){
+      let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
+      this.billingForm.get('country').setValue(country)
+      console.log(this.billingForm)
+    }
   }
 
   public placeOrder(){
+    
+    console.log(this.billingForm)
     if(this.billingForm.valid && this.deliveryForm.valid && this.paymentForm.valid){
       if(this.billingForm.pristine == false || this.deliveryForm.pristine == false || this.paymentForm.pristine == false){
+
         this.afs.collection('customer').doc(this.authService.user['uid']).update({
           billingAddress: this.billingForm.value,
           paymentMethod: this.paymentForm.value,
@@ -114,6 +124,18 @@ export class CheckoutComponent implements OnInit {
         createdAt: this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear()
       }).then(
         ()=>{
+          this.authService.db.collection('mail').add({
+            from:'ritta.keyrouz@hotmail.com',
+            to: this.authService.user['email'],
+            message:{
+              subject: 'order confirmation',
+              text: 'your order has been placed'
+            }
+          }).then(
+            ()=>{
+              this.snackBar.open('Your order has been placed! An email confirmation has been sent to you.', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+            }
+          )
           this.afs.collection('cart').doc(this.authService.user['uid']).update({
             products:[],
             totalCartCount:0,
@@ -121,7 +143,7 @@ export class CheckoutComponent implements OnInit {
           }).then(
             ()=>{
               this.horizontalStepper._steps.forEach(step => step.editable = false);
-              this.verticalStepper._steps.forEach(step => step.editable = false);
+              // this.verticalStepper._steps.forEach(step => step.editable = false);
               this.authService.Data.cartList.length = 0;    
               this.authService.Data.totalPrice = 0;
               this.authService.Data.totalCartCount = 0;
@@ -136,6 +158,7 @@ export class CheckoutComponent implements OnInit {
       ).catch(
         (error)=>{
           console.log(error)
+          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
         }
       )
     }

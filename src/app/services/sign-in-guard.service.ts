@@ -21,7 +21,7 @@ export class SignInGuardService implements CanActivate {
       return true
     } else {
     //   this.router.navigate(['/'])
-        alert()
+        // alert()
     }
   }
 }

@@ -7,7 +7,12 @@ import { AppService, User } from '../app.service';
 import { Category, Product } from '../app.models';
 import { SidenavMenuService } from '../theme/components/sidenav-menu/sidenav-menu.service';
 import { AuthService } from '../services/auth.service';
+import * as algoliasearch from 'algoliasearch/lite';
 
+const searchClient = algoliasearch(
+  'X5I45PX5A1',
+  'd344813a13a6a7918a0eefb1e1000666'
+);
 @Component({
   selector: 'app-pages',
   templateUrl: './pages.component.html',
@@ -21,7 +26,10 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public sidenavMenuItems:Array<any>;
   @ViewChild('sidenav') sidenav:any;
   public localAuthService:AuthService;
-
+  config = {
+    indexName: 'product',
+    searchClient
+  };
   public settings: Settings;
   public data : Data;
   public user : User;
