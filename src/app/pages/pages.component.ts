@@ -13,6 +13,7 @@ const searchClient = algoliasearch(
   'X5I45PX5A1',
   'd344813a13a6a7918a0eefb1e1000666'
 );
+
 @Component({
   selector: 'app-pages',
   templateUrl: './pages.component.html',
@@ -21,7 +22,7 @@ const searchClient = algoliasearch(
 })
 export class PagesComponent implements OnInit, AfterViewInit {
   public showBackToTop:boolean = false;
-  public categories:Category[];
+  public categories:any[]=[];
   public category:Category;
   public sidenavMenuItems:Array<any>;
   @ViewChild('sidenav') sidenav:any;
@@ -33,6 +34,8 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public settings: Settings;
   public data : Data;
   public user : User;
+  showSearchResults: boolean;
+  localAppService: AppService;
   constructor(public appSettings:AppSettings, 
               public appService:AppService, 
               private afs:AngularFirestore,
@@ -43,20 +46,53 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.localAppService = this.appService;
     this.data = this.authService.Data;
     this.user = this.authService.user;
     console.log(this.authService.Data, 'dataaa ')
-    this.getCategories();
+    this.authService.db.collection('categories').get().then(
+      (snapshot)=>{
+        snapshot.forEach(
+          (doc)=>{
+            let data = doc.data()
+            data.id = doc.id
+            this.categories.push(data)
+          }
+        )
+
+      }
+    )
+    // this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
   } 
+  
+  toggleShowHits(value) {
+    if(value) {
+      this.appService.showSearchResults = value;
+    }
+  }
+
+  keepSearchOpen(e: Event){
+    e.stopPropagation();
+  }
 
 
-  public getCategories(){    
-    this.appService.getCategories().subscribe(data => {
-      this.categories = data;
-      this.category = data[0];
-      this.authService.Data.categories = data;
-    })
+
+  // public getCategories(){    
+  //   this.appService.getCategories().subscribe(data => {
+  //     this.categories = data;
+  //     this.category = data[0];
+  //     this.authService.Data.categories = data;
+  //   })
+  // }
+
+  viewProduct(product) {
+    console.log(product, `products/${product.ID}`);
+    this.router.navigate([`/products/${product.objectID}/${product.name}`])
+  }
+
+  search(){
+    this.router.navigate([`/search/${(<HTMLInputElement>document.getElementsByClassName('ais-SearchBox-input')[0]).value}`,])
   }
 
   public changeCategory(event){
@@ -108,8 +144,6 @@ export class PagesComponent implements OnInit, AfterViewInit {
     event.stopPropagation();
     event.preventDefault();
   }
-
-  public search(){}
 
  
   public scrollToTop(){

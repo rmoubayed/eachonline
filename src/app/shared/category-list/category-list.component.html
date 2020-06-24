@@ -1,8 +1,8 @@
 <div *ngFor="let category of mainCategories">
-    <button mat-menu-item (click)="changeCategory(category)">
+    <button mat-menu-item (click)="naviagateTo(category.name)">
         <span>{{category.name}}</span>
     </button>
-     <div *ngIf="category.hasSubCategory" class="sub-category">
+     <!-- <div *ngIf="category.hasSubCategory" class="sub-category">
         <app-category-list [categories]="categories" [categoryParentId]="category.id" (change)="changeCategory(category)"></app-category-list>
-    </div>
+    </div> -->
 </div>

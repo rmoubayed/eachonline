@@ -152,7 +152,7 @@
             <div class="mat-header-cell">Total</div>
           </div>
           <div *ngFor="let product of authService.Data.cartList" class="mat-row">
-            <div class="mat-cell"><img [src]="product.images[0].small"></div>
+            <div class="mat-cell"><img [src]="product.images[0]"></div>
             <div class="mat-cell">{{product.name}}</div>
             <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      
             <div class="mat-cell text-muted"> {{product.cartCount}} </div>
@@ -180,7 +180,7 @@
       </div>
       <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="p-1">
         <p class="text-muted">Country:</p>
-        <p>{{billingForm.controls.country.value.name}}</p>
+        <p *ngIf="billingForm.controls.country && billingForm.controls.country.value">{{billingForm.controls.country.value.name}}</p>
       </div>
       <div fxLayout="column" fxFlex="100" fxFlex.gt-sm="25" class="p-1">
         <p class="text-muted">City:</p>

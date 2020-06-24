@@ -60,6 +60,8 @@ export class AddressesComponent implements OnInit {
       Object.keys(this.user['billingAddress']).forEach(key => {
         this.billingForm.get(key).setValue(this.user['billingAddress'][key])
       });
+      let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
+      this.billingForm.get('country').setValue(country)
       this.selectedBillingCountry = new FormControl(this.user['billingAddress'].country.code);
       console.log(this.selectedBillingCountry)
     }
@@ -67,6 +69,8 @@ export class AddressesComponent implements OnInit {
       Object.keys(this.user['shippingAddress']).forEach(key => {
         this.shippingForm.get(key).setValue(this.user['shippingAddress'][key])
       });
+      let country = this.countries.find((elt)=> {return elt.code == this.shippingForm.get('country').value})
+      this.shippingForm.get('country').setValue(country)
       this.selectedShippingCountry =  new FormControl(this.user['shippingAddress'].country.code);
     }
     

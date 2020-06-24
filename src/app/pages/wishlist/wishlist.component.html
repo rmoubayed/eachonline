@@ -18,8 +18,8 @@
       </div>
     </div>
     <div *ngFor="let product of authService.Data.wishList" class="mat-row">
-      <div class="mat-cell"><img [src]="product.images[0].small"></div>
-      <div class="mat-cell"><a [routerLink]="['/products', product.id, product.name]" class="product-name">{{product.name}}</a></div>
+      <div class="mat-cell"><img [src]="product.images[0]"></div>
+      <div class="mat-cell"><a [routerLink]="['/products', product.objectID, product.name]" class="product-name">{{product.name}}</a></div>
       <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>
       <div class="mat-cell">{{ (product.availibilityCount > 0) ? 'In stock':'Unavailable'}}</div>
       <!-- <div class="mat-cell text-muted">
@@ -32,7 +32,7 @@
           </button> -->
           <app-controls [product]="product" [type]="'wish'"></app-controls>
 
-          <button mat-icon-button matTooltip="View full details" [routerLink]="['/products', product.id, product.name]"><mat-icon>remove_red_eye</mat-icon></button>
+          <button mat-icon-button matTooltip="View full details" [routerLink]="['/products', product.objectID, product.name]"><mat-icon>remove_red_eye</mat-icon></button>
 
           <button mat-mini-fab color="warn" (click)="remove(product)" matTooltip="Clear" class="remove">
               <mat-icon>close</mat-icon>

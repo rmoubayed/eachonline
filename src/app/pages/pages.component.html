@@ -33,16 +33,30 @@
             <app-top-menu></app-top-menu>       
         </mat-toolbar-row>
         <mat-toolbar-row fxLayoutAlign="space-between center" class="logo-toolbar theme-container">
-            <a class="logo" routerLink="/" (click)="closeSubMenus()">Each Online</a>
+            <a class="logo" routerLink="/" (click)="closeSubMenus()" [ngStyle]="{'width':'100px', 'height':'100px'}">
+                <img src="../../assets/images/each-logo.png" [ngStyle]="{'width':'100%'}">
+            </a>
             <div fxFlex fxFlexOffset.gt-sm="10" fxShow="false" fxShow.gt-sm >
                 <form method="get"  class="search-form" fxLayout="row" >
-                    <button mat-raised-button [matMenuTriggerFor]="categoriesMenu" #categoriesMenuTrigger="matMenuTrigger" type="button" class="mat-elevation-z0 categories text-truncate text-muted">{{category?.name}}<mat-icon>arrow_drop_down</mat-icon></button>
-                    <mat-menu #categoriesMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="categories-dropdown">
+                    <!-- <button mat-raised-button [matMenuTriggerFor]="categoriesMenu" #categoriesMenuTrigger="matMenuTrigger" type="button" class="mat-elevation-z0 categories text-truncate text-muted">{{category?.name}}<mat-icon>arrow_drop_down</mat-icon></button> -->
+                    <!-- <mat-menu #categoriesMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="categories-dropdown">
                         <span (mouseleave)="categoriesMenuTrigger.closeMenu()">
                             <app-category-list [categories]="categories" [categoryParentId]="0" (change)="changeCategory($event)"></app-category-list>
                         </span>
-                    </mat-menu>
-                    <input type="text" placeholder="Type to search..." fxFlex >
+                    </mat-menu> -->
+                    <ais-instantsearch [config]="config" [ngStyle]="{'width':'100%'}">
+                        <ais-search-box [searchAsYouType]="true" autocomplete="off" (click)="keepSearchOpen($event)" (focusin)="toggleShowHits(true)"></ais-search-box>
+                        <ais-hits *ngIf="localAppService.showSearchResults" [ngStyle]="{'position': 'absolute'}">
+                            <ng-template let-hits="hits">
+                            <ul class="ais-Hits-list">
+                                <li (click)="viewProduct(hit)" *ngFor="let hit of hits" class="ais-Hits-item">
+                                    <span>{{hit.name}}</span>
+                                </li>
+                            </ul>
+                            </ng-template>
+                        </ais-hits>
+                    </ais-instantsearch>  
+                    <!-- <input type="text" placeholder="Type to search..." fxFlex > -->
                     <button mat-mini-fab (click)="search()" type="submit" class="search-btn mat-elevation-z0 text-muted">
                         <mat-icon>search</mat-icon>
                     </button> 
@@ -80,7 +94,7 @@
                                         <p matLine class="text-muted">
                                             <span> {{product.cartCount}} x ${{product.newPrice | number : '1.2-2'}} </span>
                                         </p>
-                                        <img  [src]="product.images[0].small" alt="image">
+                                        <img  [src]="product.images[0]" alt="image">
                                         <button mat-icon-button color="warn" class="remove" (click)="remove(product);stopClickPropagate($event)" matTooltip="Remove" matTooltipPosition="before">
                                             <mat-icon class="mat-icon-sm">close</mat-icon>
                                         </button>

@@ -1,6 +1,6 @@
 import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { ProductDialogComponent } from '../../shared/products-carousel/product-dialog/product-dialog.component';
 import { AppService } from '../../app.service';
@@ -44,11 +44,13 @@ export class ProductsComponent implements OnInit  {
   public state: {
     items: object[]
  }
-  
+ url:string;
+ localAppService:AppService;
+ productRenderer:any;
+ productList:any[]=[];
   
   constructor(
     private activatedRoute: ActivatedRoute,
-    private afs: AngularFirestore,
     public authService: AuthService,
     public appService:AppService, 
     public dialog: MatDialog, 
@@ -56,11 +58,56 @@ export class ProductsComponent implements OnInit  {
     ) { }
 
   ngOnInit() {
+    this.localAppService = this.appService;
+    this.router.events.subscribe(
+      (val)=>{
+        if(val instanceof NavigationStart){
+          console.log(val)
+          this.appService.currentListingUrl = val.url;
+          console.log(this.appService.currentListingUrl)
+          console.log(this.activatedRoute.snapshot.paramMap.get('name'))
+          if(this.appService.currentListingUrl.split('/').pop() != 'products'){
+            this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
+          }else{
+            this.productList = this.search('', null)
+          }
+          // else{
+          //   this.productList = products
+          // }
+          // this.productRenderer = (products)=>{
+            
+          //   console.log(this.productList)
+          //   return products.map(product=>({...product}))
+          // }
+        }
+      }
+    )
+
+    this.appService.currentListingUrl = window.location.pathname;
+    
+    this.productRenderer = (products)=>{
+      console.log(products, this.productList, this.appService.currentListingUrl)
+      if(this.appService.currentListingUrl == '/products'){
+        this.productList = products
+      }else if(this.appService.currentListingUrl.indexOf('search') > 0){
+        let searchValue = this.activatedRoute.snapshot.paramMap.get('name')
+        console.log(this.activatedRoute.snapshot.paramMap.get('name'))
+        this.productList = this.search(searchValue, products)
+      }else{
+        this.productList = products.filter(product=>product.categoryId == this.appService.currentListingUrl.split('/').pop())
+        // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
+        console.log(this.productList)
+      }
+      
+      
+      console.log(this.productList)
+      return products.map(product=>({...product}))
+    }
+    
+    
+    console.log(this.appService.currentListingUrl, this.appService.currentListingUrl.split('/').pop())
     this.count = this.counts[0];
     this.sort = this.sortings[0];
-    this.sub = this.activatedRoute.params.subscribe(params => {
-      //console.log(params['name']);
-    });
     if(window.innerWidth < 960){
       this.sidenavOpen = false;
     };
@@ -68,40 +115,90 @@ export class ProductsComponent implements OnInit  {
       this.viewCol = 33.3;
     };
 
-    this.getCategories();
-    this.getBrands();
-    this.getAllProducts();   
+    
+    // this.getCategories();
+    // this.getBrands();
+
+  }
+  searchCategory(category):any {
+    searchClient.search(
+      [
+        {
+          indexName: 'product', 
+          query: '',
+          params: {facetFilters: ['categoryId:'+category] }
+        }
+      ]).then((data)=>{
+        console.log(data)
+        this.productList = data.results[0].hits;
+        return this.productList;
+      })
   }
 
-  public getAllProducts(){
-    this.appService.getProducts("featured").subscribe(data=>{
-      this.products = data; 
-      //for show more product  
-      for (var index = 0; index < 3; index++) {
-        this.products = this.products.concat(this.products);        
-      }
-    });
+  search(value, products):any {
+    let index = searchClient.initIndex('product');
+    index.search(
+        {
+          query: value,
+        }
+      ).then((data)=>{
+        console.log('rdfghjkhgfcdrtfyguh', products)
+        if(products != null){
+          this.productList = [];
+          data.hits.forEach(product=>{
+            let found =  products.find(elt=> {return elt.name == product.name} )
+            console.log(found)
+            if(found) {
+              console.log(this.productList)
+              
+              this.productList.push(product) 
+              // this.productList.push(product)
+            }
+          })
+        }else{
+          console.log('product list1')
+          this.productList = data.hits;
+        }
+        // console.log(data)
+        
+        return this.productList;
+      })
   }
 
-  public getCategories(){  
-    if(this.authService.Data.categories.length == 0) { 
-      this.appService.getCategories().subscribe(data => {
-        this.categories = data;
-        console.log(this.categories, 'categories')
-        this.authService.Data.categories = data;
-      });
-    }
-    else{
-      this.categories = this.authService.Data.categories;
-    }
-  }
+  // public getAllProducts(){
+  //   this.authService.db.collection('products').get().then(
+  //     (snapshot)=>{
+  //       snapshot.forEach(elt=>{
+  //         let data = elt.data();
+  //         data.id = elt.id;
+  //         this.products.push(data)
+  //       })
+  //     }
+  //   ).finally(
+  //     ()=>{
+  //       console.log(this.products)
+  //     }
+  //   )
+  // }
 
-  public getBrands(){
-    this.brands = this.appService.getBrands();
-  }
+  // public getCategories(){  
+  //   if(this.authService.Data.categories.length == 0) { 
+  //     this.appService.getCategories().subscribe(data => {
+  //       this.categories = data;
+  //       console.log(this.categories, 'categories')
+  //       this.authService.Data.categories = data;
+  //     });
+  //   }
+  //   else{
+  //     this.categories = this.authService.Data.categories;
+  //   }
+  // }
+
+  // public getBrands(){
+  //   this.brands = this.appService.getBrands();
+  // }
 
   ngOnDestroy() {
-    this.sub.unsubscribe();
   }
 
   @HostListener('window:resize')
@@ -112,7 +209,7 @@ export class ProductsComponent implements OnInit  {
 
   public changeCount(count){
     this.count = count;
-    this.getAllProducts(); 
+    // this.getAllProducts(); 
   }
 
   public changeSorting(sort){
@@ -131,14 +228,14 @@ export class ProductsComponent implements OnInit  {
     });
     dialogRef.afterClosed().subscribe(product => {
       if(product){
-        this.router.navigate(['/products', product.id, product.name]); 
+        this.router.navigate(['/products', product.objectID, product.name]); 
       }
     });
   }
 
   public onPageChanged(event){
       this.page = event;
-      this.getAllProducts(); 
+      // this.getAllProducts(); 
       window.scrollTo(0,0); 
   }
 

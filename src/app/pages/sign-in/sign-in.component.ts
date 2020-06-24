@@ -55,7 +55,6 @@ export class SignInComponent implements OnInit {
   public onRegisterFormSubmit(values:Object):void {
     if (this.registerForm.valid) {
       this.authService.register(values)
-      this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
     }
   }
 

@@ -46,7 +46,7 @@ export class ControlsComponent implements OnInit {
     if(this.count < this.product.availibilityCount){
       this.count++;
       let obj = {
-        productId: this.product.id,
+        productId: this.product.objectID,
         soldQuantity: this.count,
         total: this.count * this.product.newPrice
       }
@@ -61,7 +61,7 @@ export class ControlsComponent implements OnInit {
     if(this.count > 1){
       this.count--;
       let obj = {
-        productId: this.product.id,
+        productId: this.product.objectID,
         soldQuantity: this.count,
         total: this.count * this.product.newPrice
       }
@@ -70,6 +70,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public addToCompare(product:Product){
+    console.log(product, product.objectID, product['objectID'])
     if(this.authService.loggedIn){
       this.authService.addToCompare(product);
     }else{
@@ -79,6 +80,7 @@ export class ControlsComponent implements OnInit {
   }
 
   public addToWishList(product:Product){
+    console.log(product, product.objectID, product['objectID'])
     if(this.authService.loggedIn){
       this.authService.addToWishList(product);
     }else{
@@ -91,12 +93,12 @@ export class ControlsComponent implements OnInit {
       console.log(product)
       let message;
       let status;
-      let currentProduct = this.authService.Data.cartList.filter(item=>item.id == product.id)[0];
+      let currentProduct = this.authService.Data.cartList.filter(item=>item.objectID == product.objectID)[0];
       if(currentProduct){
         if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
           product.cartCount = currentProduct.cartCount + this.count;
           console.log(product.size.length)
-          if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
+          if((product.size != null && !(product['item'] && product['item']['selectedSize'])) || (product.color != null && !(product['item'] && product['item']['selectedColor']))){
             message = 'Please select size or color in order to add to cart'; 
             status = 'error';          
             this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
@@ -115,7 +117,8 @@ export class ControlsComponent implements OnInit {
         }
       }else{
         product.cartCount = this.count;
-        if((product.size != null && !(product['item'] && product['item']['selectedSize'])) && (product.color != null && !(product['item'] && product['item']['selectedColor']))){
+        console.log(product.size != null,!(product['item'] && product['item']['selectedSize']),product.color != null,!(product['item'] && product['item']['selectedColor'])  )
+        if((product.size != null && !(product['item'] && product['item']['selectedSize'])) || (product.color != null && !(product['item'] && product['item']['selectedColor']))){
           message = 'Please select size and color in order to add to cart'; 
           status = 'error';          
           this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 }); 

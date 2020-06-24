@@ -10,6 +10,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 
 @Injectable()
 export class AppService {
+    currentListingUrl:string;
+    showSearchResults:boolean=false;
     public url = "assets/data/";
     constructor(private http : HttpClient) { }
     
@@ -318,9 +320,9 @@ export class AppService {
 
     public getDeliveryMethods(){
         return [
-            { value: 'free', name: 'Free Delivery', desc: '$0.00 / Delivery in 7 to 14 business Days' },
-            { value: 'standard', name: 'Standard Delivery', desc: '$7.99 / Delivery in 5 to 7 business Days' },
-            { value: 'express', name: 'Express Delivery', desc: '$29.99 / Delivery in 1 business Days' }
+            { value: 'free', name: 'Free Delivery', desc: '$0.00 / Delivery in 7 to 14 business Days', valueNumber:0 },
+            { value: 'standard', name: 'Standard Delivery', desc: '$7.99 / Delivery in 5 to 7 business Days', valueNumber:7.99 },
+            { value: 'express', name: 'Express Delivery', desc: '$29.99 / Delivery in 1 business Days', valueNumber: 29.99 }
         ]
     }
 

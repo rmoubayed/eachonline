@@ -55,6 +55,7 @@ import { CategoryListComponent } from './category-list/category-list.component';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgAisModule, NgAisInstantSearch } from 'angular-instantsearch';
 import { CustomRefine } from './custom-widgets/custom-refine.component';
+import { CustomRefinePrice } from './custom-widgets/custom-refine-price.components';
 
 @NgModule({
   imports: [
@@ -101,6 +102,7 @@ import { CustomRefine } from './custom-widgets/custom-refine.component';
   ],
   exports: [
     CustomRefine,
+    CustomRefinePrice,
     RouterModule,
     SwiperModule,
     FlexLayoutModule,
@@ -158,10 +160,12 @@ import { CustomRefine } from './custom-widgets/custom-refine.component';
     ProductDialogComponent,
     BannersComponent,
     CustomRefine,
+    CustomRefinePrice,
     CategoryListComponent
   ],
   entryComponents:[
     ProductDialogComponent,
+    CustomRefinePrice,
     CustomRefine,
   ],
   providers:[

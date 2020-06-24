@@ -1,5 +1,5 @@
 <footer class="bg-primary footer">
-    <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="border-bottom-mute subscribe-block theme-container">
+    <!-- <div fxLayout="column" fxLayout.gt-sm="row wrap" fxLayoutAlign="center center" class="border-bottom-mute subscribe-block theme-container">
         <div fxFlex="100" fxFlex.gt-sm="40" fxLayout="column" fxLayoutAlign="center center"> 
             <h1 class="fw-500">Subscribe our Newsletter</h1>
             <h3 class="fw-300 secondary-color">Stay up to date with our latest new and products</h3>
@@ -8,16 +8,16 @@
             <input type="text" placeholder="Your email address..." fxFlex>
             <button mat-raised-button color="accent" (click)="subscribe()" type="button" class="mat-elevation-z0 text-muted">Subscribe</button>
         </form>
-    </div>
+    </div> -->
     <div fxLayout="row wrap" fxLayoutAlign="space-between" class="py-3 border-bottom-mute theme-container">        
         <div fxFlex="100" fxFlex.gt-sm="20" fxFlex.sm="40"> 
-            <h3 class="col-title">USEFUL LINKS</h3>
-            <p class="mt-2"><a href="javascript:void(0);" class="link secondary-color">My Account</a></p>
-            <p class="mt-1"><a routerLink="/contact" class="link secondary-color">Contact</a></p>
-            <p class="mt-1"><a routerLink="/compare" class="link secondary-color">Compare</a></p>
-            <p class="mt-1"><a routerLink="/wishlist" class="link secondary-color">Wishlist</a></p>
-            <p class="mt-1"><a routerLink="/checkout" class="link secondary-color">Checkout</a></p>
-            <p class="mt-1"><a href="javascript:void(0);" class="link secondary-color">FAQ</a></p>
+            <!-- <h3 class="col-title">USEFUL LINKS</h3> -->
+            <p class="mt-2"><a routerLink="/contact" class="link secondary-color">Contact</a></p>
+            <p class="mt-1"><a routerLink="/about-us" class="link secondary-color">About us</a></p>
+            <p class="mt-1"><a routerLink="/privacy-policy" class="link secondary-color">Privacy Policy</a></p>
+            <p class="mt-1"><a routerLink="/terms-of-use" class="link secondary-color">Terms of Use</a></p>
+            <p class="mt-1"><a routerLink="/return-policy" class="link secondary-color">Return Policy</a></p>
+            <!-- <p class="mt-1"><a href="javascript:void(0);" class="link secondary-color">FAQ</a></p> -->
         </div>
         <div fxFlex="100" fxFlex.gt-sm="30" fxFlex.sm="60" ngClass.xs="mt-2"> 
             <!-- <h3 class="col-title">CONTACT INFORMATION</h3>            
@@ -52,8 +52,8 @@
             </agm-map> -->
         </div>
     </div>
-    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" class="copyright secondary-color theme-container">
-        <p ngClass.xs="mt-1">Copyright © 2018 All Rights Reserved</p>
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="center" class="copyright secondary-color theme-container">
+        <p ngClass.xs="mt-1">Copyright © {{date}} All Rights Reserved</p>
         <!-- <p>Designed & Developed by <a mat-button href="http://themeseason.com/" target="_blank">ThemeSeason</a></p> -->
     </div>
 </footer>

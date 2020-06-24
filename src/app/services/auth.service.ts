@@ -44,22 +44,29 @@ export class AuthService {
         this.afs.doc(`customer/${data.user.uid}`).set({ }, { merge: true });
         return this.afs.doc(`customer/${data.user.uid}`).update({
           email: data.user.email,
-          fullName: values['name']
+          fullName: values['name'],
+          userType:'customer'
         }).then(
           ()=>{ 
             this.loggedIn = true;
             this.user = data.user;
+            this.user['displayName'] = values['name']
             data.user.updateProfile({displayName: values['name']}).then(
               (data)=>{
                 console.log('updateProfile', data);
                 this.sendEmailVerify();
+                this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
                 this.router.navigate(['/']);
               }
             )
           }
         ).catch( (error) => {
-            console.log(error);
+            // let err = JSON.parse(error)
+            this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+
         });
+      }).catch(error=>{
+          this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
       })
   }
   login(values) {
@@ -167,7 +174,7 @@ export class AuthService {
 
 public addToCompare(product:Product){
     let message, status;
-    if(this.Data.compareList.filter(item=>item.id == product.id)[0]){
+    if(this.Data.compareList.filter(item=>item.objectID == product.objectID)[0]){
         message = 'The product ' + product.name + ' already added to comparison list.'; 
         status = 'error';     
     }
@@ -194,7 +201,7 @@ public addToCompare(product:Product){
 
 public addToWishList(product:Product){
     let message, status;
-    if(this.Data.wishList.filter(item=>item.id == product.id)[0]){
+    if(this.Data.wishList.filter(item=>item.objectID == product.objectID)[0]){
         message = 'The product ' + product.name + ' already added to wish list.'; 
         status = 'error';     
     }else{
@@ -223,8 +230,8 @@ public addToCart(product:Product){
   let message, status;        
   this.Data.totalPrice = null;
   this.Data.totalCartCount = null;
-  if(this.Data.cartList.filter(item=>item.id == product.id)[0]){ 
-    let item = this.Data.cartList.filter(item=>item.id == product.id)[0];
+  if(this.Data.cartList.filter(item=>item.objectID == product.objectID)[0]){ 
+    let item = this.Data.cartList.filter(item=>item.objectID == product.objectID)[0];
     item.cartCount = product.cartCount;
     if(product['items']){
       item['items'] = product['items']
@@ -267,14 +274,14 @@ public addToCart(product:Product){
 
 public resetProductCartCount(product:Product){
     product.cartCount = 0;
-    let compareProduct = this.Data.compareList.filter(item=>item.id == product.id)[0];
+    let compareProduct = this.Data.compareList.filter(item=>item.objectID == product.objectID)[0];
     if(compareProduct){
         compareProduct.cartCount = 0;
         this.afs.collection('cart').doc(this.user['uid']).update({
           compareList: this.Data.compareList
         })
     };
-    let wishProduct = this.Data.wishList.filter(item=>item.id == product.id)[0];
+    let wishProduct = this.Data.wishList.filter(item=>item.objectID == product.objectID)[0];
     if(wishProduct){
         wishProduct.cartCount = 0;
         this.afs.collection('cart').doc(this.user['uid']).update({

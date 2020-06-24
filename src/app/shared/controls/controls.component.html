@@ -7,7 +7,7 @@
     </div>
     <div>
         <button mat-icon-button matTooltip="Add to wishlist" *ngIf="type != 'wish'" (click)="addToWishList(product)"><mat-icon>favorite</mat-icon></button>
-        <button mat-icon-button matTooltip="Add to cart" *ngIf="type == 'details' && product?.availibilityCount > 0" (click)="addToCart(product)"><mat-icon>shopping_cart</mat-icon></button>
+        <button mat-icon-button matTooltip="Add to cart" *ngIf="type == 'details' && product?.availabilityCount > 0" (click)="addToCart(product)"><mat-icon>shopping_cart</mat-icon></button>
         <button mat-icon-button matTooltip="Add to compare" (click)="addToCompare(product)"><mat-icon>compare</mat-icon></button>
         <button *ngIf="type== 'listing'" mat-icon-button matTooltip="Quick view" (click)="openProductDialog(product)"><mat-icon>remove_red_eye</mat-icon></button>
     </div>

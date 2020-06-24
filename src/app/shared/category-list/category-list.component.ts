@@ -15,12 +15,12 @@ export class CategoryListComponent {
   constructor() {
    }
 
-  public ngDoCheck() {
-    if(this.categories && !this.mainCategories) {
-      this.mainCategories = this.categories.filter(category => category.parentId == this.categoryParentId); 
-      console.log(this.categories, this.mainCategories)
-    }
-  }
+  // public ngDoCheck() {
+  //   if(this.categories && !this.mainCategories) {
+  //     this.mainCategories = this.categories.filter(category => category.parentId == this.categoryParentId); 
+  //     console.log(this.categories, this.mainCategories)
+  //   }
+  // }
 
   public stopClickPropagate(event: any){
     if(window.innerWidth < 960){
@@ -28,6 +28,8 @@ export class CategoryListComponent {
       event.preventDefault();
     }    
   }
+
+  
 
   public changeCategory(event){
     this.change.emit(event);

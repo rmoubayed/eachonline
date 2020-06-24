@@ -18,7 +18,7 @@ export class WishlistComponent implements OnInit {
   ngOnInit() {
     this.authService.Data.cartList.forEach(cartProduct=>{
       this.authService.Data.wishList.forEach(product=>{
-        if(cartProduct.id == product.id){
+        if(cartProduct.objectID == product.objectID){
           product.cartCount = cartProduct.cartCount;
         }
       });

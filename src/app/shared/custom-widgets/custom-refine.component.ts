@@ -1,4 +1,4 @@
-import { Component, Inject, forwardRef } from '@angular/core';
+import { Component, Inject, forwardRef, Input } from '@angular/core';
 import { BaseWidget, NgAisInstantSearch } from 'angular-instantsearch';
 import { connectRefinementList } from 'instantsearch.js/es/connectors';
 
@@ -21,6 +21,7 @@ import { connectRefinementList } from 'instantsearch.js/es/connectors';
     `
   ]
 })
+
 export class CustomRefine extends BaseWidget {
   state: {
     items: { label: string; value: string, count: number }[];
@@ -31,7 +32,7 @@ export class CustomRefine extends BaseWidget {
     toggleShowMore: () => void;
     canToggleShowMore: boolean;
   }
-
+  @Input() attribute : string;
   constructor(
     @Inject(forwardRef(() => NgAisInstantSearch))
     public instantSearchParent
@@ -40,7 +41,7 @@ export class CustomRefine extends BaseWidget {
   }
 
   public ngOnInit() {
-    this.createWidget(connectRefinementList, { attribute: 'color' });
+    this.createWidget(connectRefinementList, { attribute: this.attribute, operator:'or' });
     super.ngOnInit();
   }
 }

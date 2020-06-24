@@ -9,22 +9,24 @@ import { emailValidator } from '../../theme/utils/app-validators';
 })
 export class ContactComponent implements OnInit {
   contactForm: FormGroup;
+  url: string;
 
   constructor(public formBuilder: FormBuilder) { }
 
   ngOnInit() {
-    this.contactForm = this.formBuilder.group({
-      name: ['', Validators.required],
-      email: ['', Validators.compose([Validators.required, emailValidator])],
-      phone: ['', Validators.required],
-      message: ['', Validators.required]
-    });
+    this.url = window.location.pathname;
+    // this.contactForm = this.formBuilder.group({
+    //   name: ['', Validators.required],
+    //   email: ['', Validators.compose([Validators.required, emailValidator])],
+    //   phone: ['', Validators.required],
+    //   message: ['', Validators.required]
+    // });
   }
 
-  public onContactFormSubmit(values:Object):void {
-    if (this.contactForm.valid) {
-      console.log(values);
-    }
-  }
+  // public onContactFormSubmit(values:Object):void {
+  //   if (this.contactForm.valid) {
+  //     console.log(values);
+  //   }
+  // }
 
 }

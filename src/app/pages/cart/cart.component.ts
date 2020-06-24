@@ -18,9 +18,9 @@ export class CartComponent implements OnInit {
   ngOnInit() {
     this.authService.Data.cartList.forEach(product=>{
       console.log(product, 'productttt')
-      this.total[product.id] = product.cartCount*product.newPrice;
+      this.total[product.objectID] = product.cartCount*product.newPrice;
       this.grandTotal += product.cartCount*product.newPrice;
-      this.cartItemCount[product.id] = product.cartCount;
+      this.cartItemCount[product.objectID] = product.cartCount;
       this.cartItemCountTotal += product.cartCount;
 
       console.log(this.total, this.grandTotal, this.cartItemCount, this.cartItemCountTotal)
@@ -77,19 +77,19 @@ export class CartComponent implements OnInit {
     const index: number = this.authService.Data.cartList.indexOf(product);
     if (index !== -1) {
       this.authService.Data.cartList.splice(index, 1);
-      this.grandTotal = this.grandTotal - this.total[product.id]; 
+      this.grandTotal = this.grandTotal - this.total[product.objectID]; 
       this.authService.Data.totalPrice = this.grandTotal;       
       this.total.forEach(val => {
-        if(val == this.total[product.id]){
-          this.total[product.id] = 0;
+        if(val == this.total[product.objectID]){
+          this.total[product.objectID] = 0;
         }
       });
 
-      this.cartItemCountTotal = this.cartItemCountTotal - this.cartItemCount[product.id]; 
+      this.cartItemCountTotal = this.cartItemCountTotal - this.cartItemCount[product.objectID]; 
       this.authService.Data.totalCartCount = this.cartItemCountTotal;
       this.cartItemCount.forEach(val=>{
-        if(val == this.cartItemCount[product.id]){
-          this.cartItemCount[product.id] = 0;
+        if(val == this.cartItemCount[product.objectID]){
+          this.cartItemCount[product.objectID] = 0;
         }
       });
       this.afs.collection('cart').doc(this.authService.user['uid']).update({

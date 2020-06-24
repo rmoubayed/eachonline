@@ -8,6 +8,7 @@ import { AppGuardService } from './services/app-guard.service';
 import { AuthGuardService } from './services/auth-guard.service';
 import { SignInGuardService } from './services/sign-in-guard.service';
 import { CheckoutGuardService } from './services/checkout-guard.service';
+import { ProductComponent } from './pages/products/product/product.component';
 
 export const routes: Routes = [
     { 
@@ -21,9 +22,15 @@ export const routes: Routes = [
             { path: 'cart', loadChildren: './pages/cart/cart.module#CartModule', data: { breadcrumb: 'Cart' }, canActivate:[AuthGuardService] },
             { path: 'checkout', loadChildren: './pages/checkout/checkout.module#CheckoutModule', data: { breadcrumb: 'Checkout' }, canActivate:[AuthGuardService, CheckoutGuardService] },
             { path: 'contact', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'Contact' } },
+            { path: 'privacy-policy', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'Privacy Policy' } },
+            { path: 'about-us', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'About Us' } },
+            { path: 'terms-of-use', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'Terms of Use' } },
+            { path: 'return-policy', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'Return Policy' } },
             { path: 'sign-in', loadChildren: './pages/sign-in/sign-in.module#SignInModule', data: { breadcrumb: 'Sign In ' }, canActivate:[SignInGuardService] },
-            { path: 'brands', loadChildren: './pages/brands/brands.module#BrandsModule', data: { breadcrumb: 'Brands' } },
-            { path: 'products', loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } }
+            // { path: 'brands', loadChildren: './pages/brands/brands.module#BrandsModule', data: { breadcrumb: 'Brands' } },
+            { path: 'products', loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } },
+            { path: 'search', loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } },
+
         ]
     },
     { path: '**', component: NotFoundComponent }

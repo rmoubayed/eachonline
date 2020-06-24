@@ -3,15 +3,15 @@
         
         <mat-card class="product-image">
             <button mat-icon-button (click)="openZoomViewer()" fxHide="false" fxHide.gt-md><mat-icon>fullscreen</mat-icon></button>
-            <img *ngIf="image" [src]="image" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave($event)"/>
+            <img *ngIf="product?.images.length > 0" [src]="product?.images[0]" (mousemove)="onMouseMove($event)" (mouseleave)="onMouseLeave($event)"/>
         </mat-card>       
 
-        <div class="small-carousel"> 
+        <div class="small-carousel" *ngIf="product?.images.length > 1"> 
             <div class="swiper-container" [swiper]="config">
                 <div class="swiper-wrapper"> 
                     <div *ngFor="let image of product?.images" class="swiper-slide">
                         <mat-card (click)="selectImage(image)" class="p-1">
-                            <img [attr.data-src]="image.small" class="swiper-lazy"/>
+                            <img [attr.data-src]="image" class="swiper-lazy"/>
                             <div class="swiper-lazy-preloader"></div>
                         </mat-card>
                     </div>                    
@@ -31,8 +31,8 @@
 
         <h2>{{product?.name}}</h2>
         <div class="py-1 lh">
-            <p><span class="text-muted fw-500">Category: </span><span>{{ ( authService.Data.categories | filterById : product?.categoryId )?.name }}</span></p>
-            <p><span class="text-muted fw-500">Availibility: </span><span>{{ (product?.availibilityCount > 0) ? 'In stock':'Unavailable'}}</span></p>
+            <p><span class="text-muted fw-500">Category: </span><span>{{product?.categoryId}}</span></p>
+            <p><span class="text-muted fw-500">Availibility: </span><span>{{ (product?.availabilityCount > 0) ? 'In stock':'Unavailable'}}</span></p>
         </div>                 
         <div class="py-1">
             <app-rating [ratingsCount]="product?.ratingsCount" [ratingsValue]="product?.ratingsValue" [direction]="'row'"></app-rating>
@@ -43,11 +43,11 @@
         <h2 class="py-2 new-price">${{product?.newPrice}}</h2>
 
         <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" class="details text-muted py-1">
-            <div *ngIf="product?.color.length > 0" class="color">
+            <div *ngIf="product?.color && product?.color.length > 0" class="color">
                 <span class="fw-500">Select Color:</span>
                 <button mat-raised-button *ngFor="let color of product?.color" [id]='color' [ngClass]="{'selected': selectedColor == color}"  (click)="selectColor(color)" [style.background]="color">&nbsp;</button>              
             </div>
-            <div *ngIf="product?.size.length > 0" class="size" ngClass.xs="mt-1">
+            <div *ngIf="product?.size && product?.size.length > 0" class="size" ngClass.xs="mt-1">
                 <span class="fw-500">Select Size:</span>
                 <button mat-raised-button *ngFor="let size of product?.size" [id]='size' [ngClass]="{'selected': selectedSize == size}" (click)="selectSize(size)">{{size}}</button>
             </div>
@@ -65,7 +65,7 @@
         </div> -->
 
     </div>
-    <div fxFlex="100" fxFlex.gt-md="20" fxHide fxShow.gt-md> 
+    <!-- <div fxFlex="100" fxFlex.gt-md="20" fxHide fxShow.gt-md> 
 
         <div fxLayout="row wrap" class="info-bar" ngClass.gt-md="m-0">
             <div fxFlex="100" fxFlex.md="25" fxFlex.sm="50">
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-    </div>
+    </div> -->
 </div>
 
 <!-- <div fxLayout="row wrap" class="mt-2">
