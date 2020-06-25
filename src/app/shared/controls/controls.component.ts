@@ -43,7 +43,7 @@ export class ControlsComponent implements OnInit {
 
 
   public increment(count){
-    if(this.count < this.product.availibilityCount){
+    if(this.count < this.product.availabilityCount){
       this.count++;
       let obj = {
         productId: this.product.objectID,
@@ -95,7 +95,7 @@ export class ControlsComponent implements OnInit {
       let status;
       let currentProduct = this.authService.Data.cartList.filter(item=>item.objectID == product.objectID)[0];
       if(currentProduct){
-        if((currentProduct.cartCount + this.count) <= this.product.availibilityCount){
+        if((currentProduct.cartCount + this.count) <= this.product.availabilityCount){
           product.cartCount = currentProduct.cartCount + this.count;
           console.log(product.size.length)
           if((product.size != null && !(product['item'] && product['item']['selectedSize'])) || (product.color != null && !(product['item'] && product['item']['selectedColor']))){
@@ -112,7 +112,7 @@ export class ControlsComponent implements OnInit {
             this.authService.addToCart(product)
           }
         }else{
-          this.snackBar.open('You can not add more items than available. In stock ' + this.product.availibilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
+          this.snackBar.open('You can not add more items than available. In stock ' + this.product.availabilityCount + ' items and you already added ' + currentProduct.cartCount + ' item to your cart', '×', { panelClass: 'error', verticalPosition: 'top', duration: 5000 });
           return false;
         }
       }else{

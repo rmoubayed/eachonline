@@ -1,8 +1,8 @@
-<mat-chip-list *ngIf="authService.Data.wishList.length == 0">
+<mat-chip-list *ngIf="localAuthService.Data.wishList.length == 0">
     <mat-chip color="warn" selected="true">YOU HAVE NO ITEMS IN WISH LIST.</mat-chip>
 </mat-chip-list>
 
-<mat-card *ngIf="authService.Data.wishList?.length > 0" class="p-0">
+<mat-card *ngIf="localAuthService.Data.wishList?.length > 0" class="p-0">
 
   <div class="mat-table wishlist-table">
     <div class="mat-header-row">
@@ -17,11 +17,11 @@
         </div>
       </div>
     </div>
-    <div *ngFor="let product of authService.Data.wishList" class="mat-row">
+    <div *ngFor="let product of localAuthService.Data.wishList" class="mat-row">
       <div class="mat-cell"><img [src]="product.images[0]"></div>
       <div class="mat-cell"><a [routerLink]="['/products', product.objectID, product.name]" class="product-name">{{product.name}}</a></div>
       <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>
-      <div class="mat-cell">{{ (product.availibilityCount > 0) ? 'In stock':'Unavailable'}}</div>
+      <div class="mat-cell">{{ (product.availabilityCount > 0) ? 'In stock':'Unavailable'}}</div>
       <!-- <div class="mat-cell text-muted">
         <app-controls [product]="product" (onOpenProductDialog)="openProductDialog(product)" [type]="'wish'"></app-controls>
       </div> -->

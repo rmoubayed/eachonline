@@ -11,10 +11,12 @@ import { Product } from '../../app.models';
   styleUrls: ['./compare.component.scss']
 })
 export class CompareComponent implements OnInit {
+  localAuthService: AuthService;
   
   constructor(public appService:AppService, private afs:AngularFirestore, public snackBar: MatSnackBar, private authService : AuthService) { }
 
   ngOnInit() { 
+    this.localAuthService = this.authService;
     this.authService.Data.cartList.forEach(cartProduct=>{
       this.authService.Data.compareList.forEach(product=>{
         if(cartProduct.objectID == product.objectID){

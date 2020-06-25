@@ -329,6 +329,9 @@ export class AppService {
 } 
 export interface User {
     email?: string;
+    displayName?:string;
+    billingAddress?:any;
+    shippingAddress?:any;
     // username?: string;
     // profilePhotoURL?: string;
 }

@@ -13,9 +13,12 @@ import { Router } from '@angular/router';
 })
 export class WishlistComponent implements OnInit {
   public quantity:number = 1;
+  localAuthService: AuthService;
+  
   constructor(public appService:AppService, private router:Router, private afs:AngularFirestore, public snackBar: MatSnackBar, private authService : AuthService) { }
 
   ngOnInit() {
+    this.localAuthService = this.authService;
     this.authService.Data.cartList.forEach(cartProduct=>{
       this.authService.Data.wishList.forEach(product=>{
         if(cartProduct.objectID == product.objectID){

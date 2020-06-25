@@ -1,4 +1,4 @@
-<mat-horizontal-stepper #horizontalStepper (selectionChange)="getStepId(event)" linear="true" class="mat-elevation-z2" fxShow="false" fxShow.gt-sm>
+<mat-horizontal-stepper #horizontalStepper (selectionChange)="getStepId($event)" linear="true" class="mat-elevation-z2" fxShow="false" fxShow.gt-sm>
   <mat-step [stepControl]="billingForm" label="Billing address">
     <form [formGroup]="billingForm">     
       <div fxLayout="row wrap">

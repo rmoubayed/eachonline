@@ -1,5 +1,5 @@
 <div fxLayout="row" fxLayout.xs="column" [fxLayoutAlign]="align" class="text-muted">
-    <div *ngIf="product?.availibilityCount > 0 && (type=='details')">
+    <div *ngIf="product?.availabilityCount > 0 && (type=='details')">
         <span class="fw-500">Quantity:</span> 
         <button mat-icon-button matTooltip="Remove" (click)="decrement()"><mat-icon>remove</mat-icon></button>
         <span> {{count}} </span>
@@ -12,6 +12,6 @@
         <button *ngIf="type== 'listing'" mat-icon-button matTooltip="Quick view" (click)="openProductDialog(product)"><mat-icon>remove_red_eye</mat-icon></button>
     </div>
 </div> 
-<div *ngIf="product?.availibilityCount == 0 && type=='listing'" class="bg-warn p-1 mt-2">
+<div *ngIf="product?.availabilityCount == 0 && type=='listing'" class="bg-warn p-1 mt-2">
     Sorry, this item is unavailable. Please choose a different one.
 </div>

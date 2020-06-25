@@ -13,9 +13,11 @@ export class CartComponent implements OnInit {
   grandTotal = 0;
   cartItemCount = [];
   cartItemCountTotal = 0;
+  localAuthService: AuthService;
   constructor(public appService:AppService,private afs: AngularFirestore, private authService : AuthService) { }
 
   ngOnInit() {
+    this.localAuthService = this.authService;
     this.authService.Data.cartList.forEach(product=>{
       console.log(product, 'productttt')
       this.total[product.objectID] = product.cartCount*product.newPrice;

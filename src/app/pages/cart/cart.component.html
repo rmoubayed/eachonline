@@ -1,11 +1,11 @@
-<div *ngIf="authService.Data.cartList.length == 0">
+<div *ngIf="localAuthService.Data.cartList.length == 0">
   <mat-chip-list>
       <mat-chip color="warn" selected="true">YOU HAVE NO ITEMS IN YOUR SHOPPING CART.</mat-chip>
   </mat-chip-list>
   <a [routerLink]="['/']" mat-raised-button color="primary" class="mt-2">Continue shopping</a>
 </div>
 
-<mat-card *ngIf="authService.Data.cartList?.length > 0" class="p-0">
+<mat-card *ngIf="localAuthService.Data.cartList?.length > 0" class="p-0">
 
   <div class="mat-table cart-table">
     <div class="mat-header-row">
@@ -20,7 +20,7 @@
         </div>
       </div>
     </div>
-    <div *ngFor="let product of authService.Data.cartList" class="mat-row">
+    <div *ngFor="let product of localAuthService.Data.cartList" class="mat-row">
       <div class="mat-cell"><img [src]="product.images[0]"></div>
       <div class="mat-cell"><a [routerLink]="['/products', product.objectID, product.name]" class="product-name">{{product.name}}</a></div>
       <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      
