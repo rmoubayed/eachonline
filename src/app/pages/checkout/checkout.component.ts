@@ -589,7 +589,7 @@ export class CheckoutComponent implements OnInit {
             }
           )
           this.authService.db.collection('mail').add({
-            from:'ritta.keyrouz@hotmail.com',
+            from:'eachonlinedeveloper@gmail.com',
             to: this.authService.user['email'],
             template:{
               name:'invoiceTemplate',
