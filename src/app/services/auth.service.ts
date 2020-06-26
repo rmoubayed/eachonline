@@ -37,12 +37,13 @@ export class AuthService {
   }
   
   register(values) {
+    console.log('register')
     this.afAuth.auth.createUserWithEmailAndPassword(values['email'], values['password']).then(
       (data)=>{
         console.log(data);
+        data.user.updateProfile({displayName: values['name']})
         this.afs.doc(`cart/${data.user.uid}`).set({ }, { merge: true });
-        this.afs.doc(`customer/${data.user.uid}`).set({ }, { merge: true });
-        return this.afs.doc(`customer/${data.user.uid}`).update({
+        this.afs.doc(`customer/${data.user.uid}`).set({
           email: data.user.email,
           fullName: values['name'],
           userType:'customer'
@@ -50,23 +51,19 @@ export class AuthService {
           ()=>{ 
             this.loggedIn = true;
             this.user = data.user;
-            this.user['displayName'] = values['name']
-            data.user.updateProfile({displayName: values['name']}).then(
-              (data)=>{
-                console.log('updateProfile', data);
-                this.sendEmailVerify();
-                this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-                this.router.navigate(['/']);
-              }
-            )
+            this.sendEmailVerify();
+            this.snackBar.open('You registered successfully! an email verification has been sent to you', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+            this.router.navigate(['/']);
           }
         ).catch( (error) => {
+          console.log(error)
             // let err = JSON.parse(error)
-            this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+          this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
 
         });
       }).catch(error=>{
-          this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+        console.log(error)
+        this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
       })
   }
   login(values) {
