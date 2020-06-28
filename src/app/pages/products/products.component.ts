@@ -86,6 +86,7 @@ export class ProductsComponent implements OnInit  {
     this.appService.currentListingUrl = window.location.pathname;
     
     this.productRenderer = (products)=>{
+      products = products.filter(elt=>elt.status == 'published');
       console.log(products, this.productList, this.appService.currentListingUrl)
       if(this.appService.currentListingUrl == '/products'){
         this.productList = products
