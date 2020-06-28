@@ -1,6 +1,8 @@
+import { AuthService } from './../../services/auth.service';
 import { Component, OnInit } from '@angular/core';
 import { AppService } from '../../app.service';
 import { Product } from "../../app.models";
+import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
 
 @Component({
   selector: 'app-home',
@@ -19,47 +21,101 @@ export class HomeComponent implements OnInit {
 
   public brands = [];
   public banners = [];
-  public featuredProducts: Array<Product>;
-  public onSaleProducts: Array<Product>;
-  public topRatedProducts: Array<Product>;
-  public newArrivalsProducts: Array<Product>;
+  newProducts: any[]=[];
+  saleProducts: any[]=[];
+  featuredProducts: any[]=[];
+  products: any[]=[];
+  public config: SwiperConfigInterface = {};
 
 
-  constructor(public appService:AppService) { }
+  constructor(public appService:AppService, public authService: AuthService) { }
 
   ngOnInit() {
-    this.getBanners();
-    this.getProducts("featured");
-    this.getBrands();
+    
+    this.config = {
+      observer: true,
+      slidesPerView: 6,
+      spaceBetween: 16,       
+      keyboard: true,
+      navigation: true,
+      pagination: false,
+      grabCursor: true,        
+      loop: false,
+      preloadImages: true,
+      lazy: true,  
+      breakpoints: {
+        480: {
+          slidesPerView: 1
+        },
+        740: {
+          slidesPerView: 2,
+        },
+        960: {
+          slidesPerView: 3,
+        },
+        1280: {
+          slidesPerView: 4,
+        },
+        1500: {
+          slidesPerView: 5,
+        }
+      }
+    }
+    this.authService.db.collection('products').where("discount", ">", 0).get().then(
+      (snapshot)=>{
+        snapshot.forEach((doc)=>{
+          let data= doc.data();
+          this.saleProducts.push(data);
+        })
+      }
+    ).finally(
+      ()=>{
+        console.log(this.saleProducts)
+      }
+    )
+    this.authService.db.collection('products').where('featured', '==', 'yes').get().then(
+      (snapshot)=>{
+        snapshot.forEach((doc)=>{
+          let data= doc.data();
+          this.featuredProducts.push(data);
+          
+        })
+      }
+    ).finally(
+      ()=>{
+        this.products = this.featuredProducts;
+        console.log(this.featuredProducts)
+      }
+    )
+    this.authService.db.collection('products').where('newArrival', '==', 'yes').get().then(
+      (snapshot)=>{
+        snapshot.forEach((doc)=>{
+          console.log(doc, 'new')
+          let data= doc.data();
+          this.newProducts.push(data);
+        })
+      }
+    ).finally(
+      ()=>{
+        console.log(this.newProducts)
+      }
+    )
   }
 
   public onLinkClick(e){
-    this.getProducts(e.tab.textLabel.toLowerCase()); 
+    console.log(e)
+    if(e.tab.textLabel.toLowerCase() == 'on sale'){
+      
+      
+    }else if(e.tab.textLabel.toLowerCase() == 'featured'){
+      
+      
+    }else if(e.tab.textLabel.toLowerCase() == 'New Arrivals'){
+      
+      
+    }
   }
 
-  public getProducts(type){
-    if(type == "featured" && !this.featuredProducts){
-      this.appService.getProducts("featured").subscribe(data=>{
-        this.featuredProducts = data;      
-      }) 
-    }
-    if(type == "on sale" && !this.onSaleProducts){
-      this.appService.getProducts("on-sale").subscribe(data=>{
-        this.onSaleProducts = data;      
-      })
-    }
-    if(type == "top rated" && !this.topRatedProducts){
-      this.appService.getProducts("top-rated").subscribe(data=>{
-        this.topRatedProducts = data;      
-      })
-    }
-    if(type == "new arrivals" && !this.newArrivalsProducts){
-      this.appService.getProducts("new-arrivals").subscribe(data=>{
-        this.newArrivalsProducts = data;      
-      })
-    }
-   
-  }
 
   public getBanners(){
     this.appService.getBanners().subscribe(data=>{

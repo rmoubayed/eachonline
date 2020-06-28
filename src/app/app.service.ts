@@ -1,7 +1,7 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject, ReplaySubject } from 'rxjs';
 import { MatSnackBar } from '@angular/material';
 import { Category, Product } from './app.models';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -12,6 +12,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 export class AppService {
     currentListingUrl:string;
     showSearchResults:boolean=false;
+    getProductSlider:ReplaySubject<any> = new ReplaySubject<any>();
     public url = "assets/data/";
     constructor(private http : HttpClient) { }
     

@@ -8,7 +8,7 @@ export class Settings {
 @Injectable()
 export class AppSettings {
     public settings = new Settings(
-        'RudyMobayed',  // theme name
+        'Each Online',  // theme name
         'grey'     // green, blue, red, pink, purple, grey
     )
 }
