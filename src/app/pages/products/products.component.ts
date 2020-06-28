@@ -8,6 +8,7 @@ import { Product, Category } from "../../app.models";
 import { AngularFirestore } from '@angular/fire/firestore';
 import * as algoliasearch from 'algoliasearch/lite';
 import { Inject, forwardRef } from '@angular/core';
+import { async } from '@angular/core/testing';
 
 const searchClient = algoliasearch(
   'X5I45PX5A1',
@@ -55,14 +56,15 @@ export class ProductsComponent implements OnInit  {
     public authService: AuthService,
     public appService:AppService, 
     public dialog: MatDialog, 
-    private router: Router
+    private router: Router,
+    private route : ActivatedRoute
     ) { }
 
   ngOnInit() {
-    this.categoryRefined =  (cats)=> {
-      console.log(cats);
-      cats = cats.filter(cat => cat.count > 0)
-      return cats;
+    console.log(this.route.snapshot.data['facets']);
+    let facets : any[] = this.route.snapshot.data['facets']
+    this.categoryRefined = (cats)=>{
+      return facets;
     }
     this.localAppService = this.appService;
     this.router.events.subscribe(

@@ -1,3 +1,4 @@
+import { ProductListingResolver } from './services/product-listing.resolver';
 import { Routes, RouterModule, PreloadAllModules  } from '@angular/router';
 import { ModuleWithProviders } from '@angular/core';
 
@@ -28,7 +29,7 @@ export const routes: Routes = [
             { path: 'return-policy', loadChildren: './pages/contact/contact.module#ContactModule', data: { breadcrumb: 'Return Policy' } },
             { path: 'sign-in', loadChildren: './pages/sign-in/sign-in.module#SignInModule', data: { breadcrumb: 'Sign In ' }, canActivate:[SignInGuardService] },
             // { path: 'brands', loadChildren: './pages/brands/brands.module#BrandsModule', data: { breadcrumb: 'Brands' } },
-            { path: 'products', loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } },
+            { path: 'products', resolve: {facets:ProductListingResolver},loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } },
             { path: 'search', loadChildren: './pages/products/products.module#ProductsModule', data: { breadcrumb: 'All Products' } },
 
         ]

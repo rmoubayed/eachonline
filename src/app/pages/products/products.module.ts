@@ -34,6 +34,6 @@ export const routes = [
   ],
   entryComponents:[
     ProductZoomComponent
-  ]
+  ],
 })
 export class ProductsModule { }
