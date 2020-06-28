@@ -48,6 +48,7 @@ export class ProductsComponent implements OnInit  {
  localAppService:AppService;
  productRenderer:any;
  productList:any[]=[];
+ categoryRefined: any;
   
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -58,6 +59,11 @@ export class ProductsComponent implements OnInit  {
     ) { }
 
   ngOnInit() {
+    this.categoryRefined =  (cats)=> {
+      console.log(cats);
+      cats = cats.filter(cat => cat.count > 0)
+      return cats;
+    }
     this.localAppService = this.appService;
     this.router.events.subscribe(
       (val)=>{
