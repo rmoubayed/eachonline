@@ -18,25 +18,39 @@ export class ProductsCarouselComponent implements OnInit {
   @Input('products') products: Array<Product> = [];
   @Input('type') type: string;
   public config: SwiperConfigInterface = {};
-  saleProducts: Product[];
-  newProducts: Product[];
-  featuredProducts: Product[];
+ 
   constructor(public appService:AppService, public dialog: MatDialog, private router: Router, public authService : AuthService) { }
 
   ngOnInit() {
-    if(this.type == 'sale'){
-      this.saleProducts = this.products;
-    }else if (this.type == 'new'){
-      this.newProducts = this.products;
-    }else if (this.type == 'featured'){
-      this.featuredProducts = this.products;
-    }
+    
     
    }
   
   ngAfterViewInit(){
     console.log(this.products)
-    
+    this.config = {
+      observer: true,
+      slidesPerView: 4,
+      spaceBetween: 16,       
+      keyboard: true,
+      navigation: true,
+      pagination: false,
+      grabCursor: true,        
+      loop: false,
+      preloadImages: true,
+      lazy: true,  
+      breakpoints: {
+        480: {
+          slidesPerView: 1
+        },
+        740: {
+          slidesPerView: 2,
+        },
+        960: {
+          slidesPerView: 3,
+        }
+      }
+    }
   }
 
   public openProductDialog(product){   
