@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
     
     this.config = {
       observer: true,
-      slidesPerView: 6,
+      slidesPerView: 4,
       spaceBetween: 16,       
       keyboard: true,
       navigation: true,
@@ -52,12 +52,6 @@ export class HomeComponent implements OnInit {
         },
         960: {
           slidesPerView: 3,
-        },
-        1280: {
-          slidesPerView: 4,
-        },
-        1500: {
-          slidesPerView: 5,
         }
       }
     }

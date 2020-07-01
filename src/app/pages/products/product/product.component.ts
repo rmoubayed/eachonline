@@ -27,7 +27,7 @@ export class ProductComponent implements OnInit {
   public zoomImage: any;
   private sub: any;
   public form: FormGroup;
-  public relatedProducts: Array<Product>;
+  public relatedProducts: Array<Product> = [];
   selectedColor: string;
   selectedSize: string;
   productId: string;
@@ -52,17 +52,16 @@ export class ProductComponent implements OnInit {
         
         if(facet == 'objectID'){
           this.product = data.results[0].hits[0];
+          this.image = this.product.images[0];
+          this.search('categoryId', this.product.categoryId)
         }
         else{
-          this.relatedProducts = data.results[0].hits.splice(data.results[0].hits.indexOf(this.product),1);
+          this.relatedProducts = data.results[0].hits;
           console.log(this.relatedProducts, 'related products')
         }
         console.log(data)
       }).finally(
         ()=>{
-          if(facet == 'objectID'){
-            this.search('categoryId', this.product.categoryId)
-          }
         }
       )
   }
@@ -89,15 +88,12 @@ export class ProductComponent implements OnInit {
     }
   }
 
-  public getRelatedProducts(){
-    this.appService.getProducts('related').subscribe(data => {
-      this.relatedProducts = data;
-    })
-  }
+  
 
   public selectImage(image){
-    this.image = image.medium;
-    this.zoomImage = image.big;
+    console.log(image)
+    this.image = image;
+    this.zoomImage = image;
   }
 
   public onMouseMove(e){

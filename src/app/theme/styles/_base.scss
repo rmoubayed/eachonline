@@ -477,8 +477,10 @@ button.swipe-arrow{
     }
     .image-link{
         display: block;
+        height: 230px;
     }
     img{
+        max-height: 100%;
         max-width: 100%;
         margin-bottom: 12px;
     }
