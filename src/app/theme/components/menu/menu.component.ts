@@ -1,3 +1,4 @@
+import { AuthService } from './../../../services/auth.service';
 import { Component, OnInit} from '@angular/core';
 
 @Component({
@@ -6,10 +7,26 @@ import { Component, OnInit} from '@angular/core';
   styleUrls: ['./menu.component.scss']
 })
 export class MenuComponent implements OnInit {
+  categories :any[]=[];
+  constructor(private authService: AuthService) { }
 
-  constructor() { }
-
-  ngOnInit() { }
+  ngOnInit() { 
+    this.authService.db.collection('categories').get().then(
+      (snapshot)=>{
+        snapshot.forEach(
+          (doc)=>{
+            let data = doc.data()
+            data.id = doc.id
+            this.categories.push(data)
+          }
+        )
+      }
+    ).finally(
+      ()=>{
+        console.log(this.categories)
+      }
+    )
+  }
 
   openMegaMenu(){
     let pane = document.getElementsByClassName('cdk-overlay-pane');

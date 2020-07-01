@@ -59,6 +59,7 @@ export class HomeComponent implements OnInit {
       (snapshot)=>{
         snapshot.forEach((doc)=>{
           let data= doc.data();
+          data.id = doc.id;
           this.saleProducts.push(data);
         })
       }
@@ -71,6 +72,7 @@ export class HomeComponent implements OnInit {
       (snapshot)=>{
         snapshot.forEach((doc)=>{
           let data= doc.data();
+          data.id = doc.id;
           this.featuredProducts.push(data);
           
         })
@@ -86,6 +88,7 @@ export class HomeComponent implements OnInit {
         snapshot.forEach((doc)=>{
           console.log(doc, 'new')
           let data= doc.data();
+          data.id = doc.id;
           this.newProducts.push(data);
         })
       }

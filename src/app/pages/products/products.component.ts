@@ -103,11 +103,10 @@ export class ProductsComponent implements OnInit  {
         console.log(this.activatedRoute.snapshot.paramMap.get('name'))
         this.productList = this.search(searchValue, products)
       }else{
-        this.productList = products.filter(product=>product.categoryId == this.appService.currentListingUrl.split('/').pop())
+        this.productList = products.filter(product=>product.categoryId.toLowerCase() == this.appService.currentListingUrl.split('/').pop())
         // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
         console.log(this.productList)
       }
-      
       
       console.log(this.productList)
       return products.map(product=>({...product}))
@@ -135,7 +134,7 @@ export class ProductsComponent implements OnInit  {
         {
           indexName: 'product', 
           query: '',
-          params: {facetFilters: ['categoryId:'+category] }
+          params: {facetFilters: ['categoryId:'+category, 'status:published'] }
         }
       ]).then((data)=>{
         console.log(data)
@@ -166,7 +165,7 @@ export class ProductsComponent implements OnInit  {
           })
         }else{
           console.log('product list1')
-          this.productList = data.hits;
+          this.productList = data.hits.filter((hits)=>{return hits.status == 'published'});
         }
         // console.log(data)
         

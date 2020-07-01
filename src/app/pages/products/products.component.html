@@ -73,7 +73,7 @@
                     </button> -->
                 </div>
             </div>
-
+            <!-- <p *ngIf="productList && productList.length == 0"> No results have been found</p> -->
             <div fxLayout="row wrap" class="products-wrapper">
                 <ais-hits [transformItems]="productRenderer" [ngStyle]="{'width':'100%'}">
                     <ng-template let-hits="hits" >
