@@ -108,8 +108,6 @@ THE SOFTWARE.
 
 @angular/material/dialog
 
-@angular/material/divider
-
 @angular/material/form-field
 
 @angular/material/icon
@@ -117,8 +115,6 @@ THE SOFTWARE.
 @angular/material/list
 
 @angular/material/menu
-
-@angular/material/radio
 
 @angular/material/select
 
