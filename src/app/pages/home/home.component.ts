@@ -1,5 +1,5 @@
 import { AuthService } from './../../services/auth.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { AppService } from '../../app.service';
 import { Product } from "../../app.models";
 import { SwiperConfigInterface } from 'ngx-swiper-wrapper';
@@ -41,26 +41,18 @@ export class HomeComponent implements OnInit {
       pagination: false,
       grabCursor: true,        
       loop: false,
+      watchOverflow: true,
       preloadImages: true,
       lazy: true,  
-      breakpoints: {
-        480: {
-          slidesPerView: 1
-        },
-        740: {
-          slidesPerView: 2,
-        },
-        960: {
-          slidesPerView: 3,
-        }
-      }
     }
     this.authService.db.collection('products').where("discount", ">", 0).get().then(
       (snapshot)=>{
         snapshot.forEach((doc)=>{
           let data= doc.data();
           data.id = doc.id;
-          this.saleProducts.push(data);
+          if(data.status == 'published'){
+            this.saleProducts.push(data);
+          }
         })
       }
     ).finally(
@@ -73,8 +65,9 @@ export class HomeComponent implements OnInit {
         snapshot.forEach((doc)=>{
           let data= doc.data();
           data.id = doc.id;
-          this.featuredProducts.push(data);
-          
+          if(data.status == 'published'){
+            this.featuredProducts.push(data);
+          }
         })
       }
     ).finally(
@@ -89,7 +82,9 @@ export class HomeComponent implements OnInit {
           console.log(doc, 'new')
           let data= doc.data();
           data.id = doc.id;
-          this.newProducts.push(data);
+          if(data.status == 'published'){
+            this.newProducts.push(data);
+          }
         })
       }
     ).finally(
@@ -122,6 +117,17 @@ export class HomeComponent implements OnInit {
 
   public getBrands(){
     this.brands = this.appService.getBrands();
+  }
+
+  @HostListener("window:resize", [])
+  onWindowResize() {
+    if(document.documentElement.clientWidth <= 480){
+      this.config.slidesPerView =  1;
+    }else if(document.documentElement.clientWidth <= 740){
+      this.config.slidesPerView =  2;
+    }else{
+      this.config.slidesPerView = 3;
+    }
   }
 
 }

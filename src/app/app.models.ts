@@ -20,5 +20,6 @@ export class Product {
               public color: Array<string>,
               public size: Array<string>,
               public weight: number,
+              public shipping: number,
               public categoryId: number){ }
 }

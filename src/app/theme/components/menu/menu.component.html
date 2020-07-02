@@ -12,7 +12,7 @@
                 </div>
             </div>
         </mat-menu>
-        <a *ngIf="!category.hasSubCategory && category.parentCategory == 'null'" mat-button [routerLink]="['/products', category.name.toLowerCase()]" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">{{category.name}}</a>
+        <a *ngIf="!category.hasSubCategory && category.parentCategory == null" mat-button [routerLink]="['/products', category.name.toLowerCase()]" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">{{category.name}}</a>
     </ng-container>
     
     

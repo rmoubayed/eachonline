@@ -75,8 +75,8 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
+                <button [disabled]="config.slidesPerView == featuredProducts.length" mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button [disabled]="config.slidesPerView == featuredProducts.length" mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
             </div>
         </mat-tab>
         <mat-tab label="On Sale" *ngIf="saleProducts.length > 0">
@@ -109,8 +109,8 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
+                <button mat-mini-fab [disabled]="config.slidesPerView == saleProducts.length" class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button mat-mini-fab [disabled]="config.slidesPerView == saleProducts.length" class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
             </div>
         </mat-tab>
         <!-- <mat-tab label="Top Rated">
@@ -146,8 +146,8 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
+                <button [disabled]="config.slidesPerView == newProducts.length" mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button [disabled]="config.slidesPerView == newProducts.length" mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
             </div>        
         </mat-tab>
     </mat-tab-group> 

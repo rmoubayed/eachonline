@@ -1,6 +1,7 @@
+import { PaymentService } from './../../services/payment.service';
 import { AppService } from './../../app.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatStepper, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -10,11 +11,10 @@ const Handlebars = require("handlebars");
   templateUrl: './checkout.component.html',
   styleUrls: ['./checkout.component.scss']
 })
-export class CheckoutComponent implements OnInit {
+export class CheckoutComponent implements OnInit, AfterViewInit {
   @ViewChild('horizontalStepper') horizontalStepper: MatStepper;
   @ViewChild('verticalStepper') verticalStepper: MatStepper;
   billingForm: FormGroup;
-  deliveryForm: FormGroup;
   paymentForm: FormGroup;
   countries = [];
   months = [];
@@ -25,18 +25,21 @@ export class CheckoutComponent implements OnInit {
   monthsArray:string[]=["January", "February", "March","April","May", "June","July","August","September", "October", "November","December"]
   cardLastDigits: string;
   stepId=1;
-  shipping: any;
+  shippingTotal= 0;
 
   constructor(public authService : AuthService,
               public formBuilder: FormBuilder,
               private appService : AppService,
               public snackBar: MatSnackBar,
-          
+              private paymentService: PaymentService,
               private afs : AngularFirestore) { }
 
   ngOnInit() {   
     this.authService.Data.cartList.forEach(product=>{
+      console.log(product)
       this.grandTotal += product.cartCount*product.newPrice;
+      this.shippingTotal += product.cartCount*product.shipping
+      console.log(this.shippingTotal)
     });
     this.countries = this.appService.getCountries();
     this.months = this.appService.getMonths();
@@ -55,9 +58,7 @@ export class CheckoutComponent implements OnInit {
       zip: ['', Validators.required],
       address: ['', Validators.required]
     });
-    this.deliveryForm = this.formBuilder.group({
-      deliveryMethod: [this.deliveryMethods[0], Validators.required]
-    });
+    
     this.paymentForm = this.formBuilder.group({
       cardHolderName: ['', Validators.required],
       cardNumber: ['', Validators.required],
@@ -74,9 +75,7 @@ export class CheckoutComponent implements OnInit {
       this.billingForm.get('country').setValue(this.authService.user['billingAddress'].country.code)
       this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     }
-    if(this.authService.user['deliveryMethod']){
-      this.deliveryForm.get('deliveryMethod').setValue(this.authService.user['deliveryMethod'])
-    }
+    
     if(this.authService.user['paymentMethod']){
       Object.keys(this.authService.user['paymentMethod']).forEach(key => {
         this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
@@ -87,41 +86,55 @@ export class CheckoutComponent implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    
+  }
+
   getStepId($event){
     this.stepId++;
-    if(this.stepId == 4){
-      this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
-    }
     if(this.stepId == 2){
+      this.paymentService.mountPayment();
       let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
       this.billingForm.get('country').setValue(country)
       console.log(this.billingForm)
+    }else if(this.stepId == 3){
+      this.submitPayment()
+    }else if(this.stepId == 4){
+      this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
     }
+  }
+  submitPayment() {
+    // this.payment.processPayment(this.appService.currentDataForPayment).then(
+    //   (success)=>{
+    //     if(success) {
+    //       this.showSuccess = true;
+    //       this.payment.paymentSuccess = true;
+    //       setTimeout(()=> {this.closeForm()},2000)
+    //       this.auth.db.collection('customer').doc(this.auth.user['uid']).update({unusedTier: this.appService.currentDataForPayment}).then(data=>console.log(data));
+    //     }
+    //   }
+    // );
   }
 
   public placeOrder(){
-    
     console.log(this.billingForm)
-    if(this.billingForm.valid && this.deliveryForm.valid && this.paymentForm.valid){
-      if(this.billingForm.pristine == false || this.deliveryForm.pristine == false || this.paymentForm.pristine == false){
+    if(this.billingForm.valid && this.paymentForm.valid){
+      if(this.billingForm.pristine == false || this.paymentForm.pristine == false){
         this.afs.collection('customer').doc(this.authService.user['uid']).update({
           billingAddress: this.billingForm.value,
           paymentMethod: this.paymentForm.value,
-          deliveryMethod: this.deliveryForm.value.deliveryMethod
         })
       }
       let date = new Date();
       let orderDate = this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear();
-      this.shipping = this.deliveryMethods.find((elt)=> {return (elt.value == this.deliveryForm.get('deliveryMethod').value)})
-      console.log(this.shipping, this.deliveryForm.get('deliveryMethod').value)
       this.afs.collection('order').add({
-        deliveryMethod: this.deliveryForm.value.deliveryMethod,
         billingAddress: this.billingForm.value,
         paymentMethod: this.paymentForm.value,
         customerId: this.authService.user['uid'],
         customerName:this.authService.user['displayName'],
         customerEmail:this.authService.user['email'],
         products: this.authService.Data.cartList,
+        totalShipping: this.authService.Data.totalShipping,
         totalPrice: this.authService.Data.totalPrice,
         totalOrderCount: this.authService.Data.totalCartCount,
         createdAt: orderDate
@@ -129,13 +142,13 @@ export class CheckoutComponent implements OnInit {
         ()=>{
           console.log(
             'name' ,this.billingForm.value.firstName,
-           'lastname', this.billingForm.value.lastName,
+             'lastname', this.billingForm.value.lastName,
             'adress',this.billingForm.value.address,
             'city',this.billingForm.value.city,
              'country',this.billingForm.value.country.name,
              'date',orderDate,
              'productlist',this.authService.Data.cartList,
-             'shipping',this.shipping.valueNumber,
+             'shipping',this.shippingTotal,
              'total',this.grandTotal
           )
           this.authService.db.collection('mail').add({
@@ -151,8 +164,8 @@ export class CheckoutComponent implements OnInit {
                 country: this.billingForm.value.country.name,
                 orderDate: orderDate,
                 product: this.authService.Data.cartList,
-                grandTotal: +this.grandTotal + this.shipping.valueNumber,
-                shipping: this.shipping.valueNumber,
+                grandTotal: +this.grandTotal + this.shippingTotal,
+                shipping: this.shippingTotal,
                 total: this.grandTotal
               }
             }
@@ -162,13 +175,15 @@ export class CheckoutComponent implements OnInit {
               this.afs.collection('cart').doc(this.authService.user['uid']).update({
                 products:[],
                 totalCartCount:0,
-                totalPrice:0
+                totalPrice:0,
+                totalShipping:0
               }).then(
                 ()=>{
                   this.horizontalStepper._steps.forEach(step => step.editable = false);
                   // this.verticalStepper._steps.forEach(step => step.editable = false);
                   this.authService.Data.cartList.length = 0;    
                   this.authService.Data.totalPrice = 0;
+                  this.authService.Data.totalShipping = 0;
                   this.authService.Data.totalCartCount = 0;
                 },(e)=>{
                   this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });

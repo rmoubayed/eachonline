@@ -33,6 +33,7 @@
         <div class="py-1 lh">
             <p><span class="text-muted fw-500">Category: </span><span>{{product?.categoryId}}</span></p>
             <p><span class="text-muted fw-500">Availability: </span><span>{{ (product?.availabilityCount > 0) ? 'In stock':'Unavailable'}}</span></p>
+            <p><span class="text-muted fw-500" *ngIf="product?.shipping > 0">Shipping: </span><span>{{product?.shipping}}</span></p>
         </div>                 
         <!-- <div class="py-1">
             <app-rating [ratingsCount]="product?.ratingsCount" [ratingsValue]="product?.ratingsValue" [direction]="'row'"></app-rating>

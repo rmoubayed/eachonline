@@ -108,6 +108,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
       const index: number = this.authService.Data.cartList.indexOf(product);
       if (index !== -1) {
           this.authService.Data.cartList.splice(index, 1);
+          this.authService.Data.totalShipping = this.authService.Data.totalShipping - product.shipping*product.cartCount;
           this.authService.Data.totalPrice = this.authService.Data.totalPrice - product.newPrice*product.cartCount;
           this.authService.Data.totalCartCount = this.authService.Data.totalCartCount - product.cartCount;
           this.authService.resetProductCartCount(product);
@@ -115,6 +116,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
           document.update({
             products: this.authService.Data.cartList,
             totalPrice: this.authService.Data.totalPrice,
+            totalShipping: this.authService.Data.totalShipping,
             totalCartCount:this.authService.Data.totalCartCount
           })
       }        
@@ -126,11 +128,13 @@ export class PagesComponent implements OnInit, AfterViewInit {
     });
     this.authService.Data.cartList.length = 0;
     this.authService.Data.totalPrice = 0;
+    this.authService.Data.totalShipping = 0;
     this.authService.Data.totalCartCount = 0;
     let document = this.afs.collection('cart').doc(`${this.authService.user['uid']}`)
     document.update({
       products: this.authService.Data.cartList,
       totalPrice: this.authService.Data.totalPrice,
+      totalShipping: this.authService.Data.totalShipping,
       totalCartCount:this.authService.Data.totalCartCount
     })
   }

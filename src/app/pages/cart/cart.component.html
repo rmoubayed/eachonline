@@ -12,7 +12,7 @@
       <div class="mat-header-cell">Product</div>
       <div class="mat-header-cell">Name</div>
       <div class="mat-header-cell">Price</div>      
-      <!-- <div class="mat-header-cell">Quantity</div> -->
+      <div class="mat-header-cell">Shipping</div>
       <div class="mat-header-cell">Total</div>
       <div class="mat-header-cell text-center">
         <div class="px-1">
@@ -24,6 +24,7 @@
       <div class="mat-cell"><img [src]="product.images[0]"></div>
       <div class="mat-cell"><a [routerLink]="['/products', product.objectID, product.name]" class="product-name">{{product.name}}</a></div>
       <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      
+      <div class="mat-cell" >${{shipping[product.objectID] ? (shipping[product.objectID] | number : '1.2-2') : 0}}</div>      
       <div class="mat-cell">${{total[product.objectID] | number : '1.2-2'}}</div>
       <!-- <div class="mat-cell text-muted">
         <app-controls [product]="product" [type]="'cart'" ></app-controls>
@@ -44,6 +45,7 @@
       <div class="mat-cell text-right">
         <div fxLayout="column" fxLayoutAlign="center end" class="grand-total px-2">
           <span>SubTotal:</span>
+          <span>Shipping:</span>
           <!-- <span class="text-muted">Discount:</span> -->
           <span class="new-price">Grand total:</span>
         </div>        
@@ -51,8 +53,9 @@
       <div class="mat-cell">
         <div fxLayout="column" fxLayoutAlign="center start" class="grand-total">
           <span>${{ (grandTotal) | number : '1.2-2'}}</span>
+          <span>${{ (shippingTotal) | number : '1.2-2'}}</span>
           <!-- <span class="text-muted">0</span> discountt -->
-          <span class="new-price">${{ (grandTotal) | number : '1.2-2'}}</span><!-- -(grandTotal*0.15) --> 
+          <span class="new-price">${{ (grandTotal + shippingTotal) | number : '1.2-2'}}</span><!-- -(grandTotal*0.15) --> 
         </div>
       </div>
       <div class="mat-cell text-center"><a [routerLink]="['/checkout']" mat-raised-button color="primary">Proceed To Checkout</a></div>

@@ -18,6 +18,7 @@ export interface Data {
   cartList: Product[];
   totalPrice: number;
   totalCartCount: number;
+  totalShipping: number
 }
 @Injectable({
     providedIn:'root'
@@ -33,7 +34,8 @@ export class AuthService {
     wishList: [],  // wishList
     cartList: [],  // cartList
     totalPrice: null, //totalPrice,
-    totalCartCount: 0 //totalCartCount
+    totalCartCount: 0, //totalCartCount
+    totalShipping:0
   }
   
   register(values) {
@@ -127,6 +129,7 @@ export class AuthService {
           compareList:[], 
           wishList: [],  
           cartList: [],  
+          totalShipping:0,
           totalPrice: null, 
           totalCartCount: 0 
         }
@@ -226,6 +229,7 @@ public addToWishList(product:Product){
 public addToCart(product:Product){
   let message, status;        
   this.Data.totalPrice = null;
+  this.Data.totalShipping = null;
   this.Data.totalCartCount = null;
   if(this.Data.cartList.filter(item=>item.objectID == product.objectID)[0]){ 
     let item = this.Data.cartList.filter(item=>item.objectID == product.objectID)[0];
@@ -239,14 +243,16 @@ public addToCart(product:Product){
   this.Data.cartList.forEach(product=>{
     this.Data.totalPrice = this.Data.totalPrice + (product.cartCount * product.newPrice);
     this.Data.totalCartCount = this.Data.totalCartCount + product.cartCount;
+    this.Data.totalShipping = this.Data.totalShipping + (product.cartCount * product.shipping)
   });
-  console.log(product, 'right befor databse function')
+  console.log(product, 'right befor databse function', this.Data)
   let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
   document.get().toPromise().then(
     (docSnapshot) => {
       if(docSnapshot.exists){
         document.update({
           products: this.Data.cartList,
+          totalShipping: this.Data.totalShipping,
           totalPrice: this.Data.totalPrice,
           totalCartCount: this.Data.totalCartCount
         })
@@ -254,7 +260,8 @@ public addToCart(product:Product){
         document.set({
           products: this.Data.cartList,
           totalPrice: this.Data.totalPrice,
-          totalCartCount: this.Data.totalCartCount
+          totalCartCount: this.Data.totalCartCount,
+          totalShipping: this.Data.totalShipping
         }, { merge: true }) 
       }
       message = 'The product ' + product.name + ' has been added to cart.'; 
@@ -297,6 +304,7 @@ public resetProductCartCount(product:Product){
             this.Data.compareList = docData.compareList ? docData.compareList : [];
             this.Data.totalCartCount = docData.totalCartCount ? docData.totalCartCount : 0;
             this.Data.totalPrice = docData.totalPrice ? docData.totalPrice : 0;
+            this.Data.totalShipping = docData.totalShipping ? docData.totalShipping : 0;
             console.log(this.user)
         }
         resolve(true)

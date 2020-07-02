@@ -56,7 +56,7 @@ export class ProductComponent implements OnInit {
           this.search('categoryId', this.product.categoryId)
         }
         else{
-          this.relatedProducts = data.results[0].hits;
+          this.relatedProducts = data.results[0].hits.filter((hit)=>{return hit.status == 'published' && hit.objectID != this.productId});
           console.log(this.relatedProducts, 'related products')
         }
         console.log(data)
