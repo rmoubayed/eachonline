@@ -103,7 +103,7 @@ export class ProductsComponent implements OnInit  {
         console.log(this.activatedRoute.snapshot.paramMap.get('name'))
         this.productList = this.search(searchValue, products)
       }else{
-        this.productList = products.filter(product=>product.categoryId.toLowerCase() == this.appService.currentListingUrl.split('/').pop())
+        this.productList = products.filter(product=>product.categoryId == this.appService.currentListingUrl.split('/').pop())
         // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
         console.log(this.productList)
       }

@@ -8,7 +8,7 @@
                 </div>
             </div>
             <ais-refinement-list *ngIf="localAppService.currentListingUrl == '/products'"
-                attribute="categoryId"  
+                attribute="categoryLabel"  
                 operator="or"
                 [transformItems]="categoryRefined"
             ></ais-refinement-list>
@@ -86,7 +86,7 @@
                                 <a [routerLink]="['/products', hit.objectID, hit.name]" class="image-link" [ngStyle]="{'height':'165px'}">
                                     <img [src]="hit.images[0]" alt="" [ngStyle]="{'height':'165px'}">
                                 </a>
-                                <h4 class="category text-muted">{{hit.categoryId}}</h4>                                                                     
+                                <h4 class="category text-muted">{{hit.categoryLabel}}</h4>                                                                     
                                 <a [routerLink]="['/products', hit.objectID, hit.name]" class="title text-truncate">
                                     {{hit.name}}
                                 </a>

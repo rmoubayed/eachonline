@@ -21,5 +21,6 @@ export class Product {
               public size: Array<string>,
               public weight: number,
               public shipping: number,
+              public categoryLabel:string,
               public categoryId: number){ }
 }

@@ -53,7 +53,7 @@ export class ProductComponent implements OnInit {
         if(facet == 'objectID'){
           this.product = data.results[0].hits[0];
           this.image = this.product.images[0];
-          this.search('categoryId', this.product.categoryId)
+          this.search('categoryLabel', this.product.categoryLabel)
         }
         else{
           this.relatedProducts = data.results[0].hits.filter((hit)=>{return hit.status == 'published' && hit.objectID != this.productId});
