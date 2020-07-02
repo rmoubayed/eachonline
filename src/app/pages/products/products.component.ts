@@ -64,7 +64,8 @@ export class ProductsComponent implements OnInit  {
     console.log(this.route.snapshot.data['facets']);
     let facets : any[] = this.route.snapshot.data['facets']
     this.categoryRefined = (cats)=>{
-      return facets;
+      console.log(facets);
+      return cats;
     }
     this.localAppService = this.appService;
     this.router.events.subscribe(

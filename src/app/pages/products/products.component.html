@@ -36,6 +36,15 @@
                 attribute="size"
                 operator="or"
             ></ais-refinement-list>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" >
+                <div class="col-6">
+                    <h3 class="collapsable-list">Brands<span id="catCaret" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            <ais-refinement-list 
+                attribute="brand"  
+                operator="or"
+            ></ais-refinement-list>
         </mat-sidenav>
         <mat-sidenav-content class="all-products" ngClass.gt-sm="p-left">
             <div fxLayout="row" fxLayout.xs="column" fxLayoutAlign="space-between center" class="filter-row mat-elevation-z1 text-muted">
@@ -95,7 +104,7 @@
                                         <p class="old-price text-muted"><span *ngIf="hit.oldPrice">${{hit.oldPrice | number : '1.2-2'}}</span></p>
                                         <p class="new-price">${{hit.newPrice | number : '1.2-2'}}</p>
                                     </div>
-                                    <app-rating [ratingsCount]="hit.ratingsCount" [ratingsValue]="hit.ratingsValue" [direction]="'column'"></app-rating>
+                                    <!-- <app-rating [ratingsCount]="hit.ratingsCount" [ratingsValue]="hit.ratingsValue" [direction]="'column'"></app-rating> -->
                                 </div>                            
                                 <div class="divider mt-2"></div>
                                 <div class="icons">
