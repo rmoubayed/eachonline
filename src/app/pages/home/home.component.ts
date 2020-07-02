@@ -60,7 +60,7 @@ export class HomeComponent implements OnInit {
         console.log(this.saleProducts)
       }
     )
-    this.authService.db.collection('products').where('featured', '==', 'yes').get().then(
+    this.authService.db.collection('products').where('featured', '==', true).get().then(
       (snapshot)=>{
         snapshot.forEach((doc)=>{
           let data= doc.data();
@@ -76,7 +76,7 @@ export class HomeComponent implements OnInit {
         console.log(this.featuredProducts)
       }
     )
-    this.authService.db.collection('products').where('newArrival', '==', 'yes').get().then(
+    this.authService.db.collection('products').where('newArrival', '==', true).get().then(
       (snapshot)=>{
         snapshot.forEach((doc)=>{
           console.log(doc, 'new')
