@@ -63,12 +63,23 @@ export class ProductsComponent implements OnInit  {
   ngOnInit() {
     this.route.params.subscribe(
       (data)=>{
-        console.log(data)
+        console.log(data,window.location.href.includes('search') )
+        if(window.location.pathname == '/products'){
+          this.search('',null)
+        }else if(window.location.href.includes('search')){
+          this.productList = this.search(data.name, null)
+        }else{
+          this.productList =  this.searchCategory(data.name)  
+          // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
+          console.log(this.productList)
+        }
         this.productRenderer = (products)=>{
+          console.log('product endere')
           products = products.filter(elt=>elt.status == 'published');
           if(window.location.pathname == '/products'){
             this.productList = products
           }else if(window.location.href.includes('search')){
+            console.log('search, ', products)
             this.productList = this.search(data.name, products)
           }else{
             this.productList =  this.searchCategory(data.name)  
