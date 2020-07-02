@@ -88,11 +88,14 @@ export class PagesComponent implements OnInit, AfterViewInit {
 
   viewProduct(product) {
     console.log(product, `products/${product.ID}`);
-    this.router.navigate([`/products/${product.objectID}/${product.name}`])
+    let productName = product.name.split(' ').join('-')
+    this.router.navigate([`/products/${product.objectID}/${productName}`])
   }
 
   search(){
-    this.router.navigate([`/search/${(<HTMLInputElement>document.getElementsByClassName('ais-SearchBox-input')[0]).value}`,])
+    let searchWord = (<HTMLInputElement>document.getElementsByClassName('ais-SearchBox-input')[0]).value
+    searchWord.split(' ').join('-')
+    this.router.navigate([`/search/${searchWord}`])
   }
 
   public changeCategory(event){

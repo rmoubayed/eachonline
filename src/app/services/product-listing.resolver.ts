@@ -29,6 +29,7 @@ export class ProductListingResolver implements Resolve<any> {
                   resolve(finalObj);
                 }
               )
+              
         })
     }
 }  

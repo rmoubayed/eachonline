@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { MatDialog } from '@angular/material';
 import { SwiperConfigInterface, SwiperDirective } from 'ngx-swiper-wrapper';
@@ -32,11 +32,19 @@ export class ProductComponent implements OnInit {
   selectedSize: string;
   productId: string;
 
-  constructor(public appService:AppService, private route: Router, public authService : AuthService, private activatedRoute: ActivatedRoute, public dialog: MatDialog, public formBuilder: FormBuilder) {  }
+  constructor(public appService:AppService, private route: Router, public authService : AuthService, private router: ActivatedRoute, public dialog: MatDialog, public formBuilder: FormBuilder) {  }
 
   ngOnInit() {      
-    this.productId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.search('objectID',this.productId)
+    this.productId = this.router.snapshot.paramMap.get('id');
+    this.router.params.subscribe(
+      (data)=>{
+        console.log(data)
+        this.productId = data.id;
+        this.search('objectID',this.productId)
+      }
+    )
+  
+    // this.search('objectID',this.productId)
     // this.getRelatedProducts();    
   }
 
@@ -52,6 +60,7 @@ export class ProductComponent implements OnInit {
         
         if(facet == 'objectID'){
           this.product = data.results[0].hits[0];
+          console.log(this.product)
           this.image = this.product.images[0];
           this.search('categoryLabel', this.product.categoryLabel)
         }

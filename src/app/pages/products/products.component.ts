@@ -61,6 +61,24 @@ export class ProductsComponent implements OnInit  {
     ) { }
 
   ngOnInit() {
+    this.route.params.subscribe(
+      (data)=>{
+        console.log(data)
+        this.productRenderer = (products)=>{
+          products = products.filter(elt=>elt.status == 'published');
+          if(window.location.pathname == '/products'){
+            this.productList = products
+          }else if(window.location.href.includes('search')){
+            this.productList = this.search(data.name, products)
+          }else{
+            this.productList =  this.searchCategory(data.name)  
+            // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
+            console.log(this.productList)
+          }
+          return products;
+        }
+      }
+    )
     console.log(this.route.snapshot.data['facets']);
     let facets : any[] = this.route.snapshot.data['facets']
     this.categoryRefined = (cats)=>{
@@ -68,50 +86,31 @@ export class ProductsComponent implements OnInit  {
       return cats;
     }
     this.localAppService = this.appService;
-    this.router.events.subscribe(
-      (val)=>{
-        if(val instanceof NavigationStart){
-          console.log(val)
-          this.appService.currentListingUrl = val.url;
-          console.log(this.appService.currentListingUrl)
-          console.log(this.activatedRoute.snapshot.paramMap.get('name'))
-          if(this.appService.currentListingUrl.split('/').pop() != 'products'){
-            this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
-          }else{
-            this.productList = this.search('', null)
-          }
-          // else{
-          //   this.productList = products
-          // }
-          // this.productRenderer = (products)=>{
+    // this.router.events.subscribe(
+    //   (val)=>{
+    //     if(val instanceof NavigationStart){
+    //       console.log(val)
+    //       this.appService.currentListingUrl = val.url;
+    //       if(this.appService.currentListingUrl.split('/').pop() != 'products'){
+    //         this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
+    //       }else{
+    //         this.productList = this.search('', null)
+    //       }
+    //       // else{
+    //       //   this.productList = products
+    //       // }
+    //       // this.productRenderer = (products)=>{
             
-          //   console.log(this.productList)
-          //   return products.map(product=>({...product}))
-          // }
-        }
-      }
-    )
+    //       //   console.log(this.productList)
+    //       //   return products.map(product=>({...product}))
+    //       // }
+    //     }
+    //   }
+    // )
 
     this.appService.currentListingUrl = window.location.pathname;
     
-    this.productRenderer = (products)=>{
-      products = products.filter(elt=>elt.status == 'published');
-      console.log(products, this.productList, this.appService.currentListingUrl)
-      if(this.appService.currentListingUrl == '/products'){
-        this.productList = products
-      }else if(this.appService.currentListingUrl.indexOf('search') > 0){
-        let searchValue = this.activatedRoute.snapshot.paramMap.get('name')
-        console.log(this.activatedRoute.snapshot.paramMap.get('name'))
-        this.productList = this.search(searchValue, products)
-      }else{
-        this.productList = products.filter(product=>product.categoryId == this.appService.currentListingUrl.split('/').pop())
-        // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
-        console.log(this.productList)
-      }
-      
-      console.log(this.productList)
-      return products.map(product=>({...product}))
-    }
+    
     
     
     console.log(this.appService.currentListingUrl, this.appService.currentListingUrl.split('/').pop())

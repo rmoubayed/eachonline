@@ -127,6 +127,17 @@ a{
 .mat-slider-horizontal{
     width: 100%;
 }
+.ais-Pagination{
+    color: #689f38 !important;
+}
+.ais-Pagination-item--selected .ais-Pagination-link {
+    background-color: #689f38 !important;
+    border-color: #689f38 !important;
+    color: white !important;
+}
+.ais-Pagination-link{
+    color: #689f38 !important;
+}
 .ais-Hits{
     flex-wrap: wrap;
 }
