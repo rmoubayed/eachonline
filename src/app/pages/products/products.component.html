@@ -1,4 +1,7 @@
 <ais-instantsearch [config]="config">
+    <ais-configure
+    [searchParameters]="{filters: currentSearchCategory ? 'categoryId:'+currentSearchCategory : ''}"
+    ></ais-configure>
     <ais-search-box></ais-search-box>
     <mat-sidenav-container> 
         <mat-sidenav #sidenav [opened]="sidenavOpen" [mode]="sidenavOpen ? 'side' : 'over'" class="filter-sidenav" perfectScrollbar> 
@@ -84,9 +87,6 @@
             </div>
             <!-- <p *ngIf="productList && productList.length == 0"> No results have been found</p> -->
             <div fxLayout="row wrap" class="products-wrapper">
-                <ais-configure
-                [searchParameters]="searchParams"
-                ></ais-configure>
                 <ais-hits [transformItems]="productRenderer" [ngStyle]="{'width':'100%'}">
                     <ng-template let-hits="hits" >
                         <div *ngFor="let hit of hits" style="display: none;"></div>
