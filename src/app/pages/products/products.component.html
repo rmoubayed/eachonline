@@ -1,5 +1,5 @@
 <ais-instantsearch [config]="config">
-    <ais-search-box [ngStyle]="{'display' : 'none'}"></ais-search-box>
+    <ais-search-box></ais-search-box>
     <mat-sidenav-container> 
         <mat-sidenav #sidenav [opened]="sidenavOpen" [mode]="sidenavOpen ? 'side' : 'over'" class="filter-sidenav" perfectScrollbar> 
             <div class="row" [ngStyle]="{'margin-bottom':'10px'}" *ngIf="localAppService.currentListingUrl == '/products'">
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <ais-refinement-list
-                attribute="priceRange"  operator="and"
+                attribute="priceRange" [sortBy]="['value:asc']"  operator="and"
             ></ais-refinement-list>
             <!-- <ais-custom-refine-price attribute="priceRange"></ais-custom-refine-price> -->
             <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
@@ -104,7 +104,7 @@
                                         <p class="old-price text-muted"><span *ngIf="hit.oldPrice">${{hit.oldPrice | number : '1.2-2'}}</span></p>
                                         <p class="new-price">${{hit.newPrice | number : '1.2-2'}}</p>
                                     </div>
-                                    <!-- <app-rating [ratingsCount]="hit.ratingsCount" [ratingsValue]="hit.ratingsValue" [direction]="'column'"></app-rating> -->
+                                    <app-rating [ratingsCount]="hit.ratingsCount" [ratingsValue]="hit.ratingsValue" [direction]="'column'"></app-rating>
                                 </div>                            
                                 <div class="divider mt-2"></div>
                                 <div class="icons">

@@ -65,7 +65,12 @@ export class PagesComponent implements OnInit, AfterViewInit {
     // this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
   } 
-  
+  searchIfEnter(event) {
+    console.log(event);
+    // if(event.key == 'Enter') {
+    //   this.search();
+    // }
+  }
   toggleShowHits(value) {
     if(value) {
       this.appService.showSearchResults = value;
