@@ -6,7 +6,7 @@
             <div fxLayout="row wrap">
                 <div fxFlex="20" fxLayout="column" class="p-1"> 
                     <ng-container *ngFor = "let cat of categories">
-                        <a *ngIf="cat.parentCategory == category.name" mat-menu-item [routerLink]="['/products', cat.value]" ><b>{{cat.name}}</b></a>
+                        <a *ngIf="cat.parentCategory?.toLowerCase() == category.name?.toLowerCase()" mat-menu-item [routerLink]="['/products', cat.value]" ><b>{{cat.name}}</b></a>
                     </ng-container>  
                     <a mat-menu-item [routerLink]="['/products', category.value]"><b>View All</b></a>            
                 </div>
