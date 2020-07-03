@@ -51,6 +51,8 @@ export class ProductsComponent implements OnInit {
  productList:any[]=[];
  categoryRefined: any;
  isFirstLoad : boolean;
+ trackedFilters : any;
+ 
   constructor(
     public authService: AuthService,
     public appService:AppService, 
@@ -70,6 +72,7 @@ export class ProductsComponent implements OnInit {
             return products;
           }
         } else {
+      
           this.productRenderer = (products)=>{
             console.log('product endere', products);
             products = products.filter(elt=>(elt.status == 'published' && elt.categoryId == data.name));
