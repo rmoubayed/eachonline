@@ -55,7 +55,9 @@
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <div>
-                    <a mat-button [matMenuTriggerFor]="sortMenu" #sortMenuTrigger="matMenuTrigger">
+                    <ais-sort-by [items]="sortItems">
+                    </ais-sort-by>
+                    <!-- <a mat-button [matMenuTriggerFor]="sortMenu" #sortMenuTrigger="matMenuTrigger">
                         {{sort}}<mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
                     </a>
                     <mat-menu #sortMenu="matMenu" xPosition="before" class="app-dropdown" overlapTrigger="true">
@@ -64,7 +66,7 @@
                                 <span>{{sort}}</span>
                             </button>
                         </span>
-                    </mat-menu>
+                    </mat-menu> -->
                 </div>
                 <div>
                     <ais-pagination

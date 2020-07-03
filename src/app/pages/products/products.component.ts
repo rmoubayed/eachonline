@@ -54,6 +54,7 @@ export class ProductsComponent implements OnInit {
  trackedFilters : any;
  searchParams: any;
  currentSearchCategory: string;
+ sortItems:any;
   constructor(
     public authService: AuthService,
     public appService:AppService, 
