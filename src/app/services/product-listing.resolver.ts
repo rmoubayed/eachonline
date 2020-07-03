@@ -17,16 +17,19 @@ export class ProductListingResolver implements Resolve<any> {
             searchClient.searchForFacetValues([{
                 indexName: 'product',
                 params: {
-                    facetName: 'categoryId',
+                    facetName: 'categoryLabel',
                     facetQuery: '',
                     filters: 'NOT status:draft'
                 }
               }]).then(
                 (data : any)=>{
                   console.log(data);
-                  resolve(data[0].facetHits)
+                  let finalObj = data[0].facetHits;
+                  finalObj.forEach(obj => { obj.isRefined = false; })
+                  resolve(finalObj);
                 }
               )
+              
         })
     }
 }  

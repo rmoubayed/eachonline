@@ -1,5 +1,5 @@
 import { AuthService } from 'src/app/services/auth.service';
-import { Component, OnInit, ViewChild, HostListener } from '@angular/core';
+import { Component, OnInit, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
 import { MatDialog } from '@angular/material';
 import { ProductDialogComponent } from '../../shared/products-carousel/product-dialog/product-dialog.component';
@@ -20,7 +20,7 @@ const searchClient = algoliasearch(
   templateUrl: './products.component.html',
   styleUrls: ['./products.component.scss']
 })
-export class ProductsComponent implements OnInit  {
+export class ProductsComponent implements OnInit {
   @ViewChild('sidenav') sidenav: any;
   public sidenavOpen:boolean = true;
   private sub: any;
@@ -50,9 +50,10 @@ export class ProductsComponent implements OnInit  {
  productRenderer:any;
  productList:any[]=[];
  categoryRefined: any;
-  
+ isFirstLoad : boolean;
+ trackedFilters : any;
+ searchParams: any;
   constructor(
-    private activatedRoute: ActivatedRoute,
     public authService: AuthService,
     public appService:AppService, 
     public dialog: MatDialog, 
@@ -61,58 +62,37 @@ export class ProductsComponent implements OnInit  {
     ) { }
 
   ngOnInit() {
-    console.log(this.route.snapshot.data['facets']);
-    let facets : any[] = this.route.snapshot.data['facets']
-    this.categoryRefined = (cats)=>{
-      return facets;
-    }
-    this.localAppService = this.appService;
-    this.router.events.subscribe(
-      (val)=>{
-        if(val instanceof NavigationStart){
-          console.log(val)
-          this.appService.currentListingUrl = val.url;
-          console.log(this.appService.currentListingUrl)
-          console.log(this.activatedRoute.snapshot.paramMap.get('name'))
-          if(this.appService.currentListingUrl.split('/').pop() != 'products'){
-            this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
-          }else{
-            this.productList = this.search('', null)
+    this.route.params.subscribe(
+      (data)=>{
+        console.log('inn sub');
+        if(window.location.pathname == '/products'){
+          this.productRenderer = (products)=>{
+            products = products.filter(elt=>elt.status == 'published');
+            this.productList = products;
+            return products;
           }
-          // else{
-          //   this.productList = products
-          // }
-          // this.productRenderer = (products)=>{
-            
-          //   console.log(this.productList)
-          //   return products.map(product=>({...product}))
-          // }
+        } else {
+          this.searchParams = {
+            filter: `categoryId:`+data.name
+          }
+          this.productRenderer = (products)=>{
+            console.log('product endere', products);
+            products = products.filter(elt=>(elt.status == 'published' && elt.categoryId == data.name));
+            this.productList =  products  
+            console.log(this.productList)
+            return products;
+          }
         }
       }
     )
-
-    this.appService.currentListingUrl = window.location.pathname;
-    
-    this.productRenderer = (products)=>{
-      products = products.filter(elt=>elt.status == 'published');
-      console.log(products, this.productList, this.appService.currentListingUrl)
-      if(this.appService.currentListingUrl == '/products'){
-        this.productList = products
-      }else if(this.appService.currentListingUrl.indexOf('search') > 0){
-        let searchValue = this.activatedRoute.snapshot.paramMap.get('name')
-        console.log(this.activatedRoute.snapshot.paramMap.get('name'))
-        this.productList = this.search(searchValue, products)
-      }else{
-        this.productList = products.filter(product=>product.categoryId.toLowerCase() == this.appService.currentListingUrl.split('/').pop())
-        // this.productList =  this.searchCategory(this.appService.currentListingUrl.split('/').pop())
-        console.log(this.productList)
-      }
-      
-      console.log(this.productList)
-      return products.map(product=>({...product}))
+    console.log(this.route.snapshot.data['facets']);
+    let facets : any[] = this.route.snapshot.data['facets']
+    this.categoryRefined = (cats)=>{
+      console.log(facets);
+      return cats;
     }
-    
-    
+    this.localAppService = this.appService;
+    this.appService.currentListingUrl = window.location.pathname;
     console.log(this.appService.currentListingUrl, this.appService.currentListingUrl.split('/').pop())
     this.count = this.counts[0];
     this.sort = this.sortings[0];
@@ -122,11 +102,8 @@ export class ProductsComponent implements OnInit  {
     if(window.innerWidth < 1280){
       this.viewCol = 33.3;
     };
-
-    
     // this.getCategories();
     // this.getBrands();
-
   }
   searchCategory(category):any {
     searchClient.search(
@@ -143,33 +120,20 @@ export class ProductsComponent implements OnInit  {
       })
   }
 
-  search(value, products):any {
+  search(value, products?):any {
     let index = searchClient.initIndex('product');
     index.search(
         {
           query: value,
+          filters: `status:published`
         }
       ).then((data)=>{
-        console.log('rdfghjkhgfcdrtfyguh', products)
-        if(products != null){
-          this.productList = [];
-          data.hits.forEach(product=>{
-            let found =  products.find(elt=> {return elt.name == product.name} )
-            console.log(found)
-            if(found) {
-              console.log(this.productList)
-              
-              this.productList.push(product) 
-              // this.productList.push(product)
-            }
-          })
-        }else{
-          console.log('product list1')
-          this.productList = data.hits.filter((hits)=>{return hits.status == 'published'});
-        }
-        // console.log(data)
-        
-        return this.productList;
+          console.log(JSON.stringify(data.hits));
+          if(products) {
+            
+          } else {
+            this.productList = data.hits;
+          }
       })
   }
 

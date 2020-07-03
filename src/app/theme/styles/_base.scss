@@ -127,6 +127,17 @@ a{
 .mat-slider-horizontal{
     width: 100%;
 }
+.ais-Pagination{
+    color: #689f38 !important;
+}
+.ais-Pagination-item--selected .ais-Pagination-link {
+    background-color: #689f38 !important;
+    border-color: #689f38 !important;
+    color: white !important;
+}
+.ais-Pagination-link{
+    color: #689f38 !important;
+}
 .ais-Hits{
     flex-wrap: wrap;
 }
@@ -379,7 +390,8 @@ a{
     max-height: 300px;
     overflow: scroll;
     margin-top:0px !important;
-    max-width: 565px;
+    margin-left: 0 !important;
+    max-width: 740px;
   }
   .ais-Hits-item {
     cursor: pointer;
@@ -387,7 +399,7 @@ a{
     margin-top:0.1em !important;
     transition: all .3s ease-in;
     z-index: 9999;
-    background: #f3f3f3;
+    background: white;
   }
   .ais-SearchBox-submit{
     display: none;

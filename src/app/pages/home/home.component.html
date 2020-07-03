@@ -43,10 +43,11 @@
 
 <div class="products-tabs">  
 
-    <mat-tab-group mat-stretch-tabs >
+    <mat-tab-group mat-stretch-tabs (selectedTabChange)="onLinkClick($event)">
        
-        <mat-tab label="Featured" *ngIf="featuredProducts.length > 0">           
-            <div *ngIf="featuredProducts.length > 0" class="swiper-container" [swiper]="config">
+        <mat-tab label="Featured" *ngIf="featuredProducts.length > 0">       
+            <app-products-carousel *ngIf="products.length > 0" [products]="featuredProducts"></app-products-carousel>
+            <!-- <div *ngIf="featuredProducts.length > 0" class="swiper-container" [swiper]="config">
                 <div class="swiper-wrapper h-100" >      
                     <div *ngFor="let product of featuredProducts" class="swiper-slide" [ngStyle]="{'height':'452px'}">
                         <mat-card class="product-item" [ngStyle]="{'height':'100%'}">
@@ -57,7 +58,7 @@
                                 <img [attr.data-src]="product.images[0]" class="swiper-lazy"/>
                                 <div class="swiper-lazy-preloader"></div>
                             </a>
-                            <h4 class="category text-muted">{{product.categoryId}}</h4>                                                                     
+                            <h4 class="category text-muted">{{product.categoryLabel}}</h4>                                                                     
                             <a [routerLink]="['/products', product.id, product.name]" class="title text-truncate">
                                 {{product.name}}
                             </a>
@@ -75,12 +76,13 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
-            </div>
+                <button [disabled]="config.slidesPerView == featuredProducts.length" mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button [disabled]="config.slidesPerView == featuredProducts.length" mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
+            </div> -->
         </mat-tab>
         <mat-tab label="On Sale" *ngIf="saleProducts.length > 0">
-            <div *ngIf="saleProducts.length > 0" class="swiper-container" [swiper]="config">
+            <app-products-carousel *ngIf="products.length > 0" [products]="saleProducts"></app-products-carousel>
+            <!-- <div *ngIf="saleProducts.length > 0" class="swiper-container" [swiper]="config">
                 <div class="swiper-wrapper h-100" >      
                     <div *ngFor="let product of saleProducts" class="swiper-slide" [ngStyle]="{'height':'452px'}">
                         <mat-card class="product-item" [ngStyle]="{'height':'100%'}">
@@ -91,7 +93,7 @@
                                 <img [attr.data-src]="product.images[0]" class="swiper-lazy"/>
                                 <div class="swiper-lazy-preloader"></div>
                             </a>
-                            <h4 class="category text-muted">{{product.categoryId}}</h4>                                                                     
+                            <h4 class="category text-muted">{{product.categoryLabel}}</h4>                                                                     
                             <a [routerLink]="['/products', product.id, product.name]" class="title text-truncate">
                                 {{product.name}}
                             </a>
@@ -109,16 +111,17 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
-            </div>
+                <button mat-mini-fab [disabled]="config.slidesPerView == saleProducts.length" class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button mat-mini-fab [disabled]="config.slidesPerView == saleProducts.length" class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
+            </div> -->
         </mat-tab>
         <!-- <mat-tab label="Top Rated">
             <app-products-carousel [products]="topRatedProducts"></app-products-carousel>
         </mat-tab> -->
         <mat-tab label="New Arrivals" *ngIf="newProducts.length > 0">
-            <div *ngIf="newProducts.length > 0" class="swiper-container" [swiper]="config">
-                <div class="swiper-wrapper h-100" >      
+            <!-- <div *ngIf="newProducts.length > 0" class="swiper-container" [swiper]="config"> -->
+                <app-products-carousel *ngIf="products.length > 0" [products]="newProducts"></app-products-carousel>
+                <!-- <div class="swiper-wrapper h-100" >      
                     <div *ngFor="let product of newProducts" class="swiper-slide" [ngStyle]="{'height':'452px'}">
                         <mat-card class="product-item" [ngStyle]="{'height':'100%'}">
                             <mat-chip-list *ngIf="product.discount">
@@ -128,7 +131,7 @@
                                 <img [attr.data-src]="product.images[0]" class="swiper-lazy"/>
                                 <div class="swiper-lazy-preloader"></div>
                             </a>
-                            <h4 class="category text-muted">{{product.categoryId}}</h4>                                                                     
+                            <h4 class="category text-muted">{{product.categoryLabel}}</h4>                                                                     
                             <a [routerLink]="['/products', product.id, product.name]" class="title text-truncate">
                                 {{product.name}}
                             </a>
@@ -146,9 +149,9 @@
                         </mat-card>
                     </div>
                 </div>
-                <button mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
-                <button mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button> 
-            </div>        
+                <button [disabled]="config.slidesPerView == newProducts.length" mat-mini-fab class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>
+                <button [disabled]="config.slidesPerView == newProducts.length" mat-mini-fab class="swiper-button-next swipe-arrow"><mat-icon>keyboard_arrow_right</mat-icon></button>  -->
+            <!-- </div>         -->
         </mat-tab>
     </mat-tab-group> 
 

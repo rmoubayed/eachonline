@@ -11,6 +11,8 @@ import { AngularFirestore } from '@angular/fire/firestore';
 export class CartComponent implements OnInit {
   total = [];
   grandTotal = 0;
+  shipping = [];
+  shippingTotal = 0;
   cartItemCount = [];
   cartItemCountTotal = 0;
   localAuthService: AuthService;
@@ -20,6 +22,8 @@ export class CartComponent implements OnInit {
     this.localAuthService = this.authService;
     this.authService.Data.cartList.forEach(product=>{
       console.log(product, 'productttt')
+      this.shipping[product.objectID] = product.cartCount*product.shipping;
+      this.shippingTotal += product.cartCount*product.shipping;
       this.total[product.objectID] = product.cartCount*product.newPrice;
       this.grandTotal += product.cartCount*product.newPrice;
       this.cartItemCount[product.objectID] = product.cartCount;
@@ -80,10 +84,17 @@ export class CartComponent implements OnInit {
     if (index !== -1) {
       this.authService.Data.cartList.splice(index, 1);
       this.grandTotal = this.grandTotal - this.total[product.objectID]; 
+      this.shippingTotal = this.shippingTotal - this.shipping[product.objectID];
       this.authService.Data.totalPrice = this.grandTotal;       
+      this.authService.Data.totalShipping = this.shippingTotal;
       this.total.forEach(val => {
         if(val == this.total[product.objectID]){
           this.total[product.objectID] = 0;
+        }
+      });
+      this.shipping.forEach(val => {
+        if(val == this.shipping[product.objectID]){
+          this.shipping[product.objectID] = 0;
         }
       });
 
@@ -97,6 +108,7 @@ export class CartComponent implements OnInit {
       this.afs.collection('cart').doc(this.authService.user['uid']).update({
         products: this.authService.Data.cartList,
         totalPrice:this.authService.Data.totalPrice,
+        totalShipping: this.authService.Data.totalShipping,
         totalCartCount:this.authService.Data.totalCartCount
       })
       this.authService.resetProductCartCount(product);
@@ -109,10 +121,12 @@ export class CartComponent implements OnInit {
     });
     this.authService.Data.cartList.length = 0;
     this.authService.Data.totalPrice = 0;
+    this.authService.Data.totalShipping = 0;
     this.authService.Data.totalCartCount = 0;
     this.afs.collection('cart').doc(this.authService.user['uid']).update({
       products: this.authService.Data.cartList,
       totalPrice:this.authService.Data.totalPrice,
+      totalShipping: this.authService.Data.totalShipping,
       totalCartCount:this.authService.Data.totalCartCount
     })
   } 

@@ -31,13 +31,14 @@
 
         <h2>{{product?.name}}</h2>
         <div class="py-1 lh">
-            <p><span class="text-muted fw-500">Category: </span><span>{{product?.categoryId}}</span></p>
+            <p><span class="text-muted fw-500">Category: </span><span>{{product?.categoryLabel}}</span></p>
             <p><span class="text-muted fw-500">Availability: </span><span>{{ (product?.availabilityCount > 0) ? 'In stock':'Unavailable'}}</span></p>
+            <p><span class="text-muted fw-500" *ngIf="product?.shipping > 0">Shipping: </span><span>{{product?.shipping}}</span></p>
         </div>                 
         <!-- <div class="py-1">
             <app-rating [ratingsCount]="product?.ratingsCount" [ratingsValue]="product?.ratingsValue" [direction]="'row'"></app-rating>
         </div> -->
-        <p class="py-1 text-muted lh">{{product?.description}}</p>
+        <p class="py-1 text-muted lh">{{product?.description1}}{{product?.description2}}</p>
 
         <div class="divider mt-1"></div>
         <h2 class="py-2 new-price">${{product?.newPrice | number : '1.2-2'}}</h2>
@@ -49,7 +50,7 @@
             </div>
             <div *ngIf="product?.size && product?.size.length > 0" class="size" ngClass.xs="mt-1">
                 <span class="fw-500">Select Size:</span>
-                <button mat-raised-button *ngFor="let size of product?.size" [id]='size' [ngClass]="{'selected': selectedSize == size}" (click)="selectSize(size)">{{size}}</button>
+                <button mat-raised-button [id]='product?.size' [ngClass]="{'selected': selectedSize == product?.size}" (click)="selectSize(product?.size)">{{product?.size}}</button>
             </div>
         </div>
 

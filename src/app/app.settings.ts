@@ -9,6 +9,6 @@ export class Settings {
 export class AppSettings {
     public settings = new Settings(
         'Each Online',  // theme name
-        'grey'     // green, blue, red, pink, purple, grey
+        'green'     // green, blue, red, pink, purple, grey
     )
 }

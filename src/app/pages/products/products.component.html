@@ -1,5 +1,5 @@
 <ais-instantsearch [config]="config">
-    <ais-search-box [ngStyle]="{'display' : 'none'}"></ais-search-box>
+    <ais-search-box></ais-search-box>
     <mat-sidenav-container> 
         <mat-sidenav #sidenav [opened]="sidenavOpen" [mode]="sidenavOpen ? 'side' : 'over'" class="filter-sidenav" perfectScrollbar> 
             <div class="row" [ngStyle]="{'margin-bottom':'10px'}" *ngIf="localAppService.currentListingUrl == '/products'">
@@ -8,7 +8,7 @@
                 </div>
             </div>
             <ais-refinement-list *ngIf="localAppService.currentListingUrl == '/products'"
-                attribute="categoryId"  
+                attribute="categoryLabel"  
                 operator="or"
                 [transformItems]="categoryRefined"
             ></ais-refinement-list>
@@ -18,7 +18,7 @@
                 </div>
             </div>
             <ais-refinement-list
-                attribute="priceRange"  operator="and"
+                attribute="priceRange" [sortBy]="['value:asc']"  operator="and"
             ></ais-refinement-list>
             <!-- <ais-custom-refine-price attribute="priceRange"></ais-custom-refine-price> -->
             <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
@@ -34,6 +34,15 @@
             </div>
             <ais-refinement-list
                 attribute="size"
+                operator="or"
+            ></ais-refinement-list>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" >
+                <div class="col-6">
+                    <h3 class="collapsable-list">Brands<span id="catCaret" class="caretSrudox"></span></h3>
+                </div>
+            </div>
+            <ais-refinement-list 
+                attribute="brand"  
                 operator="or"
             ></ais-refinement-list>
         </mat-sidenav>
@@ -75,6 +84,9 @@
             </div>
             <!-- <p *ngIf="productList && productList.length == 0"> No results have been found</p> -->
             <div fxLayout="row wrap" class="products-wrapper">
+                <ais-configure
+                [searchParameters]="searchParams"
+                ></ais-configure>
                 <ais-hits [transformItems]="productRenderer" [ngStyle]="{'width':'100%'}">
                     <ng-template let-hits="hits" >
                         <div *ngFor="let hit of hits" style="display: none;"></div>
@@ -86,7 +98,7 @@
                                 <a [routerLink]="['/products', hit.objectID, hit.name]" class="image-link" [ngStyle]="{'height':'165px'}">
                                     <img [src]="hit.images[0]" alt="" [ngStyle]="{'height':'165px'}">
                                 </a>
-                                <h4 class="category text-muted">{{hit.categoryId}}</h4>                                                                     
+                                <h4 class="category text-muted">{{hit.categoryLabel}}</h4>                                                                     
                                 <a [routerLink]="['/products', hit.objectID, hit.name]" class="title text-truncate">
                                     {{hit.name}}
                                 </a>

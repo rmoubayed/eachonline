@@ -1,5 +1,5 @@
 <div *ngFor="let category of mainCategories">
-    <button mat-menu-item (click)="naviagateTo(category.name)">
+    <button mat-menu-item (click)="naviagateTo(category.value)">
         <span>{{category.name}}</span>
     </button>
      <!-- <div *ngIf="category.hasSubCategory" class="sub-category">

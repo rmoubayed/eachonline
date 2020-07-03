@@ -11,6 +11,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 @Injectable()
 export class AppService {
     currentListingUrl:string;
+    savedProductsFromSearch: any[];
     showSearchResults:boolean=false;
     getProductSlider:ReplaySubject<any> = new ReplaySubject<any>();
     public url = "assets/data/";
