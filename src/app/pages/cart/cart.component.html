@@ -11,6 +11,7 @@
     <div class="mat-header-row">
       <div class="mat-header-cell">Product</div>
       <div class="mat-header-cell">Name</div>
+      <div class="mat-header-cell">Quantity</div>
       <div class="mat-header-cell">Price</div>      
       <div class="mat-header-cell">Shipping</div>
       <div class="mat-header-cell">Total</div>
@@ -23,6 +24,7 @@
     <div *ngFor="let product of localAuthService.Data.cartList" class="mat-row">
       <div class="mat-cell"><img [src]="product.images[0]"></div>
       <div class="mat-cell"><a [routerLink]="['/products', product.objectID, product.name]" class="product-name">{{product.name}}</a></div>
+      <div class="mat-cell">{{product.cartCount}}</div>
       <div class="mat-cell">${{product.newPrice | number : '1.2-2'}}</div>      
       <div class="mat-cell" >${{shipping[product.objectID] ? (shipping[product.objectID] | number : '1.2-2') : 0}}</div>      
       <div class="mat-cell">${{total[product.objectID] | number : '1.2-2'}}</div>
