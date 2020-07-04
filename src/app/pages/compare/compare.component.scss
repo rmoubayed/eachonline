@@ -70,3 +70,9 @@
     }
 }
 
+.compare-desc{
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: block;
+    overflow: hidden !important;
+}

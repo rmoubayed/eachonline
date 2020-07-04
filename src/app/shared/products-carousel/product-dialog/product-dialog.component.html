@@ -7,8 +7,8 @@
             <div class="swiper-container h-100" [swiper]="config">
                 <div class="swiper-wrapper">      
                     <div *ngFor="let image of product.images" class="swiper-slide">
-                        <img [attr.data-src]="image.medium" class="swiper-lazy"/>
-                        <div class="swiper-lazy-preloader"></div>
+                        <img [src]="image.medium" class="swiper-lazy"/>
+                        <div *ngIf="!image" class="swiper-lazy-preloader"></div>
                     </div>
                 </div>
                 <button mat-icon-button class="swiper-button-prev swipe-arrow"><mat-icon>keyboard_arrow_left</mat-icon></button>

@@ -21,7 +21,9 @@
                 </div>
             </div>
             <ais-refinement-list
-                attribute="priceRange" [sortBy]="['value:asc']"  operator="and"
+                attribute="priceRange"
+                operator="and"
+                [transformItems]="priceRangeRefined"
             ></ais-refinement-list>
             <!-- <ais-custom-refine-price attribute="priceRange"></ais-custom-refine-price> -->
             <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
@@ -55,8 +57,8 @@
                     <mat-icon>more_vert</mat-icon>
                 </button>
                 <div>
-                    <ais-sort-by [items]="sortItems">
-                    </ais-sort-by>
+                    <!-- <ais-sort-by [items]="sortItems">
+                    </ais-sort-by> -->
                     <!-- <a mat-button [matMenuTriggerFor]="sortMenu" #sortMenuTrigger="matMenuTrigger">
                         {{sort}}<mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
                     </a>

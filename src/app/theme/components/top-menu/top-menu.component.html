@@ -40,7 +40,7 @@
         <span >
             <div fxLayout="row" fxLayoutAlign="space-around center" class="user-info" *ngIf="authService.loggedIn && authService.user && authService.user.displayName">                   
                 <img src="assets/images/others/user.jpg" alt="user-image" width="50">
-                <p>{{user?.displayName}}<br> </p>
+                <p>{{localAuthService?.user?.displayName}}<br> </p>
             </div>
             <div class="divider"></div>
             <a mat-menu-item routerLink="/account"> 

@@ -38,21 +38,22 @@ export class HomeComponent implements OnInit, AfterViewInit {
     this.searchCategory('featured', true)
     this.searchCategory('newArrival', true)
     this.searchDisount();
-    this.authService.db.collection('products').where("discount", ">", 0).limit(10).get().then(
-      (snapshot)=>{
-        snapshot.forEach((doc)=>{
-          let data= doc.data();
-          data.id = doc.id;
-          if(data.status == 'published'){
-            this.saleProducts.push(data);
-          }
-        })
-      }
-    ).finally(
-      ()=>{
-        console.log(this.saleProducts)
-      }
-    )
+   
+    // this.authService.db.collection('products').where("discount", ">", 0).limit(10).get().then(
+    //   (snapshot)=>{
+    //     snapshot.forEach((doc)=>{
+    //       let data= doc.data();
+    //       data.id = doc.id;
+    //       if(data.status == 'published'){
+    //         this.saleProducts.push(data);
+    //       }
+    //     })
+    //   }
+    // ).finally(
+    //   ()=>{
+    //     console.log(this.saleProducts)
+    //   }
+    // )
     // this.authService.db.collection('products').where('featured', '==', true).limit(10).get().then(
     //   (snapshot)=>{
     //     snapshot.forEach((doc)=>{
@@ -89,7 +90,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     this.config = {
-      observer: true,
       slidesPerView: 4,
       spaceBetween: 16,       
       keyboard: true,

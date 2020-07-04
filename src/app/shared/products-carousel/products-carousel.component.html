@@ -6,8 +6,8 @@
                     <mat-chip color="warn" selected="true">{{product.discount}}% OFF</mat-chip>
                 </mat-chip-list>
                 <a [routerLink]="['/products', product.objectID, product.name]" class="image-link">
-                    <img [attr.data-src]="product.images[0]" class="swiper-lazy"/>
-                    <div class="swiper-lazy-preloader"></div>
+                    <img [src]="product.images[0]" class="swiper-lazy"/>
+                    <div *ngIf="!product.images" class="swiper-lazy-preloader"></div>
                 </a>
                 <h4 class="category text-muted">{{product.categoryLabel}}</h4>                                                                     
                 <a [routerLink]="['/products', product.objectID, product.name]" class="title text-truncate">

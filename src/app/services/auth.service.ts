@@ -100,8 +100,31 @@ export class AuthService {
       this.afAuth.auth
       .signInWithPopup(provider)
       .then(res => {
+        console.log(res)
+        if(res.additionalUserInfo.isNewUser){
+          this.afs.doc(`cart/${res.user.uid}`).set({ }, { merge: true });
+            this.afs.doc(`customer/${res.user.uid}`).set({
+              email: res.user.email,
+              fullName: res.user.displayName,
+              userType:'customer'
+            }).then(
+              ()=>{ 
+                this.loggedIn = true;
+                this.user = res.user;
+                this.snackBar.open('You registered successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+                this.router.navigate(['/']);
+              }
+            ).catch( (error) => {
+              console.log(error)
+                // let err = JSON.parse(error)
+              this.snackBar.open(error.message, '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+    
+            });          
+        }else{
+          console.log('kjhgfghjh')
+          this.router.navigate(['/']);
+        } 
         resolve(res);
-        this.router.navigate(['/'])
       })
     })
   }
@@ -179,24 +202,32 @@ public addToCompare(product:Product){
         status = 'error';     
     }
     else{
+      if(this.Data.compareList && this.Data.compareList.length < 5){
         this.Data.compareList.push(product);
         message = 'The product ' + product.name + ' has been added to comparison list.'; 
         status = 'success';  
+        let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
+        document.get().toPromise().then(
+            (docSnapshot) => {
+                if (docSnapshot.exists) {
+                  document.update({
+                    compareList: this.Data.compareList
+                })
+                } else {
+                  document.set({
+                    compareList: this.Data.compareList
+                  }, { merge: true }) 
+                }
+            });
+        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+      }else{
+        message = 'You cannot compare more than 5 items'; 
+        status = 'error';  
+        this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+      }
+        
     }
-    let document = this.afs.collection('cart').doc(`${this.user['uid']}`)
-    document.get().toPromise().then(
-        (docSnapshot) => {
-            if (docSnapshot.exists) {
-              document.update({
-                compareList: this.Data.compareList
-            })
-            } else {
-              document.set({
-                compareList: this.Data.compareList
-              }, { merge: true }) 
-            }
-        });
-    this.snackBar.open(message, '×', { panelClass: [status], verticalPosition: 'top', duration: 3000 });
+   
 }
 
 public addToWishList(product:Product){
@@ -368,13 +399,19 @@ public resetProductCartCount(product:Product){
       })
   }
   
-  resetUserPassword(newPassword) {
+  resetUserPassword(email) {
     var user = firebase.auth().currentUser;
-    user.updatePassword(newPassword).then(function() {
+    this.afAuth.auth.sendPasswordResetEmail(email).then(
+    ()=>{
       this.snackBar.open('Your password has been updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });        
-    }).catch(function(error) {
+
+    }
+    ).catch(
+      (error) => {
         this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-    });
+        
+      }
+    );
   }
 
   sendEmailVerify() {

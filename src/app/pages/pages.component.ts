@@ -46,6 +46,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.localAuthService = this.authService;
     this.localAppService = this.appService;
     this.data = this.authService.Data;
     this.user = this.authService.user;

@@ -20,10 +20,12 @@ export class TopMenuComponent implements OnInit {
     // { name:'Turkish', image: 'assets/images/flags/tr.svg' }
   ]
   public flag:any;
+  localAuthService:AuthService;
 
   constructor(public appService:AppService, public authService: AuthService, public router:Router) { }
 
   ngOnInit() {
+    this.localAuthService = this.authService;
     this.user = this.authService.user;
     console.log(this.user)
     this.data = this.authService.Data;

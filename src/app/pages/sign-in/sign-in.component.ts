@@ -13,6 +13,7 @@ import { AuthService } from 'src/app/services/auth.service';
 export class SignInComponent implements OnInit {
   loginForm: FormGroup;
   registerForm: FormGroup;
+  reset:boolean = false;
 
   constructor(public formBuilder: FormBuilder,
     public router:Router,
@@ -37,11 +38,24 @@ export class SignInComponent implements OnInit {
   }
 
   public onLoginFormSubmit(values:Object):void {
-    if (this.loginForm.valid) {
-      this.authService.login(values)
+    if(this.reset){
+      if (this.loginForm.valid) {
+        this.authService.resetUserPassword(values)
+      }else{
+        //error code
+      }
     }else{
-      //error code
+      if (this.loginForm.valid) {
+        this.authService.login(values)
+      }else{
+        //error code
+      }
     }
+    
+  }
+
+  openReset(){
+    this.reset = true;
   }
 
   public loginWithGoogle(){
@@ -56,6 +70,12 @@ export class SignInComponent implements OnInit {
     if (this.registerForm.valid) {
       this.authService.register(values)
     }
+  }
+
+  resetPassword(){
+    this.loginForm = this.formBuilder.group({
+      'email': ['', Validators.compose([Validators.required, emailValidator])],
+    });
   }
 
 }

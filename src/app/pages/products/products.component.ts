@@ -1,3 +1,5 @@
+import { map } from 'rxjs/operators';
+import { element } from 'protractor';
 import { AuthService } from 'src/app/services/auth.service';
 import { Component, OnInit, ViewChild, HostListener, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router, NavigationStart } from '@angular/router';
@@ -28,7 +30,7 @@ export class ProductsComponent implements OnInit {
   public viewCol: number = 25;
   public counts = [12, 24, 36];
   public count:any;
-  public sortings = ['Sort by Default', 'Best match', 'Lowest first', 'Highest first'];
+  public sortings = ['New Arrival', 'Best match', 'Lowest first', 'Highest first'];
   public sort:any;
   public products: any[] = [];
   public categories:Category[];
@@ -54,7 +56,7 @@ export class ProductsComponent implements OnInit {
  trackedFilters : any;
  searchParams: any;
  currentSearchCategory: string;
- sortItems:any;
+  priceRangeRefined: any;
   constructor(
     public authService: AuthService,
     public appService:AppService, 
@@ -64,10 +66,12 @@ export class ProductsComponent implements OnInit {
     ) { }
 
   ngOnInit() {
+   
     this.route.params.subscribe(
       (data)=>{
         console.log('inn sub');
         if(window.location.pathname == '/products'){
+          this.currentSearchCategory = undefined;
           this.productRenderer = (products)=>{
             products = products.filter(elt=>elt.status == 'published');
             this.productList = products;
@@ -91,6 +95,28 @@ export class ProductsComponent implements OnInit {
       console.log(facets);
       return cats;
     }
+
+    this.priceRangeRefined = (price)=>{
+
+      console.log(price)
+      price.map(element =>{  
+        let str = element.label.split('-');
+        console.log(str, 'element label')
+            str = str.map(el => {
+              return el.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            });
+            console.log(str, 'str after morph')
+            str = str.join('-')
+            console.log(element)
+            price[price.indexOf(element)].label = '$'+str
+            price[price.indexOf(element)].highlighted = '$'+str;
+          }
+        ) 
+      console.log(price)
+      price = price.sort(this.compare);
+      return price;
+    }
+
     this.localAppService = this.appService;
     this.appService.currentListingUrl = window.location.pathname;
     console.log(this.appService.currentListingUrl, this.appService.currentListingUrl.split('/').pop())
@@ -104,6 +130,15 @@ export class ProductsComponent implements OnInit {
     };
     // this.getCategories();
     // this.getBrands();
+  }
+  compare( a, b ) {
+    if ( a.value < b.value ){
+      return -1;
+    }
+    if ( a.value > b.value ){
+      return 1;
+    }
+    return 0;
   }
   searchCategory(category):any {
     searchClient.search(
