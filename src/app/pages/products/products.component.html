@@ -25,6 +25,15 @@
                 operator="and"
                 [transformItems]="priceRangeRefined"
             ></ais-refinement-list>
+            <ais-range-input
+            attribute="newPrice"
+            [min]="0"
+            [max]="10000"
+            [precision]="0"
+            currency="$"
+            separator="to"
+            submitLabel="Go"
+            ></ais-range-input>
             <!-- <ais-custom-refine-price attribute="priceRange"></ais-custom-refine-price> -->
             <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
                 <div class="col-6">

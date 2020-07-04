@@ -7,7 +7,7 @@ import { connectRefinementList } from 'instantsearch.js/es/connectors';
   template: `
     <ul [ngStyle]="{'display':'flex','flex-wrap':'wrap','list-style':'none', 'justify-content':'space-between'}">
         <li *ngFor="let item of state.items" [ngStyle]="{'width':'40px', 'height':'40px', 'margin-bottom':'10px'}">
-          <button [ngStyle]="{'width':'40px', 'height':'40px'}" (click)="state.refine($event.target.value)" [style.border]="item.isRefined ? '1px solid black' : 'none'" [style.background]="item.value"></button>
+          <button [ngStyle]="{'width':'40px', 'height':'40px'}" (click)="refine(item)" [style.border]="item.isRefined ? '3px solid black' : item.value == 'White' ? '1px dotted black' : 'none'" [style.background]="item.value"></button>
         </li>
     </ul>
   `,
@@ -39,9 +39,13 @@ export class CustomRefine extends BaseWidget {
   ) {
     super('CustomRefine');
   }
-
+  
   public ngOnInit() {
     this.createWidget(connectRefinementList, { attribute: this.attribute, operator:'or' });
     super.ngOnInit();
+  }
+  public refine(event) {
+    console.log(event);
+    this.state.refine(event.value)
   }
 }

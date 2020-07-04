@@ -92,27 +92,27 @@ export class ProductsComponent implements OnInit {
     console.log(this.route.snapshot.data['facets']);
     let facets : any[] = this.route.snapshot.data['facets']
     this.categoryRefined = (cats)=>{
-      console.log(facets);
+      // console.log(facets);
       return cats;
     }
 
     this.priceRangeRefined = (price)=>{
-      console.log(price)
+      // console.log(price)
       price = price.sort(this.compare);
       price.map(element =>{  
         let str = element.label.split('-');
-        console.log(str, 'element label')
+        // console.log(str, 'element label')
             str = str.map(el => {
               return el.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             });
-            console.log(str, 'str after morph')
+            // console.log(str, 'str after morph')
             str = str.join('-')
-            console.log(element)
+            // console.log(element)
             price[price.indexOf(element)].label = '$'+str
             price[price.indexOf(element)].highlighted = '$'+str;
           }
         ) 
-      console.log(price)
+      // console.log(price)
       return price;
     }
 
