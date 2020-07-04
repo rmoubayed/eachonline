@@ -162,7 +162,7 @@ export class AuthService {
   }
   getCurrentUser(){
     return new Promise<any>((resolve, reject) => {
-      var user = firebase.auth().onAuthStateChanged((user) => {
+      var user = this.afAuth.auth.onAuthStateChanged((user) => {
         if (user) {
           this.loggedIn = true;
           this.user = user;
