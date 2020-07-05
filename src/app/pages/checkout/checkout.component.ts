@@ -60,6 +60,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     this.months = this.appService.getMonths();
     this.years = this.appService.getYears();
     this.deliveryMethods = this.appService.getDeliveryMethods();
+    this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     this.billingForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -71,9 +72,10 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       country: [this.selectedBillingCountry, Validators.required],
       city: ['', Validators.required],
       state: '',
-      zip: ['', [Validators.required, Validators.pattern("^\d{5}(?:[-\s]\d{4})?$")]],
+      zip: ['', [Validators.required]],
       address: ['', Validators.required]
     });
+    this.selectedBillingCountry.setValue(this.authService.user['billingAddress'].country.code)
     this.billingForm.get('countryCode').valueChanges
     .pipe(takeUntil(this._onDestroy))
     .subscribe(() => {
@@ -95,8 +97,6 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       Object.keys(this.authService.user['billingAddress']).forEach(key => {
         this.billingForm.get(key).setValue(this.authService.user['billingAddress'][key])
       });
-      this.billingForm.get('country').setValue(this.authService.user['billingAddress'].country.code)
-      this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     }
   }
   initStripeForm() {
@@ -121,7 +121,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     console.log(this.billingForm)
   }
   validateCountry(){
-    if(this.billingForm.value.countryCode && isValidCountryCode(this.billingForm.value.countryCode)){
+    if(this.billingForm.get('countryCode').value && isValidCountryCode(this.billingForm.get('countryCode').value)){
       this.billingForm.get('countryCode').setErrors(null)
     }else{
       this.billingForm.get('countryCode').setErrors({incorrect: true});
@@ -129,7 +129,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
   }
 
   validatePhone(){
-    if(this.billingForm.value.phone && isValidNumber(this.billingForm.value.phone)){
+    if(this.billingForm.get('phone').value && isValidNumber(this.billingForm.get('phone').value)){
       this.billingForm.get('phone').setErrors(null)
     }else{
       this.billingForm.get('phone').setErrors({incorrect: true});
@@ -249,19 +249,19 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
 
   public placeOrder(){
     // alert();
-    console.log(this.billingForm)
+    console.log(this.billingForm, this.paymentForm)
     if(true){ //this.billingForm.valid && this.paymentForm.valid
       if(this.billingForm.pristine == false || this.paymentForm.pristine == false){
         this.afs.collection('customer').doc(this.authService.user['uid']).update({
           billingAddress: this.billingForm.value,
-          paymentMethod: this.paymentForm.value,
+          paymentMethod: this.chosenPaymentControl.value,
         })
       }
       let date = new Date();
       let orderDate = this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear();
       this.afs.collection('order').add({
         billingAddress: this.billingForm.value,
-        paymentMethod: this.paymentForm.value,
+        paymentMethod: this.chosenPaymentControl.value,
         customerId: this.authService.user['uid'],
         customerName:this.authService.user['displayName'],
         customerEmail:this.authService.user['email'],
@@ -272,17 +272,6 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
         createdAt: orderDate
       }).then(
         ()=>{
-          console.log(
-            'name' ,this.billingForm.value.firstName,
-             'lastname', this.billingForm.value.lastName,
-            'adress',this.billingForm.value.address,
-            'city',this.billingForm.value.city,
-             'country',this.billingForm.value.country.name,
-             'date',orderDate,
-             'productlist',this.authService.Data.cartList,
-             'shipping',this.shippingTotal,
-             'total',this.grandTotal
-          )
           this.authService.db.collection('mail').add({
             from:'eachonlinedeveloper@gmail.com',
             to: this.authService.user['email'],
@@ -293,7 +282,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
                 lastname:this.billingForm.value.lastName,
                 address:this.billingForm.value.address,
                 city:this.billingForm.value.city,
-                country: this.billingForm.value.country.name,
+                country: this.billingForm.value.country,
                 orderDate: orderDate,
                 product: this.authService.Data.cartList,
                 grandTotal: +this.grandTotal + this.shippingTotal,
@@ -330,6 +319,17 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       ).catch(
         (error)=>{
           console.log(error)
+          console.log(
+            'name' ,this.billingForm.value.firstName,
+             'lastname', this.billingForm.value.lastName,
+            'adress',this.billingForm.value.address,
+            'city',this.billingForm.value.city,
+             'country',this.billingForm.value.country.name,
+             'date',orderDate,
+             'productlist',this.authService.Data.cartList,
+             'shipping',this.shippingTotal,
+             'total',this.grandTotal
+          )
           this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
         }
       )
