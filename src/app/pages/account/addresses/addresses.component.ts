@@ -46,7 +46,7 @@ export class AddressesComponent implements OnInit {
       'countryCode':['', Validators.required],
       'city': ['', Validators.required],
       'state': [''],
-      'zip': ['', [Validators.required, Validators.pattern("^\d{5}(?:[-\s]\d{4})?$")]],
+      'zip': ['', [Validators.required]],
       'address': ['', Validators.required]
     });
     
@@ -61,7 +61,7 @@ export class AddressesComponent implements OnInit {
       'country': ['', Validators.required],
       'city': ['', Validators.required],
       'state': [''],
-      'zip': ['', [Validators.required, Validators.pattern("^\d{5}(?:[-\s]\d{4})?$")]],
+      'zip': ['', [Validators.required]],
       'address': ['', Validators.required]
     });
     this.shippingForm.get('countryCode').valueChanges
@@ -90,10 +90,18 @@ export class AddressesComponent implements OnInit {
 
     if(this.user['billingAddress']){
       Object.keys(this.user['billingAddress']).forEach(key => {
-        this.billingForm.get(key).setValue(this.user['billingAddress'][key])
+        console.log(key);
+        console.log(this.user['billingAddress'][key])
+        if(key == 'country') {
+          this.billingForm.get(key).setValue(this.user['billingAddress'][key].code)
+        } else {
+          this.billingForm.get(key).setValue(this.user['billingAddress'][key])
+        }
       });
       let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
-      this.billingForm.get('country').setValue(country.code)
+      if(country) {
+        this.billingForm.get('country').setValue(country.code) 
+      }
       console.log(this.billingForm.get('country').value)
       // this.selectedBillingCountry.setValue(country);
       console.log(this.selectedBillingCountry)

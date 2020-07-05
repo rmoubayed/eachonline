@@ -61,18 +61,13 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     this.years = this.appService.getYears();
     this.deliveryMethods = this.appService.getDeliveryMethods();
     this.selectedBillingCountry = new FormControl();
-    if(this.authService.user && this.authService.user['billingAddress'] 
-    && this.authService.user['billingAddress'].country && this.authService.user['billingAddress'].country.code ) {
-      // this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
-      this.selectedBillingCountry.setValue(this.authService.user['billingAddress'].country.code)
-    }
     this.billingForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       middleName: '',
       company: '',
       email: ['', [Validators.required, Validators.email]],
-      phone: ['', Validators.required],
+      phone: ['', [Validators.required]],
       countryCode: ['', Validators.required],
       country: [this.selectedBillingCountry, Validators.required],
       city: ['', Validators.required],
@@ -80,6 +75,14 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       zip: ['', [Validators.required]],
       address: ['', Validators.required]
     });
+    console.log(this.authService.user);
+    // if(this.authService.user && this.authService.user['billingAddress'] 
+    // && this.authService.user['billingAddress'].country && this.authService.user['billingAddress'].country.code ) {
+    //   // this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
+    //   alert()
+    //   this.selectedBillingCountry.setValue(this.authService.user['billingAddress'].country);
+    //   this.billingForm.get('country').setValue(this.selectedBillingCountry);
+    // }
     this.billingForm.get('countryCode').valueChanges
     .pipe(takeUntil(this._onDestroy))
     .subscribe(() => {
@@ -99,7 +102,11 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     if(this.authService.user['billingAddress']){
       console.log(this.authService.user['billingAddress'])
       Object.keys(this.authService.user['billingAddress']).forEach(key => {
-        this.billingForm.get(key).setValue(this.authService.user['billingAddress'][key])
+        if(key == 'country') {
+          this.billingForm.get(key).setValue(this.authService.user['billingAddress'][key].code)
+        } else {
+          this.billingForm.get(key).setValue(this.authService.user['billingAddress'][key])
+        }
       });
     }
   }
@@ -111,14 +118,14 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       expiredYear: ['', Validators.required],
       cvv: ['', Validators.required]
     });
-    if(this.authService.user['paymentMethod']){
-      Object.keys(this.authService.user['paymentMethod']).forEach(key => {
-        this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
-        if(key == 'cardNumber'){
-          this.cardLastDigits = this.authService.user['paymentMethod'][key].substring(12);
-        }
-      });
-    }
+    // if(this.authService.user['paymentMethod']){
+    //   Object.keys(this.authService.user['paymentMethod']).forEach(key => {
+    //     this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
+    //     if(key == 'cardNumber'){
+    //       this.cardLastDigits = this.authService.user['paymentMethod'][key].substring(12);
+    //     }
+    //   });
+    // }
     this.paymentService.mountPayment();
     let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
     this.billingForm.get('country').setValue(country)
@@ -133,10 +140,11 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
   }
 
   validatePhone(){
+    console.log(this.billingForm.get('phone').value, isValidNumber(this.billingForm.get('phone').value));
     if(this.billingForm.get('phone').value && isValidNumber(this.billingForm.get('phone').value)){
       this.billingForm.get('phone').setErrors(null)
     }else{
-      this.billingForm.get('phone').setErrors({incorrect: true});
+      this.billingForm.get('phone').setErrors(null);
     }
   }
   public onBillingFormSubmit(values:Object):void {
@@ -305,7 +313,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
               }).then(
                 ()=>{
                   this.horizontalStepper.next();
-                  this.horizontalStepper._steps.forEach(step => step.editable = false);
+                  setTimeout(()=>{this.horizontalStepper._steps.forEach(step => step.editable = false);},1000)
                   this.authService.Data.cartList = [];    
                   this.authService.Data.totalPrice = 0;
                   this.authService.Data.totalShipping = 0;
