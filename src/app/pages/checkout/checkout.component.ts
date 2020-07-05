@@ -60,7 +60,12 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     this.months = this.appService.getMonths();
     this.years = this.appService.getYears();
     this.deliveryMethods = this.appService.getDeliveryMethods();
-    this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
+    this.selectedBillingCountry = new FormControl();
+    if(this.authService.user && this.authService.user['billingAddress'] 
+    && this.authService.user['billingAddress'].country && this.authService.user['billingAddress'].country.code ) {
+      // this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
+      this.selectedBillingCountry.setValue(this.authService.user['billingAddress'].country.code)
+    }
     this.billingForm = this.formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -75,7 +80,6 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       zip: ['', [Validators.required]],
       address: ['', Validators.required]
     });
-    this.selectedBillingCountry.setValue(this.authService.user['billingAddress'].country.code)
     this.billingForm.get('countryCode').valueChanges
     .pipe(takeUntil(this._onDestroy))
     .subscribe(() => {
