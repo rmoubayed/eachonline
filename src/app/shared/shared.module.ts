@@ -56,6 +56,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { NgAisModule, NgAisInstantSearch } from 'angular-instantsearch';
 import { CustomRefine } from './custom-widgets/custom-refine.component';
 import { CustomRefinePrice } from './custom-widgets/custom-refine-price.components';
+import { NgxPayPalModule } from 'ngx-paypal';
 
 @NgModule({
   imports: [
@@ -98,9 +99,11 @@ import { CustomRefinePrice } from './custom-widgets/custom-refine-price.componen
     PerfectScrollbarModule,
     PipesModule,
     ReactiveFormsModule,
-    FormsModule
+    FormsModule,
+    NgxPayPalModule
   ],
   exports: [
+    NgxPayPalModule,
     CustomRefine,
     CustomRefinePrice,
     RouterModule,

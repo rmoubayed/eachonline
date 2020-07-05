@@ -5,7 +5,16 @@ import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatStepper, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
+import '../../../assets/phonevalidation';
 const Handlebars = require("handlebars");
+declare var isValidNumber: any;
+declare var isValidCountryCode: any;
+import {
+  IPayPalConfig,
+  ICreateOrderRequest 
+} from 'ngx-paypal';
+import { takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 @Component({
   selector: 'app-checkout',
   templateUrl: './checkout.component.html',
@@ -26,6 +35,12 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
   cardLastDigits: string;
   stepId=1;
   shippingTotal= 0;
+  paymentCC : boolean;
+  paymentPP : boolean;
+  chosenPaymentControl : FormControl;
+  public payPalConfig ? : IPayPalConfig;
+  private _onDestroy = new Subject<void>();
+
 
   constructor(public authService : AuthService,
               public formBuilder: FormBuilder,
@@ -34,7 +49,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
               private paymentService: PaymentService,
               private afs : AngularFirestore) { }
 
-  ngOnInit() {   
+  ngOnInit() { 
     this.authService.Data.cartList.forEach(product=>{
       console.log(product)
       this.grandTotal += product.cartCount*product.newPrice;
@@ -50,22 +65,30 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       lastName: ['', Validators.required],
       middleName: '',
       company: '',
-      email: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
+      countryCode: ['', Validators.required],
       country: [this.selectedBillingCountry, Validators.required],
       city: ['', Validators.required],
       state: '',
-      zip: ['', Validators.required],
+      zip: ['', [Validators.required, Validators.pattern("^\d{5}(?:[-\s]\d{4})?$")]],
       address: ['', Validators.required]
     });
-    
-    this.paymentForm = this.formBuilder.group({
-      cardHolderName: ['', Validators.required],
-      cardNumber: ['', Validators.required],
-      expiredMonth: ['', Validators.required],
-      expiredYear: ['', Validators.required],
-      cvv: ['', Validators.required]
+    this.billingForm.get('countryCode').valueChanges
+    .pipe(takeUntil(this._onDestroy))
+    .subscribe(() => {
+      console.log('validate')
+      this.validateCountry();
     });
+    this.billingForm.get('phone').valueChanges
+    .pipe(takeUntil(this._onDestroy))
+    .subscribe(() => {
+      this.validatePhone();
+    });
+    this.chosenPaymentControl = new FormControl();
+    this.paymentForm = this.formBuilder.group({
+      chosenPaymentMethod: [this.chosenPaymentControl, Validators.required]
+    })
     console.log(this.deliveryMethods[0])
     if(this.authService.user['billingAddress']){
       console.log(this.authService.user['billingAddress'])
@@ -75,7 +98,15 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       this.billingForm.get('country').setValue(this.authService.user['billingAddress'].country.code)
       this.selectedBillingCountry = new FormControl(this.authService.user['billingAddress'].country.code);
     }
-    
+  }
+  initStripeForm() {
+    this.paymentForm = this.formBuilder.group({
+      cardHolderName: ['', Validators.required],
+      cardNumber: ['', Validators.required],
+      expiredMonth: ['', Validators.required],
+      expiredYear: ['', Validators.required],
+      cvv: ['', Validators.required]
+    });
     if(this.authService.user['paymentMethod']){
       Object.keys(this.authService.user['paymentMethod']).forEach(key => {
         this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
@@ -84,41 +115,142 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
         }
       });
     }
+    this.paymentService.mountPayment();
+    let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
+    this.billingForm.get('country').setValue(country)
+    console.log(this.billingForm)
+  }
+  validateCountry(){
+    if(this.billingForm.value.countryCode && isValidCountryCode(this.billingForm.value.countryCode)){
+      this.billingForm.get('countryCode').setErrors(null)
+    }else{
+      this.billingForm.get('countryCode').setErrors({incorrect: true});
+    }
   }
 
+  validatePhone(){
+    if(this.billingForm.value.phone && isValidNumber(this.billingForm.value.phone)){
+      this.billingForm.get('phone').setErrors(null)
+    }else{
+      this.billingForm.get('phone').setErrors({incorrect: true});
+    }
+  }
+  public onBillingFormSubmit(values:Object):void {
+    
+    if (this.billingForm.valid && this.billingForm.pristine == false) {
+      console.log(this.billingForm.value)
+      this.afs.collection('customer').doc(this.authService.user['uid']).update({
+        billingAddress : this.billingForm.value
+      })
+      this.snackBar.open('Your billing address information updated successfully!', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+
+    }
+  }
+  setPaymentMethod(event) {
+    console.log(event);
+    if(event.value == 'cc') {
+      this.paymentCC = true;
+      this.paymentPP = false;
+      setTimeout(()=>{this.initStripeForm()},100)
+    } else {
+      this.paymentCC = false;
+      this.paymentPP = true;
+      this.initConfig();
+    }
+  }
   ngAfterViewInit(): void {
     
   }
+  private initConfig(): void {
+    let products = this.paymentService.processOrderPaymentData(this.authService.Data.cartList);
+    console.log(products, this.grandTotal, this.shippingTotal, this.grandTotal + this.shippingTotal, '' + (this.grandTotal + this.shippingTotal));
+    this.payPalConfig = {
+        currency: 'USD',
+        clientId: 'AQSj8idbJrFpQAoSRoekKSLJO_l3uhPFROnPNbvEQj9nDXbwGZkky5J4C3M6cCma0u9_vuKUlg9cC54c',
+        createOrderOnClient: (data) => < ICreateOrderRequest > {
+            intent: 'CAPTURE',
+            application_context: {payment_method: {payer_selected: 'PAYPAL'}},
+            purchase_units: [{
+                amount: {
+                    currency_code: 'USD',
+                    value: '' + (this.grandTotal + this.shippingTotal),
+                    breakdown: {
+                        item_total: {
+                            currency_code: 'USD',
+                            value: this.grandTotal+''
+                        },
+                        shipping: {
+                          currency_code: 'USD',
+                          value: this.shippingTotal+''
+                        }
+                    }
+                },
+                items: products
+            }]
+        },
+        advanced: {
+            commit: 'true'
+        },
+        style: {
+            label: 'paypal',
+            layout: 'horizontal',
+            tagline: false,
+            size: 'responsive'
+        },
+        onApprove: (data, actions) => {
+            console.log('onApprove - transaction was approved, but not authorized', data, actions);
+            actions.order.get().then(details => {
+                console.log('onApprove - you can get full order details inside onApprove: ', details);
+            });
+
+        },
+        onClientAuthorization: (data) => {
+            console.log('onClientAuthorization - you should probably inform your server about completed transaction at this point', data);
+            if(data.status == 'COMPLETED') {
+              this.placeOrder();
+            }
+            // this.showSuccess = true;
+        },
+        onCancel: (data, actions) => {
+            console.log('OnCancel', data, actions);
+            // this.showCancel = true;
+
+        },
+        onError: err => {
+            console.log('OnError', err);
+            // this.showError = true;
+        },
+        onClick: (data, actions) => {
+            console.log('onClick', data, actions);
+            // this.resetStatus();
+        }
+    };
+}
 
   getStepId($event){
     this.stepId++;
     if(this.stepId == 2){
-      this.paymentService.mountPayment();
-      let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
-      this.billingForm.get('country').setValue(country)
-      console.log(this.billingForm)
+
     }else if(this.stepId == 3){
-      this.submitPayment()
+
     }else if(this.stepId == 4){
       this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
     }
   }
   submitPayment() {
-    // this.payment.processPayment(this.appService.currentDataForPayment).then(
-    //   (success)=>{
-    //     if(success) {
-    //       this.showSuccess = true;
-    //       this.payment.paymentSuccess = true;
-    //       setTimeout(()=> {this.closeForm()},2000)
-    //       this.auth.db.collection('customer').doc(this.auth.user['uid']).update({unusedTier: this.appService.currentDataForPayment}).then(data=>console.log(data));
-    //     }
-    //   }
-    // );
+    this.paymentService.processPayment(this.authService.Data.cartList).then(
+      (result)=>{
+        if(result) {
+          this.placeOrder();
+        }
+      }
+    );
   }
 
   public placeOrder(){
+    // alert();
     console.log(this.billingForm)
-    if(this.billingForm.valid && this.paymentForm.valid){
+    if(true){ //this.billingForm.valid && this.paymentForm.valid
       if(this.billingForm.pristine == false || this.paymentForm.pristine == false){
         this.afs.collection('customer').doc(this.authService.user['uid']).update({
           billingAddress: this.billingForm.value,
@@ -179,9 +311,9 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
                 totalShipping:0
               }).then(
                 ()=>{
+                  this.horizontalStepper.next();
                   this.horizontalStepper._steps.forEach(step => step.editable = false);
-                  // this.verticalStepper._steps.forEach(step => step.editable = false);
-                  this.authService.Data.cartList.length = 0;    
+                  this.authService.Data.cartList = [];    
                   this.authService.Data.totalPrice = 0;
                   this.authService.Data.totalShipping = 0;
                   this.authService.Data.totalCartCount = 0;

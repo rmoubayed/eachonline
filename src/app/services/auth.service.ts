@@ -28,6 +28,7 @@ export class AuthService {
   loggedIn : boolean;
   user : User
   db = firebase.firestore();
+  apiUrl: string = 'https://us-central1-eachonline-dev.cloudfunctions.net/gateway/';
   Data :  Data = {
     categories: [], // categories
     compareList:[], // compareList

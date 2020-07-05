@@ -9,14 +9,33 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 declare var Stripe;
+
+export interface PayPalProduct {
+  name:string;
+  quantity: string;
+  category: string;
+  unit_amount: UnitAmount
+}
+export interface StripeProduct {
+  name: string;
+  id: string;
+}
+export interface StripePrice {
+  product: string;
+  unit_amount: string;
+  currency: string;
+}
+export interface UnitAmount {
+  currency_code: string;
+  value: string;
+}
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentService {
   paymentInProgress: boolean;
   paymentSuccess: boolean;
-  tierPayment : Subject<boolean> = new Subject<boolean>();
-  stripe = Stripe('pk_test_EbCL8Qgp442Ku8zX39iRlpZp');
+  stripe = Stripe('pk_test_87BwEuXGojRCF1iXMHi20m0X000mIixiCM');
   // Set up Stripe.js and Elements to use in checkout form
  
   card : any;
@@ -70,27 +89,24 @@ export class PaymentService {
     private http :HttpClient) { }
 
   mountPayment() {
-    let elements = this.stripe.elements();
-    this.cardNumber = elements.create('cardNumber', {
-      style: this.elementStyles,
-      classes: this.elementClasses,
-    });
+  let elements = this.stripe.elements();
+  var style = {
+    base: {
+      color: "#32325d"
+    }
+  }
 
-    this.cardExpiry = elements.create('cardExpiry', {
-      style: this.elementStyles,
-      classes: this.elementClasses,
-    });
-    
-  
-    this.cardCvc = elements.create('cardCvc', {
-      style: this.elementStyles,
-      classes: this.elementClasses,
-    });
-    this.cardCvc.mount('#example3-card-cvc');
-    this.cardNumber.mount('#example3-card-number');
-    this.cardExpiry.mount('#example3-card-expiry');
+  this.card = elements.create("card", { style: style });
+  this.card.mount("#card-element");
 
-    this.registerElements([this.cardNumber, this.cardExpiry, this.cardCvc], 'example3');
+  this.card.addEventListener('change', ({error}) => {
+    const displayError = document.getElementById('card-errors');
+    if (error) {
+      displayError.textContent = error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
     // this.card = elements.create([this.cardNumber, this.cardExpiry, this.cardCvc], 'example3');
     // this.card.mount("#example-3");
 
@@ -103,92 +119,108 @@ export class PaymentService {
     //     }
     // });
   }
-  registerElements(elements, exampleName) {
-    var formClass = '.' + exampleName;
-    var example = document.querySelector(formClass);
-    this.form = example.querySelector('.stripe-form');
-    
-    // Listen for errors from each Element, and show error messages in the UI.
-    
-    elements.forEach(function(element, id) {
-      console.log(element, id)
-      element.on('change', function(event) {
-        let displayError = document.getElementById('card-errors');
-        if (event.error) {
-          displayError.textContent = event.error.message;
-        } else {
-          displayError.textContent = '';
+  processOrderPaymentData(products) : any[] {
+      let paypalProducts : PayPalProduct[] = []
+      products.forEach(product => {
+        let paypalProduct : PayPalProduct = {
+          quantity: product.cartCount+'',
+          unit_amount: {
+            currency_code: 'USD',
+            value: product.newPrice+''
+          },
+          category: 'DIGITAL_GOODS',
+          name: product.name
         }
-      });
-    });
-  
-    this.form.addEventListener('submit', function(e) {
-      e.preventDefault();
-  
-      // Trigger HTML5 validation UI on the form if any of the inputs fail
-      // validation.
-      var plainInputsValid = true;
-      Array.prototype.forEach.call(this.form.querySelectorAll('input'), function(
-        input
-      ) {
-        if (input.checkValidity && !input.checkValidity()) {
-          plainInputsValid = false;
-          return;
-        }
-      });
-      if (!plainInputsValid) {
-        this.triggerBrowserValidation();
-        return;
-      }
-  
-      // Show a loading screen...
-      example.classList.add('submitting');
-  
-      // Disable all inputs.
-      this.disableInputs();
-  
-  
-      // Use Stripe.js to create a token. We only need to pass in one Element
-      // from the Element group in order to create a token. We can also pass
-      // in the additional customer data we collected in our form.
-      this.stripe.createToken(elements[0]).then(function(result) {
-        // Stop loading!
-        example.classList.remove('submitting');
-  
-        if (result.token) {
-          // If we received a token, show the token ID.
-          example.querySelector('.token').innerHTML = result.token.id;
-          example.classList.add('submitted');
-        } else {
-          // Otherwise, un-disable inputs.
-          this.enableInputs();
-        }
-      });
-    });
-  
-    
+        paypalProducts.push(paypalProduct)
+      })
+      return paypalProducts
   }
-  enableInputs() {
-    Array.prototype.forEach.call(
-      this.form.querySelectorAll(
-        "input[type='text'], input[type='email'], input[type='tel']"
-      ),
-      function(input) {
-        input.removeAttribute('disabled');
-      }
-    );
-  }
+  // registerElements(elements, exampleName) {
+  //   var formClass = '.' + exampleName;
+  //   var example = document.querySelector(formClass);
+  //   this.form = example.querySelector('.stripe-form');
+    
+  //   // Listen for errors from each Element, and show error messages in the UI.
+    
+  //   elements.forEach(function(element, id) {
+  //     console.log(element, id)
+  //     element.on('change', function(event) {
+  //       let displayError = document.getElementById('card-errors');
+  //       if (event.error) {
+  //         displayError.textContent = event.error.message;
+  //       } else {
+  //         displayError.textContent = '';
+  //       }
+  //     });
+  //   });
+  
+  //   this.form.addEventListener('submit', function(e) {
+  //     e.preventDefault();
+  
+  //     // Trigger HTML5 validation UI on the form if any of the inputs fail
+  //     // validation.
+  //     var plainInputsValid = true;
+  //     Array.prototype.forEach.call(this.form.querySelectorAll('input'), function(
+  //       input
+  //     ) {
+  //       if (input.checkValidity && !input.checkValidity()) {
+  //         plainInputsValid = false;
+  //         return;
+  //       }
+  //     });
+  //     if (!plainInputsValid) {
+  //       this.triggerBrowserValidation();
+  //       return;
+  //     }
+  
+  //     // Show a loading screen...
+  //     example.classList.add('submitting');
+  
+  //     // Disable all inputs.
+  //     this.disableInputs();
+  
+  
+  //     // Use Stripe.js to create a token. We only need to pass in one Element
+  //     // from the Element group in order to create a token. We can also pass
+  //     // in the additional customer data we collected in our form.
+  //     this.stripe.createToken(elements[0]).then(function(result) {
+  //       // Stop loading!
+  //       example.classList.remove('submitting');
+  
+  //       if (result.token) {
+  //         // If we received a token, show the token ID.
+  //         example.querySelector('.token').innerHTML = result.token.id;
+  //         example.classList.add('submitted');
+  //       } else {
+  //         // Otherwise, un-disable inputs.
+  //         this.enableInputs();
+  //       }
+  //     });
+  //   });
+  
+    
+  // }
+  // enableInputs() {
+  //   Array.prototype.forEach.call(
+  //     this.form.querySelectorAll(
+  //       "input[type='text'], input[type='email'], input[type='tel']"
+  //     ),
+  //     function(input) {
+  //       input.removeAttribute('disabled');
+  //     }
+  //   );
+  // }
 
-  disableInputs(){
-    Array.prototype.forEach.call(
-      this.form.querySelectorAll(
-        "input[type='text'], input[type='email'], input[type='tel']"
-      ),
-      function(input) {
-        input.setAttribute('disabled', 'true');
-      }
-    );
-  }
+  // disableInputs(){
+  //   Array.prototype.forEach.call(
+  //     this.form.querySelectorAll(
+  //       "input[type='text'], input[type='email'], input[type='tel']"
+  //     ),
+  //     function(input) {
+  //       input.setAttribute('disabled', 'true');
+  //     }
+  //   );
+  // }
 
   triggerBrowserValidation() {
     // The only way to trigger HTML5 form validation UI is to fake a user submit
@@ -200,14 +232,13 @@ export class PaymentService {
     submit.click();
     submit.remove();
   }
-
-  processPayment(tier) {
+  
+  processPayment(products) {
     return new Promise( (resolve, reject) => {
-    if(this.auth.loggedIn && this.auth.user) {
       // this.afs.collection(`payments/`)
-      let body = {tier: tier};
+      let body = {products: products};
       this.paymentInProgress = true;
-      this.http.post('https://us-central1-synthu-dev.cloudfunctions.net/gateway/tierPayment', body).pipe(
+      this.http.post(this.auth.apiUrl+'orderStripePayment', body).pipe(
         map((response) => {
             console.log(response);
             var clientSecret = response['client_secret'];
@@ -228,13 +259,11 @@ export class PaymentService {
               } else {
                 if (result.paymentIntent.status === 'succeeded') {
                   console.log('payment success!!!');
-                  this.tierPayment.next(true);
-                  resolve(true);
+                  resolve(result);
                 }
               }
             });
           })).subscribe()
-      } 
     })
   }
 }

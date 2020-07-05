@@ -97,7 +97,7 @@ export class ControlsComponent implements OnInit {
       if(currentProduct){
         if((currentProduct.cartCount + this.count) <= this.product.availabilityCount){
           product.cartCount = currentProduct.cartCount + this.count;
-          console.log(product.size.length)
+          // console.log(product.size.length)
           if((product.size != null && !(product['item'] && product['item']['selectedSize'])) || (product.color != null && !(product['item'] && product['item']['selectedColor']))){
             message = 'Please select size or color in order to add to cart'; 
             status = 'error';          
