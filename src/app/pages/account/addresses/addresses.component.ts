@@ -41,7 +41,7 @@ export class AddressesComponent implements OnInit {
       'middleName': [''],
       'company': [''],
       'email': ['', Validators.required],
-      'phone': ['', [Validators.required]],
+      'phone': [''],
       'country': ['', Validators.required],
       'countryCode':['', Validators.required],
       'city': ['', Validators.required],
@@ -57,7 +57,7 @@ export class AddressesComponent implements OnInit {
       'company': [''],
       'email': ['', Validators.required],
       'countryCode':['', Validators.required],
-      'phone': ['', Validators.required],
+      'phone': [''],
       'country': ['', Validators.required],
       'city': ['', Validators.required],
       'state': [''],
@@ -140,13 +140,13 @@ export class AddressesComponent implements OnInit {
       if(this.shippingForm.value.phone && isValidNumber(this.shippingForm.value.phone)){
         this.shippingForm.get('phone').setErrors(null)
       }else{
-        this.shippingForm.get('phone').setErrors({incorrect: true});
+        this.shippingForm.get('phone').setErrors(null);
       }
     }else{
       if(this.billingForm.value.phone && isValidNumber(this.billingForm.value.phone)){
         this.billingForm.get('phone').setErrors(null)
       }else{
-        this.billingForm.get('phone').setErrors({incorrect: true});
+        this.billingForm.get('phone').setErrors(null);
       }
     }
   }

@@ -182,7 +182,9 @@ export class PagesComponent implements OnInit, AfterViewInit {
   ngAfterViewInit(){    
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) { 
-        this.sidenav.close(); 
+        this.sidenav.close();
+        let searchWord = (<HTMLInputElement>document.getElementsByClassName('ais-SearchBox-input')[0])
+        searchWord.value = '';
       }                
     });
     this.sidenavMenuService.expandActiveSubMenu(this.sidenavMenuService.getSidenavMenuItems());

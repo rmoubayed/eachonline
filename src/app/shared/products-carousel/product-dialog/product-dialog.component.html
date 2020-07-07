@@ -7,7 +7,7 @@
             <div class="swiper-container h-100" [swiper]="config">
                 <div class="swiper-wrapper">      
                     <div *ngFor="let image of product.images" class="swiper-slide">
-                        <img [src]="image.medium" class="swiper-lazy"/>
+                        <img [src]="image" class="swiper-lazy"/>
                         <div *ngIf="!image" class="swiper-lazy-preloader"></div>
                     </div>
                 </div>

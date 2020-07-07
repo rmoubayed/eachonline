@@ -42,7 +42,18 @@ export class TopMenuComponent implements OnInit {
   }
 
   public signOut(){
+    this.authService.Data = {
+      categories: [], 
+      compareList:[], 
+      wishList: [],  
+      cartList: [],  
+      totalShipping:0,
+      totalPrice: null, 
+      totalCartCount: 0 
+    }
     this.authService.logout();
+    this.data = this.authService.Data;
+    
   }
 
   

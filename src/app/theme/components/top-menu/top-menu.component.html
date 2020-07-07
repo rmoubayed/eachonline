@@ -25,8 +25,8 @@
     </mat-menu>
 
     <span fxShow="false" fxShow.gt-sm>
-        <a mat-button routerLink="/compare">Compare  ({{data?.compareList?.length}})</a>
-        <a mat-button routerLink="/wishlist">Wishlist ({{data?.wishList?.length}})</a>
+        <a mat-button routerLink="/compare">Compare  ({{localAuthService?.Data.compareList?.length}})</a>
+        <a mat-button routerLink="/wishlist">Wishlist ({{localAuthService?.Data.wishList?.length}})</a>
     </span>  
 
     <a mat-button *ngIf="!authService.loggedIn" routerLink="/sign-in"> 
@@ -49,11 +49,11 @@
             </a>
             <a mat-menu-item routerLink="/compare" fxHide="false" fxHide.gt-sm>
                 <mat-icon class="mat-icon-sm">compare</mat-icon>
-                <span>Compare ({{data?.compareList?.length}})</span> 
+                <span>Compare ({{localAuthService?.Data.compareList?.length}})</span> 
             </a>
             <a mat-menu-item routerLink="/wishlist" fxHide="false" fxHide.gt-sm>
                 <mat-icon class="mat-icon-sm">favorite</mat-icon>
-                <span>Wishlist ({{data?.wishList?.length}})</span>
+                <span>Wishlist ({{localAuthService?.Data.wishList?.length}})</span>
             </a>
             <!-- <a mat-menu-item routerLink="/"> 
                 <mat-icon class="mat-icon-sm">lock</mat-icon>
