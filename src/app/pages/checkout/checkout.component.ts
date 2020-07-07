@@ -1,7 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { PaymentService } from './../../services/payment.service';
 import { AppService } from './../../app.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, AfterViewInit, NgZone } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { MatStepper, MatSnackBar } from '@angular/material';
 import { AngularFirestore } from '@angular/fire/firestore';
@@ -13,7 +14,7 @@ import {
   IPayPalConfig,
   ICreateOrderRequest 
 } from 'ngx-paypal';
-import { takeUntil } from 'rxjs/operators';
+import { takeUntil, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
 @Component({
   selector: 'app-checkout',
@@ -46,8 +47,10 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
               public formBuilder: FormBuilder,
               private appService : AppService,
               public snackBar: MatSnackBar,
+              private http : HttpClient,
               private paymentService: PaymentService,
-              private afs : AngularFirestore) { }
+              private afs : AngularFirestore,
+              private ngZone : NgZone) { }
 
   ngOnInit() { 
     this.authService.Data.cartList.forEach(product=>{
@@ -111,21 +114,6 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
     }
   }
   initStripeForm() {
-    this.paymentForm = this.formBuilder.group({
-      cardHolderName: ['', Validators.required],
-      cardNumber: ['', Validators.required],
-      expiredMonth: ['', Validators.required],
-      expiredYear: ['', Validators.required],
-      cvv: ['', Validators.required]
-    });
-    // if(this.authService.user['paymentMethod']){
-    //   Object.keys(this.authService.user['paymentMethod']).forEach(key => {
-    //     this.paymentForm.get(key).setValue(this.authService.user['paymentMethod'][key])
-    //     if(key == 'cardNumber'){
-    //       this.cardLastDigits = this.authService.user['paymentMethod'][key].substring(12);
-    //     }
-    //   });
-    // }
     this.paymentService.mountPayment();
     let country = this.countries.find((elt)=> {return elt.code == this.billingForm.get('country').value})
     this.billingForm.get('country').setValue(country)
@@ -240,19 +228,14 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
 }
 
   getStepId($event){
+    console.log(this.stepId);
     this.stepId++;
-    if(this.stepId == 2){
-
-    }else if(this.stepId == 3){
-
-    }else if(this.stepId == 4){
-      this.cardLastDigits = this.paymentForm.get('cardNumber').value.substring(12);
-    }
   }
   submitPayment() {
     this.paymentService.processPayment(this.authService.Data.cartList).then(
-      (result)=>{
-        if(result) {
+      (result : any)=>{
+        console.log(result);
+        if(result && result.paymentIntent && result.paymentIntent.status == 'succeeded') {
           this.placeOrder();
         }
       }
@@ -271,7 +254,7 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
       }
       let date = new Date();
       let orderDate = this.monthsArray[date.getMonth()] + ' '+ date.getDate() + ', '+ date.getFullYear();
-      this.afs.collection('order').add({
+      let orderObj = {
         billingAddress: this.billingForm.value,
         paymentMethod: this.chosenPaymentControl.value,
         customerId: this.authService.user['uid'],
@@ -282,69 +265,76 @@ export class CheckoutComponent implements OnInit, AfterViewInit {
         totalPrice: this.authService.Data.totalPrice,
         totalOrderCount: this.authService.Data.totalCartCount,
         createdAt: orderDate
-      }).then(
-        ()=>{
-          this.authService.db.collection('mail').add({
-            from:'eachonlinedeveloper@gmail.com',
-            to: this.authService.user['email'],
-            template:{
-              name:'invoiceTemplate',
-              data:{
-                firstname: this.billingForm.value.firstName,
-                lastname:this.billingForm.value.lastName,
-                address:this.billingForm.value.address,
-                city:this.billingForm.value.city,
-                country: this.billingForm.value.country,
-                orderDate: orderDate,
-                product: this.authService.Data.cartList,
-                grandTotal: +this.grandTotal + this.shippingTotal,
-                shipping: this.shippingTotal,
-                total: this.grandTotal
-              }
-            }
-          }).then(
-            ()=>{
-              this.snackBar.open('Your order has been placed! An email confirmation has been sent to you.', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
-              this.afs.collection('cart').doc(this.authService.user['uid']).update({
-                products:[],
-                totalCartCount:0,
-                totalPrice:0,
-                totalShipping:0
-              }).then(
-                ()=>{
-                  this.horizontalStepper.next();
-                  setTimeout(()=>{this.horizontalStepper._steps.forEach(step => step.editable = false);},1000)
-                  this.authService.Data.cartList = [];    
-                  this.authService.Data.totalPrice = 0;
-                  this.authService.Data.totalShipping = 0;
-                  this.authService.Data.totalCartCount = 0;
-                },(e)=>{
-                  this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+      }
+      this.http.post(this.authService.apiUrl+'createOrder', {order: orderObj, user: this.authService.user}).pipe(
+        map(
+          (data)=>{
+            console.log(data);
+            this.authService.db.collection('mail').add({
+              from:'eachonlinedeveloper@gmail.com',
+              to: this.authService.user['email'],
+              template:{
+                name:'invoiceTemplate',
+                data:{
+                  firstname: this.billingForm.value.firstName,
+                  lastname:this.billingForm.value.lastName,
+                  address:this.billingForm.value.address,
+                  city:this.billingForm.value.city,
+                  country: this.billingForm.value.country,
+                  orderDate: orderDate,
+                  product: this.authService.Data.cartList,
+                  grandTotal: +this.grandTotal + this.shippingTotal,
+                  shipping: this.shippingTotal,
+                  total: this.grandTotal
                 }
-              )
-            }
-          )
-        },
-        (e)=>{
-          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
-        }
-      ).catch(
-        (error)=>{
-          console.log(error)
-          console.log(
-            'name' ,this.billingForm.value.firstName,
-             'lastname', this.billingForm.value.lastName,
-            'adress',this.billingForm.value.address,
-            'city',this.billingForm.value.city,
-             'country',this.billingForm.value.country.name,
-             'date',orderDate,
-             'productlist',this.authService.Data.cartList,
-             'shipping',this.shippingTotal,
-             'total',this.grandTotal
-          )
-          this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
-        }
-      )
+              }
+            }).then(
+              ()=>{
+                this.snackBar.open('Your order has been placed! An email confirmation has been sent to you.', '×', { panelClass: 'success', verticalPosition: 'top', duration: 3000 });
+                this.afs.collection('cart').doc(this.authService.user['uid']).update({
+                  products:[],
+                  totalCartCount:0,
+                  totalPrice:0,
+                  totalShipping:0
+                }).then(
+                  ()=>{
+                    this.ngZone.run(() => {
+                      this.paymentForm.setErrors(null);
+                      this.paymentForm.setValidators(null);
+                      this.horizontalStepper.selected.completed = true;
+                      this.horizontalStepper.selected.editable = false;
+                      this.horizontalStepper.next();
+                      this.horizontalStepper._steps.forEach(step => step.editable = false)
+                      this.authService.Data.cartList = [];    
+                      this.authService.Data.totalPrice = 0;
+                      this.authService.Data.totalShipping = 0;
+                      this.authService.Data.totalCartCount = 0;
+                    });         
+                  },(e)=>{
+                    this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+                  }
+                )
+              }
+            ).catch(
+              (error)=>{
+                console.log(error)
+                console.log(
+                  'name' ,this.billingForm.value.firstName,
+                   'lastname', this.billingForm.value.lastName,
+                  'adress',this.billingForm.value.address,
+                  'city',this.billingForm.value.city,
+                   'country',this.billingForm.value.country.name,
+                   'date',orderDate,
+                   'productlist',this.authService.Data.cartList,
+                   'shipping',this.shippingTotal,
+                   'total',this.grandTotal
+                )
+                this.snackBar.open('Something went wrong please try again', '×', { panelClass: 'error', verticalPosition: 'top', duration: 3000 });
+              }
+            )
+          }
+        )
+      ).subscribe()
     }
     // this.horizontalStepper._steps.forEach(step => step.editable = false);
     // this.verticalStepper._steps.forEach(step => step.editable = false);

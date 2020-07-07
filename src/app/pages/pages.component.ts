@@ -188,6 +188,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
       }                
     });
     this.sidenavMenuService.expandActiveSubMenu(this.sidenavMenuService.getSidenavMenuItems());
+    
   }
 
   public closeSubMenus(){

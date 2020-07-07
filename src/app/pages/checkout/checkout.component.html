@@ -204,7 +204,7 @@
       </div>
       <div fxLayout="row" fxLayoutAlign="center center" class="mt-2 p-1"> 
         <button mat-mini-fab matStepperPrevious color="primary" matTooltip="Back" matTooltipPosition="before" class="mr-1"><mat-icon>navigate_before</mat-icon></button>
-        <!-- <button mat-mini-fab matStepperNext color="primary" matTooltip="Next" matTooltipPosition="after"><mat-icon>navigate_next</mat-icon></button>        -->
+        <button mat-mini-fab matStepperNext color="primary" matTooltip="Next" matTooltipPosition="after"><mat-icon>navigate_next</mat-icon></button>       
       </div>
     </ng-container>
     <ng-container *ngIf="paymentPP">
@@ -219,12 +219,11 @@
     <div fxLayout="column" fxLayoutAlign="center center" class="p-2 text-center"> 
       <button mat-fab color="primary"><mat-icon>check</mat-icon></button>
       <h2 class="py-2">Congratulation! Your order has been processed</h2>
-      <p class="text-muted">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed tempus dolor ante, ut luctus mi faucibus a. Ut eu tincidunt neque. Proin porttitor id ligula id placerat. Integer nec nulla varius, dapibus libero quis, semper eros. Aliquam erat volutpat. Proin volutpat tellus vel purus interdum euismod.</p>
+      <p class="text-muted">Please check your email for order confirmation</p>
     </div>
     <div fxLayout="row" fxLayoutAlign="center center" class="mt-2 p-1"> 
       <a [routerLink]="['/']" mat-raised-button color="primary">Return to Shop</a>       
     </div>
-     
   </mat-step>
 </mat-horizontal-stepper>
 
