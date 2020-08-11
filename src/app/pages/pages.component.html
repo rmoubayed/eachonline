@@ -22,20 +22,146 @@
 
 
     <mat-toolbar color="primary">
-        <mat-toolbar-row fxLayoutAlign="space-between center" class="top-toolbar theme-container">
+        <mat-toolbar-row fxLayoutAlign="space-between center" class="top-toolbar ">
             <span fxHide="false" fxHide.gt-sm>
                 <button mat-button (click)="sidenav.toggle()" class="sidenav-toggle">
                     <mat-icon>menu</mat-icon>
                 </button> 
             </span>
-            <span fxShow="false" fxShow.gt-xs fxLayoutAlign="center center"><mat-icon class="mat-icon-sm">call</mat-icon>  Hotline: 702.800.5464 </span>
-            <span fxShow="false" fxShow.gt-sm>Welcome to our market!</span>
-            <app-top-menu></app-top-menu>       
-        </mat-toolbar-row>
-        <mat-toolbar-row fxLayoutAlign="space-between center" class="logo-toolbar theme-container">
+            <app-top-menu></app-top-menu> 
             <a class="logo" routerLink="/" (click)="closeSubMenus()" [ngStyle]="{'width':'100px', 'height':'100px'}">
                 <img src="../../assets/images/each-logo.png" [ngStyle]="{'width':'100%'}">
             </a>
+            <div>
+                <div class="top-menu">    
+                    <!-- <mat-menu #currencyMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-dropdown">
+                        <span (mouseleave)="currencyMenuTrigger.closeMenu()">
+                            <button mat-menu-item *ngFor="let cur of currencies" (click)="changeCurrency(cur)">
+                                <span>{{cur}}</span>
+                            </button>
+                        </span>
+                    </mat-menu> -->
+                
+                    <!-- <a mat-button [matMenuTriggerFor]="langMenu" #langMenuTrigger="matMenuTrigger">
+                        <img [src]="flag.image" width="18">
+                        <span fxShow="false" fxShow.gt-sm class="flag-menu-title">{{flag.name}}</span>
+                        <mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
+                    </a> -->
+                    
+                    <!-- <mat-menu #langMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-dropdown">
+                        <span (mouseleave)="langMenuTrigger.closeMenu()">
+                            <button mat-menu-item *ngFor="let flag of flags" (click)="changeLang(flag)">
+                                <img [src]="flag.image" width="18"> {{flag.name}}
+                            </button>
+                        </span>
+                    </mat-menu> -->
+                
+                    <button mat-icon-button class="search-toggle-btn" (click) = "openSearchBox()">
+                        <mat-icon class="mat-icon-lg">search</mat-icon>
+                    </button>
+
+                    <button mat-icon-button [matMenuTriggerFor]="cartMenu" #cartMenuTrigger="matMenuTrigger" class="flex-row-button" *ngIf="localAuthService?.loggedIn">
+                        <mat-icon class="mat-icon-lg">shopping_cart</mat-icon>
+                        <span *ngIf="localAuthService?.Data?.totalCartCount > 0" class="cart-items-count">{{localAuthService?.Data?.totalCartCount}}</span>
+                        <!-- <div fxLayout="column" fxLayoutAlign="center center" fxShow="false" fxShow.gt-xs class="top-cart">
+                            <span>Shopping Cart</span>
+                            <span *ngIf="localAuthService?.Data?.totalCartCount > 0">{{localAuthService?.Data?.totalCartCount}} item<span *ngIf="localAuthService?.Data?.totalCartCount > 1">s</span> - 
+                                $<span>{{(localAuthService?.Data?.totalPrice + localAuthService?.Data?.totalShipping) | number : '1.2-2'}}</span>
+                            </span>
+                        </div> -->
+                        <!-- <mat-icon class="mat-icon-sm">arrow_drop_down</mat-icon> -->
+                    </button>
+                    <mat-menu #cartMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="top-menu-dropdown cart-dropdown">
+                        <ng-template matMenuContent>
+                            <span (mouseleave)="cartMenuTrigger.closeMenu()" class="d-block">
+                                <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted">
+                                    <b><span>{{ocalAuthService?.Data?.totalCartCount}} ITEM<span *ngIf="localAuthService?.Data?.totalCartCount > 1">S</span></span></b>
+                                    <b><a [routerLink]="['/cart']" class="text-muted">VIEW CART</a></b>
+                                </div>
+                                <div class="divider mt-1"></div>
+                                <div *ngIf="localAuthService?.Data?.totalCartCount == 0" class="py-1 text-muted text-center">You have no items in your shopping cart.</div>
+                                <mat-list>
+                                    <mat-list-item *ngFor="let product of localAuthService?.Data?.cartList">                                   
+                                        <h3 matLine class="text-muted"> {{product.name}} </h3>
+                                        <p matLine class="text-muted">
+                                            <span> {{product.cartCount}} x ${{product.newPrice | number : '1.2-2'}} </span>
+                                        </p>
+                                        <img  [src]="product.images[0]" style="max-width:50px" alt="image">
+                                        <button mat-icon-button color="warn" class="remove" (click)="remove(product);stopClickPropagate($event)" matTooltip="Remove" matTooltipPosition="before">
+                                            <mat-icon class="mat-icon-sm">close</mat-icon>
+                                        </button>
+                                    </mat-list-item>
+                                </mat-list>
+                                <div *ngIf="localAuthService?.Data?.cartList.length > 0" class="cart-dropdown-footer">
+                                    <div class="divider mt-1"></div>
+                                    <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted mt-1">
+                                        <b>Shipping:</b>
+                                        <b class="new-price">${{(localAuthService?.Data?.totalShipping) | number : '1.2-2'}}</b>
+                                    </div>
+                                    <div fxLayout="row" fxLayoutAlign="space-between center" class="text-muted mt-1">
+                                        <b>TOTAL:</b>
+                                        <b class="new-price">${{(localAuthService?.Data?.totalPrice + localAuthService?.Data?.totalShipping) | number : '1.2-2'}}</b>
+                                    </div>
+                                    <div class="divider mt-1"></div>
+                                    <div fxLayout="row" fxLayoutAlign="space-between center" class="mt-1">
+                                        <button mat-mini-fab color="warn" (click)="clear();stopClickPropagate($event)" matTooltip="Clear All" matTooltipPosition="after">
+                                            <mat-icon>remove_shopping_cart</mat-icon>
+                                        </button>
+                                        <a [routerLink]="['/checkout']" mat-mini-fab color="primary" matTooltip="Checkout" matTooltipPosition="before">
+                                            <mat-icon>check</mat-icon>
+                                        </a>
+                                    </div>
+                                </div>
+                            </span>
+                        </ng-template>
+                    </mat-menu>
+                
+                    <span fxShow="false" fxShow.gt-sm *ngIf="localAuthService?.loggedIn">
+                        <a mat-button routerLink="/compare">Compare  ({{localAuthService?.Data.compareList?.length}})</a>
+                        <a mat-button routerLink="/wishlist">Wishlist ({{localAuthService?.Data.wishList?.length}})</a>
+                    </span>  
+                
+                    <a mat-button *ngIf="!authService.loggedIn" routerLink="/sign-in"> 
+                        <mat-icon class="mat-icon-sm account-icon">person</mat-icon> <span fxShow="false" fxShow.gt-sm>Sign in</span> 
+                    </a>
+                
+                    <a mat-button [matMenuTriggerFor]="accountMenu" #accountMenuTrigger="matMenuTrigger" *ngIf="localAuthService?.loggedIn"> 
+                        <mat-icon class="mat-icon-sm account-icon">person</mat-icon> <span fxShow="false" fxShow.gt-sm>account</span> <mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
+                    </a>
+                    <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-dropdown account" >
+                        <span >
+                            <div fxLayout="row" fxLayoutAlign="space-around center" class="user-info" *ngIf="authService.loggedIn && authService.user && authService.user.displayName">                   
+                                <!-- <img src="assets/images/others/user.jpg" alt="user-image" width="50"> -->
+                                <p>{{localAuthService?.user?.displayName}}<br> </p>
+                            </div>
+                            <div class="divider"></div>
+                            <a mat-menu-item routerLink="/account"> 
+                                <mat-icon class="mat-icon-sm">settings</mat-icon>
+                                <span>Account Settings</span> 
+                            </a>
+                            <a mat-menu-item routerLink="/compare" fxHide="false" fxHide.gt-sm>
+                                <mat-icon class="mat-icon-sm">compare</mat-icon>
+                                <span>Compare ({{localAuthService?.Data.compareList?.length}})</span> 
+                            </a>
+                            <a mat-menu-item routerLink="/wishlist" fxHide="false" fxHide.gt-sm>
+                                <mat-icon class="mat-icon-sm">favorite</mat-icon>
+                                <span>Wishlist ({{localAuthService?.Data.wishList?.length}})</span>
+                            </a>
+                            <div class="divider"></div>
+                            <a mat-menu-item > 
+                                <mat-icon class="mat-icon-sm">power_settings_new</mat-icon>
+                                <span (click)="signOut()">Sign Out</span> 
+                            </a>
+                        </span>
+                    </mat-menu>   
+                    <button mat-icon-button>
+                        <mat-icon class="mat-icon-lg">contact_support</mat-icon>
+                    </button>
+                </div>  
+            </div>
+        </mat-toolbar-row>
+        <mat-toolbar-row fxLayoutAlign="space-between center" class="logo-toolbar theme-container" *ngIf="openSearch" [ngStyle]="{'position':'relative'}">
+            <span class="close-x" (click)="openSearch = !openSearch">x</span>
             <div fxFlex fxFlexOffset.gt-sm="10" fxShow="false" fxShow.gt-sm >
                 <form method="get"  class="search-form" fxLayout="row" >
                     <!-- <button mat-raised-button [matMenuTriggerFor]="categoriesMenu" #categoriesMenuTrigger="matMenuTrigger" type="button" class="mat-elevation-z0 categories text-truncate text-muted">{{category?.name}}<mat-icon>arrow_drop_down</mat-icon></button> -->
@@ -72,7 +198,7 @@
           
            
 
-            <div fxFlexOffset="10" fxLayout="row" fxLayoutAlign="center center">                
+            <!-- <div fxFlexOffset="10" fxLayout="row" fxLayoutAlign="center center">                
 
                 <div fxLayoutAlign="center center">
                     <button mat-button [matMenuTriggerFor]="cartMenu" #cartMenuTrigger="matMenuTrigger" class="flex-row-button">
@@ -156,16 +282,19 @@
                     </mat-menu>
                 </div>
 
+            </div> -->
+            
+        </mat-toolbar-row>
+        <mat-toolbar-row> 
+            <div class="banner-ribbon"> register to our concierge manager program
+                <button mat-raised-button [ngStyle]="{'margin-left': '20px'}">Register</button>
             </div>
             
         </mat-toolbar-row>
     </mat-toolbar> 
+    <app-main-carousel [slides]="slides"></app-main-carousel> 
 
-
- 
     <app-menu fxShow="false" fxShow.gt-sm></app-menu>  
-
-    
     <div class="theme-container main"> 
         <app-breadcrumb></app-breadcrumb>
         <router-outlet></router-outlet>

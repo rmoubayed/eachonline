@@ -1,6 +1,62 @@
 <div class="top-menu">    
 
-    <a mat-button [matMenuTriggerFor]="currencyMenu" #currencyMenuTrigger="matMenuTrigger">
+    <a mat-button routerLink="/products"> 
+        <span fxShow="false" fxShow.gt-sm>Products</span> 
+    </a>
+   
+    <a mat-button [matMenuTriggerFor]="accountMenu" #accountMenuTrigger="matMenuTrigger"> 
+        <span fxShow="false" fxShow.gt-sm>Services</span> <mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
+    </a>
+    <mat-menu #accountMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-dropdown account" >
+        <span>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Business Services</span> 
+            </a>
+            <div class="divider"></div>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Communication</span> 
+            </a>
+            <div class="divider"></div>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Construction & Engineering</span> 
+            </a>
+            <div class="divider"></div>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Distribution</span> 
+            </a>
+            <div class="divider"></div>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Education</span> 
+            </a>
+            <div class="divider"></div>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Environmental</span> 
+            </a>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Finance</span> 
+            </a>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Tourism</span> 
+            </a>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Health</span> 
+            </a>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Recreation</span> 
+            </a>
+            <a mat-menu-item routerLink="/account"> 
+                <span>Transportation</span> 
+            </a>
+        </span>
+    </mat-menu>  
+    <a mat-button routerLink="/sign-in"> 
+        <span fxShow="false" fxShow.gt-sm>Partners</span> 
+    </a>
+    <a mat-button routerLink="/about-us"> 
+        <span fxShow="false" fxShow.gt-sm>About</span> 
+    </a>
+
+    <!-- <a mat-button [matMenuTriggerFor]="currencyMenu" #currencyMenuTrigger="matMenuTrigger">
         {{currency}}<mat-icon class="mat-icon-sm caret">arrow_drop_down</mat-icon>
     </a>
     <mat-menu #currencyMenu="matMenu" [overlapTrigger]="false" xPosition="before" class="app-dropdown">
@@ -55,20 +111,12 @@
                 <mat-icon class="mat-icon-sm">favorite</mat-icon>
                 <span>Wishlist ({{localAuthService?.Data.wishList?.length}})</span>
             </a>
-            <!-- <a mat-menu-item routerLink="/"> 
-                <mat-icon class="mat-icon-sm">lock</mat-icon>
-                <span>Lock screen</span> 
-            </a> -->
-            <!-- <a mat-menu-item routerLink="/"> 
-                <mat-icon class="mat-icon-sm">help</mat-icon>
-                <span>Help</span> 
-            </a> -->
             <div class="divider"></div>
             <a mat-menu-item > 
                 <mat-icon class="mat-icon-sm">power_settings_new</mat-icon>
                 <span (click)="signOut()">Sign Out</span> 
             </a>
         </span>
-    </mat-menu>    
+    </mat-menu>     -->
 
 </div>  

@@ -24,7 +24,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
   ];
 
   public brands = [];
-  public banners = [];
   newProducts: any[]=[];
   saleProducts: any[]=[];
   featuredProducts: any[]=[];
@@ -155,11 +154,6 @@ export class HomeComponent implements OnInit, AfterViewInit {
     )
   }
 
-  public getBanners(){
-    this.appService.getBanners().subscribe(data=>{
-      this.banners = data;
-    })
-  }
 
   public getBrands(){
     this.brands = this.appService.getBrands();

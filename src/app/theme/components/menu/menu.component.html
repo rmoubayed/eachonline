@@ -1,6 +1,11 @@
 <mat-toolbar class="top-navbar mat-elevation-z2" fxLayoutAlign="center center" >
-    <a mat-button routerLink="/" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Home</a>
-    <ng-container *ngFor="let category of categories">
+    <a mat-button routerLink="/manufactures" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Manufactures</a>
+    <a mat-button routerLink="/wholesalers" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Wholesalers</a>
+    <a mat-button routerLink="/retailers-and-stores" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Retailers & Stores</a>
+    <a mat-button routerLink="/services-providers" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Services Providers</a>
+    <a mat-button routerLink="/concierge-managers" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Concierge Managers</a>
+    <a mat-button routerLink="/regional-managers" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Regional Managers</a>
+    <!-- <ng-container *ngFor="let category of categories">
         <a mat-button *ngIf="category.hasSubCategory" [matMenuTriggerFor]="menu" (click)="openMegaMenu()">{{category.name}}<mat-icon class="caret">arrow_drop_down</mat-icon></a>
         <mat-menu #menu="matMenu" [overlapTrigger]="false" class="mega-menu app-dropdown">
             <div fxLayout="row wrap">
@@ -13,7 +18,7 @@
             </div>
         </mat-menu>
         <a *ngIf="!category.hasSubCategory && category.parentCategory == null" mat-button [routerLink]="['/products', category.value]" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">{{category.name}}</a>
-    </ng-container>
+    </ng-container> -->
     
     
     <!-- <a mat-button [routerLink]="['/products', 'electronics']" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">Electronics</a>
@@ -32,7 +37,7 @@
         <a mat-menu-item>Menu item</a>
     </mat-menu> -->
     
-    <a mat-button routerLink="/products" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">All products</a>
+    <!-- <a mat-button routerLink="/products" routerLinkActive="horizontal-active-link" [routerLinkActiveOptions]="{exact:true}">All products</a> -->
 
 </mat-toolbar>
 

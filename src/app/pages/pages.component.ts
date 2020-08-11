@@ -25,6 +25,23 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public categories:any[]=[];
   public category:Category;
   public sidenavMenuItems:Array<any>;
+  public currencies = ['USD'];
+  public currency:any;
+  public slides = [
+    { title: 'The biggest sale', subtitle: 'Special for today', image: 'assets/images/carousel/banner1.jpg' },
+    { title: 'Summer collection', subtitle: 'New Arrivals On Sale', image: 'assets/images/carousel/banner2.jpg' },
+    { title: 'The biggest sale', subtitle: 'Special for today', image: 'assets/images/carousel/banner3.jpg' },
+    { title: 'Summer collection', subtitle: 'New Arrivals On Sale', image: 'assets/images/carousel/banner4.jpg' },
+    { title: 'The biggest sale', subtitle: 'Special for today', image: 'assets/images/carousel/banner5.jpg' }
+  ];
+  public flags = [
+    { name:'English', image: 'assets/images/flags/gb.svg' },
+    // { name:'German', image: 'assets/images/flags/de.svg' },
+    // { name:'French', image: 'assets/images/flags/fr.svg' },
+    // { name:'Russian', image: 'assets/images/flags/ru.svg' },
+    // { name:'Turkish', image: 'assets/images/flags/tr.svg' }
+  ]
+  public flag:any;
   @ViewChild('sidenav') sidenav:any;
   public localAuthService:AuthService;
   config = {
@@ -36,6 +53,7 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public user : User;
   showSearchResults: boolean;
   localAppService: AppService;
+  openSearch: boolean = false;
   constructor(public appSettings:AppSettings, 
               public appService:AppService, 
               private afs:AngularFirestore,
@@ -46,6 +64,8 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    this.currency = this.currencies[0];
+    this.flag = this.flags[0];    
     this.localAuthService = this.authService;
     this.localAppService = this.appService;
     this.data = this.authService.Data;
@@ -66,6 +86,31 @@ export class PagesComponent implements OnInit, AfterViewInit {
     // this.getCategories();
     this.sidenavMenuItems = this.sidenavMenuService.getSidenavMenuItems();
   } 
+
+  openSearchBox(){
+    this.openSearch = !this.openSearch;
+    console.log(this.openSearch)
+  }
+
+  public signOut(){
+    this.authService.Data = {
+      categories: [], 
+      compareList:[], 
+      wishList: [],  
+      cartList: [],  
+      totalShipping:0,
+      totalPrice: null, 
+      totalCartCount: 0 
+    }
+    this.authService.logout();
+    this.data = this.authService.Data;
+    
+  }
+
+  public changeLang(flag){
+    this.flag = flag;
+  }
+
   searchIfEnter(event) {
     console.log(event);
     // if(event.key == 'Enter') {
@@ -184,7 +229,9 @@ export class PagesComponent implements OnInit, AfterViewInit {
       if (event instanceof NavigationEnd) { 
         this.sidenav.close();
         let searchWord = (<HTMLInputElement>document.getElementsByClassName('ais-SearchBox-input')[0])
-        searchWord.value = '';
+        if(searchWord){
+          searchWord.value = '';
+        }
       }                
     });
     this.sidenavMenuService.expandActiveSubMenu(this.sidenavMenuService.getSidenavMenuItems());
