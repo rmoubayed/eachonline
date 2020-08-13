@@ -54,8 +54,9 @@ export class ProductsComponent implements OnInit {
  categoryRefined: any;
  isFirstLoad : boolean;
  trackedFilters : any;
- searchParams: any;
  currentSearchCategory: string;
+ searchParams: any = {filters: '',}
+
   priceRangeRefined: any;
   constructor(
     public authService: AuthService,
@@ -86,6 +87,16 @@ export class ProductsComponent implements OnInit {
             console.log(this.productList)
             return products;
           }
+        }
+      }
+    )
+    this.route.queryParams.subscribe(
+      (query)=>{
+        console.log(query)
+        if(query['services']){
+          this.searchParams.filters = this.currentSearchCategory ? 'categoryId:'+this.currentSearchCategory : 'productType:service'
+        } else {
+          this.searchParams.filters = this.currentSearchCategory ? 'categoryId:'+this.currentSearchCategory : ''
         }
       }
     )

@@ -290,7 +290,6 @@ a{
 }
 
 .banner-ribbon{
-    width: 100%;
     height: 50px;
     text-align: center;
     font-weight: 300;
@@ -305,6 +304,7 @@ a{
         height: 31px;
         line-height: 31px;
         min-width: 24px;
+        color: black !important;
         padding: 0;
         border-radius: 0;
     }
@@ -562,7 +562,16 @@ button.swipe-arrow{
 
 /******* Responsive *******/
 // Extra small devices (portrait phones, less than 576px)
-@media (max-width: 575px) { 
+@media (max-width: 575px) {
+    .ribbon{
+        height: 100px !important;
+    } 
+    .second-banner-btn{
+        margin: auto !important;
+    }
+    .second-banner{
+        display: block !important;
+    }
     .top-toolbar.mat-toolbar-row{
         padding: 0;
         .top-menu{

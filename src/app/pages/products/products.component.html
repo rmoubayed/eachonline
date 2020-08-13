@@ -1,6 +1,6 @@
 <ais-instantsearch [config]="config">
     <ais-configure
-    [searchParameters]="{filters: currentSearchCategory ? 'categoryId:'+currentSearchCategory : ''}"
+    [searchParameters]="searchParams"
     ></ais-configure>
     <ais-search-box></ais-search-box>
     <mat-sidenav-container> 

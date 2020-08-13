@@ -28,8 +28,8 @@
                     <mat-icon>menu</mat-icon>
                 </button> 
             </span>
-            <app-top-menu></app-top-menu> 
-            <a class="logo" routerLink="/" (click)="closeSubMenus()" [ngStyle]="{'width':'100px', 'height':'100px'}">
+            <app-top-menu *ngIf="!mobile"></app-top-menu> 
+            <a *ngIf="!mobile" class="logo" routerLink="/" (click)="closeSubMenus()" [ngStyle]="{'width':'100px', 'height':'100px'}">
                 <img src="../../assets/images/each-logo.png" [ngStyle]="{'width':'100%'}">
             </a>
             <div>
@@ -154,9 +154,9 @@
                             </a>
                         </span>
                     </mat-menu>   
-                    <button mat-icon-button>
+                    <a mat-icon-button href="javascript:$zopim.livechat.window.show();">
                         <mat-icon class="mat-icon-lg">contact_support</mat-icon>
-                    </button>
+                    </a>
                 </div>  
             </div>
         </mat-toolbar-row>
@@ -285,14 +285,15 @@
             </div> -->
             
         </mat-toolbar-row>
-        <mat-toolbar-row> 
-            <div class="banner-ribbon"> register to our concierge manager program
-                <button mat-raised-button [ngStyle]="{'margin-left': '20px'}">Register</button>
+        <mat-toolbar-row class="ribbon">  
+            <div class = "flex-container second-banner">
+                <p class="banner-ribbon"> register to our concierge manager program</p>
+                <button class="second-banner-btn" [ngStyle]="{'display':'block', 'margin-left':'20px'}" mat-raised-button >Register</button>
             </div>
             
         </mat-toolbar-row>
     </mat-toolbar> 
-    <app-main-carousel [slides]="slides"></app-main-carousel> 
+    <app-main-carousel [slides]="slides" *ngIf="showCarousel"></app-main-carousel> 
 
     <app-menu fxShow="false" fxShow.gt-sm></app-menu>  
     <div class="theme-container main"> 

@@ -1,13 +1,14 @@
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Component, OnInit, HostListener, ViewChild, AfterViewInit } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
-import { Router, NavigationEnd, Data } from '@angular/router';
+import { Router, NavigationEnd, Data, NavigationStart } from '@angular/router';
 import { Settings, AppSettings } from '../app.settings';
 import { AppService, User } from '../app.service';
 import { Category, Product } from '../app.models';
 import { SidenavMenuService } from '../theme/components/sidenav-menu/sidenav-menu.service';
 import { AuthService } from '../services/auth.service';
 import * as algoliasearch from 'algoliasearch/lite';
+import { CompileShallowModuleMetadata } from '@angular/compiler';
 
 const searchClient = algoliasearch(
   'X5I45PX5A1',
@@ -53,6 +54,8 @@ export class PagesComponent implements OnInit, AfterViewInit {
   showSearchResults: boolean;
   localAppService: AppService;
   openSearch: boolean = false;
+  mobile:boolean = document.documentElement.clientWidth <= 768 ? true : false;
+  showCarousel: boolean = false;
   constructor(public appSettings:AppSettings, 
               public appService:AppService, 
               private afs:AngularFirestore,
@@ -63,13 +66,29 @@ export class PagesComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+    console.log(window.location.pathname)
     this.currency = this.currencies[0];
     this.flag = this.flags[0];    
     this.localAuthService = this.authService;
     this.localAppService = this.appService;
     this.data = this.authService.Data;
     this.user = this.authService.user;
+    if(window.location.pathname == '/' || window.location.pathname.includes('learn')){
+      this.showCarousel = true
+    }
     console.log(this.authService.Data, 'dataaa ')
+    this.router.events.subscribe(
+      (val)=>{
+        if(val instanceof NavigationStart){
+          if(val.url.includes('learn') || val.url == '/'){
+            this.showCarousel = true
+          }else{
+            this.showCarousel = false
+          }
+          console.log(val)
+        }
+      } 
+    )
     this.authService.db.collection('categories').get().then(
       (snapshot)=>{
         snapshot.forEach(
@@ -109,6 +128,10 @@ export class PagesComponent implements OnInit, AfterViewInit {
   public changeLang(flag){
     this.flag = flag;
   }
+
+//   $zopim(function() {
+//    $zopim.livechat.hideAll();
+// });
 
   searchIfEnter(event) {
     console.log(event);
