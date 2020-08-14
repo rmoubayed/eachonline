@@ -56,8 +56,22 @@ export class ProductsComponent implements OnInit {
  trackedFilters : any;
  currentSearchCategory: string;
  searchParams: any = {filters: '',}
+ serviceCategories = [
+  'Business Services',
+  'Communication',
+  'Construction & Engineering',
+  'Distribution',
+  'Education',
+  'Environmental',
+  'Finance',
+  'Tourism',
+  'Health',
+  'Recreation',
+  'Transportation'
+]
 
   priceRangeRefined: any;
+  isService: boolean;
   constructor(
     public authService: AuthService,
     public appService:AppService, 
@@ -67,43 +81,68 @@ export class ProductsComponent implements OnInit {
     ) { }
 
   ngOnInit() {
-   
-    this.route.params.subscribe(
-      (data)=>{
-        console.log('inn sub');
-        if(window.location.pathname == '/products'){
-          this.currentSearchCategory = undefined;
-          this.productRenderer = (products)=>{
-            products = products.filter(elt=>elt.status == 'published');
-            this.productList = products;
-            return products;
+    
+    // this.route.params.subscribe(
+    //   (data)=>{
+    //     console.log('inn sub');
+    //     if(window.location.pathname == '/products' && window.location.href.indexOf('?') == -1){
+    //       this.currentSearchCategory = undefined;
+    //       this.productRenderer = (products)=>{
+    //         products = products.filter(elt=>elt.status == 'published');
+    //         this.productList = products;
+    //         console.log(this.productList)
+    //         return products;
+    //       }
+    //       this.searchParams.filters = 'status:published'
+    //     } 
+        this.route.queryParams.subscribe(
+          (query)=>{
+            console.log(query)
+            if(query['services']){
+              this.isService = true;
+              this.searchParams.filters = 'categoryId:'+query['services']
+            } else {
+              this.isService = false
+              console.log(window.location.pathname.split('/').pop())
+              if(window.location.pathname.split('/').pop() != 'products'){
+                this.searchParams.filters = 'status:published AND categoryId:'+ window.location.pathname.split('/').pop()
+              }else{
+                this.searchParams.filters = 'status:published '
+              }
+              
+            }
+            this.productRenderer = (products)=>{
+              console.log(products)
+              // products = products.filter(elt=>elt.status == 'published' && elt.categoryId == query['services']);
+              this.productList = products;
+              console.log(this.productList)
+              return products;
+            } 
           }
-        } else {
-          this.currentSearchCategory = data.name;
-          this.productRenderer = (products)=>{
-            console.log('product endere', products);
-            products = products.filter(elt=>(elt.status == 'published'));
-            this.productList =  products  
-            console.log(this.productList)
-            return products;
-          }
-        }
-      }
-    )
-    this.route.queryParams.subscribe(
-      (query)=>{
-        console.log(query)
-        if(query['services']){
-          this.searchParams.filters = this.currentSearchCategory ? 'categoryId:'+this.currentSearchCategory : 'productType:service'
-        } else {
-          this.searchParams.filters = this.currentSearchCategory ? 'categoryId:'+this.currentSearchCategory : ''
-        }
-      }
-    )
+        )
+        // else {
+        //   this.currentSearchCategory = data.name;
+        //   this.productRenderer = (products)=>{
+        //     console.log('product endere', products);
+        //     products = products.filter(elt=>(elt.status == 'published' && elt.categoryId == this.currentSearchCategory));
+        //     this.productList =  products  
+        //     console.log(this.productList)
+        //     return products;
+        //   }
+        // }
+    //   }
+      
+    // )
+    
     console.log(this.route.snapshot.data['facets']);
     let facets : any[] = this.route.snapshot.data['facets']
     this.categoryRefined = (cats)=>{
-      // console.log(facets);
+      console.log(cats, 'cats')
+      cats = cats.filter(item=>{
+        return this.serviceCategories.indexOf(item.value) === -1
+        
+      })
+      console.log(cats);
       return cats;
     }
 
@@ -128,7 +167,7 @@ export class ProductsComponent implements OnInit {
     }
 
     this.localAppService = this.appService;
-    this.appService.currentListingUrl = window.location.pathname;
+    this.appService.currentListingUrl = window.location.href;
     console.log(this.appService.currentListingUrl, this.appService.currentListingUrl.split('/').pop())
     this.count = this.counts[0];
     this.sort = this.sortings[0];

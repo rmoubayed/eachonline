@@ -4,7 +4,7 @@
             <div class="info" fxLayoutAlign="start start">
                 <div class="px-2" fxLayout="column" fxLayoutAlign="center center">
                     <h1 class="title">{{banners[0].title}}</h1>
-                    <a [routerLink]="['/products', banners[0].value]" mat-raised-button color="primary" class="mt-2">Shop now</a>
+                    <a [routerLink]="['/products']" [queryParams]="{services: banners[0].value}" mat-raised-button color="primary" class="mt-2">Shop now</a>
                 </div> 
             </div> 
         </div>
@@ -13,7 +13,7 @@
                 <div class="info" fxLayoutAlign="center center">
                     <div class="px-2" fxLayout="column" fxLayoutAlign="end center">
                       <h2 class="title">{{banners[1].title}}</h2>
-                      <a [routerLink]="['/products', banners[1].value]" mat-raised-button color="primary" class="mt-2">Shop now</a>
+                      <a [routerLink]="['/products']" [queryParams]="{services: banners[1].value}" mat-raised-button color="primary" class="mt-2">Shop now</a>
                     </div> 
                 </div> 
             </div>
@@ -21,7 +21,7 @@
                 <div class="info" fxFlex fxLayoutAlign="center center">
                     <div class="px-2" fxLayout="column" fxLayoutAlign="end center">
                       <h2 class="title">{{banners[2].title}}</h2>
-                      <a [routerLink]="['/products', banners[2].value]" mat-raised-button color="primary" class="mt-2">Shop now</a>
+                      <a [routerLink]="['/products']" [queryParams]="{services: banners[2].value}" mat-raised-button color="primary" class="mt-2">Shop now</a>
                     </div> 
                 </div> 
             </div>
@@ -33,7 +33,7 @@
                 <div class="info" fxLayoutAlign="space-around center">
                     <div class="px-2" fxLayout="column" fxLayoutAlign="end center">
                       <h2 class="title">{{banners[3].title}}</h2>
-                      <a [routerLink]="['/products', banners[3].value]" mat-raised-button color="primary" class="mt-2">Shop now</a>
+                      <a [routerLink]="['/products']" [queryParams]="{services: banners[3].value}" mat-raised-button color="primary" class="mt-2">Shop now</a>
                     </div>                    
                 </div>
             </div>

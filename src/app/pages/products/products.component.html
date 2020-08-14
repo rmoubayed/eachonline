@@ -5,12 +5,12 @@
     <ais-search-box></ais-search-box>
     <mat-sidenav-container> 
         <mat-sidenav #sidenav [opened]="sidenavOpen" [mode]="sidenavOpen ? 'side' : 'over'" class="filter-sidenav" perfectScrollbar> 
-            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" *ngIf="localAppService.currentListingUrl == '/products'">
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" *ngIf="!isService">
                 <div class="col-6">
                     <h3 class="collapsable-list">Categories<span id="catCaret" class="caretSrudox"></span></h3>
                 </div>
             </div>
-            <ais-refinement-list *ngIf="localAppService.currentListingUrl == '/products'"
+            <ais-refinement-list *ngIf="!isService"
                 attribute="categoryLabel"  
                 operator="or"
                 [transformItems]="categoryRefined"
@@ -35,22 +35,22 @@
             submitLabel="Go"
             ></ais-range-input>
             <!-- <ais-custom-refine-price attribute="priceRange"></ais-custom-refine-price> -->
-            <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
+            <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}" *ngIf="!isService">
                 <div class="col-6">
                     <h3 class="collapsable-list">Color<span id="catCaret2" class="caretSrudox"></span></h3>
                 </div>
             </div>
-            <ais-custom-refine  operator="or" attribute="color"></ais-custom-refine>
-            <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}">
+            <ais-custom-refine  operator="or" attribute="color" *ngIf="!isService"></ais-custom-refine>
+            <div class="row" [ngStyle]="{'margin-bottom':'10px', 'margin-top':'20px'}" *ngIf="!isService">
                 <div class="col-6">
                     <h3 class="collapsable-list">Size<span id="catCaret2" class="caretSrudox"></span></h3>
                 </div>
             </div>
-            <ais-refinement-list
+            <ais-refinement-list *ngIf="!isService"
                 attribute="size"
                 operator="or"
             ></ais-refinement-list>
-            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" >
+            <div class="row" [ngStyle]="{'margin-bottom':'10px'}" *ngIf="!isService">
                 <div class="col-6">
                     <h3 class="collapsable-list">Brands<span id="catCaret" class="caretSrudox"></span></h3>
                 </div>
@@ -58,6 +58,7 @@
             <ais-refinement-list 
                 attribute="brand"  
                 operator="or"
+                *ngIf="!isService"
             ></ais-refinement-list>
         </mat-sidenav>
         <mat-sidenav-content class="all-products" ngClass.gt-sm="p-left">
